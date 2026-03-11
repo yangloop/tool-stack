@@ -2,7 +2,7 @@ User-agent: *
 Allow: /
 
 # Sitemap
-Sitemap: https://toolstack.example.com/sitemap.xml
+Sitemap: https://toolstack.juvvv.com/sitemap.xml
 
 # Disallow
 Disallow: /api/

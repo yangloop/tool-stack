@@ -10,7 +10,7 @@ interface SEOProps {
 const defaultTitle = 'ToolStack - 开发者工具箱';
 const defaultDescription = 'ToolStack 是一个免费的在线 IT 工具集合，提供 JSON 格式化、Base64 编解码、RSA 密钥生成、Docker 命令转换等 20+ 款实用工具。';
 const defaultKeywords = '开发工具,在线工具,JSON格式化,Base64,哈希计算,UUID生成,二维码,Docker,WebSocket,HTTP请求';
-const siteUrl = 'https://toolstack.example.com'; // 请替换为实际域名
+const siteUrl = 'https://toolstack.juvvv.com'; // 请替换为实际域名
 
 export function SEO({ 
   title, 
