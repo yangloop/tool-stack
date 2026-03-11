@@ -27,10 +27,24 @@ export default defineConfig({
       output: {
         // 代码分割
         manualChunks: {
-          // 第三方库单独打包
-          vendor: ['react', 'react-dom', 'react-router-dom'],
-          // UI 相关
-          ui: ['lucide-react'],
+          // 核心框架
+          'vendor-core': ['react', 'react-dom', 'react-router-dom'],
+          // UI 图标
+          'vendor-icons': ['lucide-react'],
+          // JSON 查看器（较大，单独打包）
+          'vendor-json': ['@uiw/react-json-view', '@uiw/react-json-view/light', '@uiw/react-json-view/dark'],
+          // SQL 格式化器（单独打包）
+          'vendor-sql-formatter': ['sql-formatter'],
+          // 语法高亮（非常大，单独打包）
+          'vendor-highlighter': ['react-syntax-highlighter', 'react-syntax-highlighter/dist/esm/prism'],
+          // Docker 转换器（较大）
+          'vendor-docker': ['composerize', 'decomposerize'],
+          // 颜色选择器
+          'vendor-color': ['react-colorful'],
+          // 加密相关
+          'vendor-crypto': ['jsencrypt', 'crypto-js', 'otpauth'],
+          // 其他工具库
+          'vendor-utils': ['axios', 'qrcode'],
         },
         // 静态资源命名
         assetFileNames: (assetInfo) => {
@@ -59,6 +73,9 @@ export default defineConfig({
     
     // 目标浏览器
     target: 'es2015',
+    
+    // 调整 chunk 大小警告阈值（第三方库较大是正常的）
+    chunkSizeWarningLimit: 700,
     
     // CSS 优化
     cssMinify: true,
