@@ -293,14 +293,14 @@ export function TextTemplateTool() {
     <div className="max-w-6xl mx-auto animate-fade-in">
       {/* 标题 */}
       <div className="tool-header">
-        <div className="tool-icon">
-          <FileText className="w-6 h-6" />
+        <div className="tool-icon w-10 h-10 sm:w-12 sm:h-12">
+          <FileText className="w-5 h-5 sm:w-6 sm:h-6" />
         </div>
-        <div className="flex-1">
-          <h1 className="text-xl font-semibold text-surface-900 dark:text-surface-100">
+        <div className="flex-1 min-w-0">
+          <h1 className="text-lg sm:text-xl font-semibold text-surface-900 dark:text-surface-100">
             文本模板替换
           </h1>
-          <p className="text-sm text-surface-500 mt-0.5">
+          <p className="text-xs sm:text-sm text-surface-500 mt-0.5">
             使用变量模板批量生成文本，支持自定义分隔符和数据表格
           </p>
         </div>
@@ -308,7 +308,7 @@ export function TextTemplateTool() {
 
       {/* 设置栏 */}
       <div className="card mb-5 space-y-4">
-        <div className="flex flex-wrap items-center gap-4">
+        <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-3 sm:gap-4">
           {/* 分隔符选择 */}
           <div className="flex items-center gap-2">
             <span className="text-sm text-surface-600 dark:text-surface-400">分隔符:</span>
@@ -348,21 +348,25 @@ export function TextTemplateTool() {
           <div className="flex-1" />
 
           {/* 操作按钮 */}
-          <button
-            onClick={syncVariables}
-            className="btn-secondary text-sm"
-            disabled={extractedVars.length === 0}
-          >
-            <Variable className="w-3.5 h-3.5" />
-            同步变量
-          </button>
-          <button
-            onClick={() => setShowSettings(!showSettings)}
-            className="btn-ghost text-sm"
-          >
-            <Settings className="w-3.5 h-3.5" />
-            设置
-          </button>
+          <div className="flex gap-2 sm:gap-3">
+            <button
+              onClick={syncVariables}
+              className="btn-secondary text-xs sm:text-sm flex-1 sm:flex-none"
+              disabled={extractedVars.length === 0}
+            >
+              <Variable className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">同步变量</span>
+              <span className="sm:hidden">同步</span>
+            </button>
+            <button
+              onClick={() => setShowSettings(!showSettings)}
+              className="btn-ghost text-xs sm:text-sm flex-1 sm:flex-none"
+            >
+              <Settings className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">设置</span>
+              <span className="sm:hidden">设置</span>
+            </button>
+          </div>
         </div>
 
         {/* 展开设置 */}
@@ -397,10 +401,10 @@ export function TextTemplateTool() {
       </div>
 
       {/* Tab 切换 */}
-      <div className="flex gap-1 border-b border-surface-200 dark:border-surface-700 mb-5">
+      <div className="flex gap-1 border-b border-surface-200 dark:border-surface-700 mb-5 overflow-x-auto">
         <button
           onClick={() => setActiveTab('single')}
-          className={`px-4 py-3 text-sm font-medium border-b-2 transition-all flex items-center gap-2 -mb-px ${
+          className={`px-3 sm:px-4 py-2.5 sm:py-3 text-sm font-medium border-b-2 transition-all flex items-center gap-1.5 sm:gap-2 -mb-px whitespace-nowrap ${
             activeTab === 'single'
               ? 'border-primary-500 text-primary-600 dark:text-primary-400'
               : 'border-transparent text-surface-500 hover:text-surface-700 dark:hover:text-surface-300'
@@ -411,7 +415,7 @@ export function TextTemplateTool() {
         </button>
         <button
           onClick={() => setActiveTab('batch')}
-          className={`px-4 py-3 text-sm font-medium border-b-2 transition-all flex items-center gap-2 -mb-px ${
+          className={`px-3 sm:px-4 py-2.5 sm:py-3 text-sm font-medium border-b-2 transition-all flex items-center gap-1.5 sm:gap-2 -mb-px whitespace-nowrap ${
             activeTab === 'batch'
               ? 'border-primary-500 text-primary-600 dark:text-primary-400'
               : 'border-transparent text-surface-500 hover:text-surface-700 dark:hover:text-surface-300'
@@ -422,14 +426,14 @@ export function TextTemplateTool() {
         </button>
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-5">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5">
         {/* 左侧：模板和变量 */}
         <div className="space-y-5">
           {/* 模板编辑 */}
-          <div className="card space-y-3">
+          <div className="card space-y-2 sm:space-y-3">
             <div className="flex items-center justify-between">
-              <h3 className="font-medium text-surface-900 dark:text-surface-100 flex items-center gap-2">
-                <FileText className="w-4 h-4 text-primary-500" />
+              <h3 className="font-medium text-sm sm:text-base text-surface-900 dark:text-surface-100 flex items-center gap-1.5 sm:gap-2">
+                <FileText className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary-500" />
                 模板
               </h3>
               <div className="flex gap-2">
@@ -442,28 +446,28 @@ export function TextTemplateTool() {
               value={template}
               onChange={(e) => setTemplate(e.target.value)}
               placeholder="输入模板，使用变量如 {{name}}..."
-              className="w-full h-48 p-4 font-mono text-sm bg-surface-50 dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded-xl resize-none focus:ring-2 focus:ring-primary-500/50"
+              className="w-full h-40 sm:h-48 p-3 sm:p-4 font-mono text-sm bg-surface-50 dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded-xl resize-none focus:ring-2 focus:ring-primary-500/50"
             />
             
             {/* 检测到的变量 */}
             {extractedVars.length > 0 && (
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="text-xs text-surface-500">检测到变量:</span>
+              <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                <span className="text-[10px] sm:text-xs text-surface-500">检测到变量:</span>
                 {extractedVars.map(v => (
-                  <span key={v} className="badge-primary text-[10px]">{v}</span>
+                  <span key={v} className="badge-primary text-[9px] sm:text-[10px] px-1.5 py-0.5">{v}</span>
                 ))}
               </div>
             )}
           </div>
 
           {/* 变量定义 */}
-          <div className="card space-y-3">
+          <div className="card space-y-2 sm:space-y-3">
             <div className="flex items-center justify-between">
-              <h3 className="font-medium text-surface-900 dark:text-surface-100 flex items-center gap-2">
-                <Variable className="w-4 h-4 text-amber-500" />
+              <h3 className="font-medium text-sm sm:text-base text-surface-900 dark:text-surface-100 flex items-center gap-1.5 sm:gap-2">
+                <Variable className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-500" />
                 变量定义
               </h3>
-              <button onClick={addVariable} className="btn-secondary text-xs">
+              <button onClick={addVariable} className="btn-secondary text-[10px] sm:text-xs px-2 sm:px-3">
                 <Plus className="w-3 h-3" />
                 添加
               </button>
@@ -471,27 +475,27 @@ export function TextTemplateTool() {
             
             <div className="space-y-2 max-h-64 overflow-y-auto">
               {variables.map((variable, index) => (
-                <div key={index} className="flex items-center gap-2 p-2 bg-surface-50 dark:bg-surface-900/50 rounded-lg">
-                  <GripVertical className="w-4 h-4 text-surface-300" />
+                <div key={index} className="flex items-center gap-1.5 sm:gap-2 p-1.5 sm:p-2 bg-surface-50 dark:bg-surface-900/50 rounded-lg">
+                  <GripVertical className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-surface-300 flex-shrink-0" />
                   <input
                     type="text"
                     value={variable.name}
                     onChange={(e) => updateVariable(index, 'name', e.target.value)}
                     placeholder="变量名"
-                    className="flex-1 input py-1.5 text-sm"
+                    className="flex-1 input py-1 sm:py-1.5 text-xs sm:text-sm min-w-0"
                   />
                   <input
                     type="text"
                     value={variable.defaultValue}
                     onChange={(e) => updateVariable(index, 'defaultValue', e.target.value)}
                     placeholder="默认值"
-                    className="flex-1 input py-1.5 text-sm"
+                    className="flex-1 input py-1 sm:py-1.5 text-xs sm:text-sm min-w-0"
                   />
                   <button
                     onClick={() => removeVariable(index)}
-                    className="text-surface-400 hover:text-red-500 p-1"
+                    className="text-surface-400 hover:text-red-500 p-1 flex-shrink-0"
                   >
-                    <X className="w-4 h-4" />
+                    <X className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                   </button>
                 </div>
               ))}
@@ -505,14 +509,14 @@ export function TextTemplateTool() {
         {/* 右侧：数据表格和结果 */}
         <div className="space-y-5">
           {activeTab === 'batch' && (
-            <div className="card space-y-3">
+            <div className="card space-y-2 sm:space-y-3">
               <div className="flex items-center justify-between">
-                <h3 className="font-medium text-surface-900 dark:text-surface-100 flex items-center gap-2">
-                  <Table2 className="w-4 h-4 text-emerald-500" />
+                <h3 className="font-medium text-sm sm:text-base text-surface-900 dark:text-surface-100 flex items-center gap-1.5 sm:gap-2">
+                  <Table2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-500" />
                   数据表格
                 </h3>
                 <div className="flex gap-2">
-                  <button onClick={addDataRow} className="btn-secondary text-xs">
+                  <button onClick={addDataRow} className="btn-secondary text-[10px] sm:text-xs px-2 sm:px-3">
                     <Plus className="w-3 h-3" />
                     添加行
                   </button>
@@ -520,7 +524,7 @@ export function TextTemplateTool() {
               </div>
 
               {/* 数据表格 */}
-              <div className="overflow-x-auto max-h-64">
+              <div className="overflow-x-auto max-h-64 -mx-3 sm:mx-0">
                 <table className="w-full text-sm">
                   <thead className="bg-surface-50 dark:bg-surface-900/50">
                     <tr>
@@ -567,10 +571,10 @@ export function TextTemplateTool() {
           )}
 
           {/* 结果预览 */}
-          <div className="card space-y-3">
+          <div className="card space-y-2 sm:space-y-3">
             <div className="flex items-center justify-between">
-              <h3 className="font-medium text-surface-900 dark:text-surface-100 flex items-center gap-2">
-                <Play className="w-4 h-4 text-emerald-500" />
+              <h3 className="font-medium text-sm sm:text-base text-surface-900 dark:text-surface-100 flex items-center gap-1.5 sm:gap-2">
+                <Play className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-500" />
                 生成结果
               </h3>
               <div className="flex gap-2">
@@ -594,11 +598,11 @@ export function TextTemplateTool() {
             <textarea
               readOnly
               value={activeTab === 'single' ? defaultResult : batchResult}
-              className="w-full h-64 p-4 font-mono text-sm bg-surface-50 dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded-xl resize-none"
+              className="w-full h-48 sm:h-64 p-3 sm:p-4 font-mono text-xs sm:text-sm bg-surface-50 dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded-xl resize-none"
             />
 
             {/* 统计 */}
-            <div className="flex items-center gap-4 text-xs text-surface-500">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs text-surface-500">
               <span>字符数: {(activeTab === 'single' ? defaultResult : batchResult).length}</span>
               <span>行数: {(activeTab === 'single' ? defaultResult : batchResult).split('\n').length}</span>
               {activeTab === 'batch' && <span>数据行: {dataRows.length}</span>}
@@ -608,15 +612,15 @@ export function TextTemplateTool() {
       </div>
 
       {/* 使用说明 */}
-      <div className="card mt-5 space-y-3">
-        <h3 className="font-medium text-surface-900 dark:text-surface-100">使用说明</h3>
-        <div className="grid md:grid-cols-2 gap-4 text-sm text-surface-600 dark:text-surface-400">
-          <div className="space-y-2">
+      <div className="card mt-4 sm:mt-5 space-y-3">
+        <h3 className="font-medium text-surface-900 dark:text-surface-100 text-sm sm:text-base">使用说明</h3>
+        <div className="grid sm:grid-cols-2 gap-3 sm:gap-4 text-xs sm:text-sm text-surface-600 dark:text-surface-400">
+          <div className="space-y-1.5 sm:space-y-2">
             <p>1. 编写模板 - 使用变量占位符，如 name</p>
             <p>2. 定义变量 - 设置变量名和默认值</p>
             <p>3. 选择分隔符 - 支持双大括号、Dollar符号、百分号等多种格式</p>
           </div>
-          <div className="space-y-2">
+          <div className="space-y-1.5 sm:space-y-2">
             <p>4. 批量处理 - 在数据表格中填入多行数据</p>
             <p>5. 生成结果 - 一键复制或导出为文本文件</p>
             <p>6. CSV 导入 - 支持从 CSV 格式快速导入数据</p>
