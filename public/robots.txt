@@ -2,7 +2,7 @@ User-agent: *
 Allow: /
 
 # Sitemap
-Sitemap: https://toolstack.juvvv.com/sitemap.xml
+Sitemap: /sitemap.xml
 
 # Disallow
 Disallow: /api/

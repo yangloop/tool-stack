@@ -10,7 +10,8 @@ interface SEOProps {
 const defaultTitle = 'ToolStack - 开发者工具箱';
 const defaultDescription = 'ToolStack 是一个免费的在线 IT 工具集合，提供 JSON 格式化、Base64 编解码、RSA 密钥生成、Docker 命令转换等 20+ 款实用工具。';
 const defaultKeywords = '开发工具,在线工具,JSON格式化,Base64,哈希计算,UUID生成,二维码,Docker,WebSocket,HTTP请求';
-const siteUrl = 'https://toolstack.juvvv.com'; // 请替换为实际域名
+// 动态获取当前域名，支持多域名部署
+const siteUrl = typeof window !== 'undefined' ? window.location.origin : '';
 
 export function SEO({ 
   title, 
@@ -19,7 +20,9 @@ export function SEO({
   pathname = ''
 }: SEOProps) {
   const fullTitle = title ? `${title} - ToolStack` : defaultTitle;
-  const url = `${siteUrl}${pathname}`;
+  // 使用动态获取的当前域名
+  const currentOrigin = typeof window !== 'undefined' ? window.location.origin : siteUrl;
+  const url = `${currentOrigin}${pathname}`;
 
   useEffect(() => {
     // 更新标题

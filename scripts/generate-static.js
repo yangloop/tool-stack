@@ -73,7 +73,8 @@ const toolNames = {
   'color': '颜色转换',
 };
 
-const baseUrl = 'https://toolstack.juvvv.com';
+// 支持从环境变量读取域名，默认为空（使用相对路径）
+const baseUrl = process.env.SITE_URL || '';
 
 // 读取模板 HTML
 const templatePath = path.join(distDir, 'index.html');

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://toolstack.juvvv.com/</loc>
+    <loc>/</loc>
     <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
@@ -9,13 +9,13 @@
   
   <!-- Format Tools -->
   <url>
-    <loc>https://toolstack.juvvv.com/tool/json</loc>
+    <loc>/tool/json</loc>
     <lastmod>2024-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://toolstack.juvvv.com/tool/sql</loc>
+    <loc>/tool/sql</loc>
     <lastmod>2024-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
@@ -23,37 +23,37 @@
   
   <!-- Encode Tools -->
   <url>
-    <loc>https://toolstack.juvvv.com/tool/base64</loc>
+    <loc>/tool/base64</loc>
     <lastmod>2024-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://toolstack.juvvv.com/tool/base64-file</loc>
+    <loc>/tool/base64-file</loc>
     <lastmod>2024-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://toolstack.juvvv.com/tool/url</loc>
+    <loc>/tool/url</loc>
     <lastmod>2024-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://toolstack.juvvv.com/tool/url-parser</loc>
+    <loc>/tool/url-parser</loc>
     <lastmod>2024-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://toolstack.juvvv.com/tool/html</loc>
+    <loc>/tool/html</loc>
     <lastmod>2024-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://toolstack.juvvv.com/tool/jwt</loc>
+    <loc>/tool/jwt</loc>
     <lastmod>2024-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
@@ -61,25 +61,25 @@
   
   <!-- Security Tools -->
   <url>
-    <loc>https://toolstack.juvvv.com/tool/hash</loc>
+    <loc>/tool/hash</loc>
     <lastmod>2024-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://toolstack.juvvv.com/tool/rsa</loc>
+    <loc>/tool/rsa</loc>
     <lastmod>2024-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://toolstack.juvvv.com/tool/otp</loc>
+    <loc>/tool/otp</loc>
     <lastmod>2024-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://toolstack.juvvv.com/tool/password</loc>
+    <loc>/tool/password</loc>
     <lastmod>2024-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -87,67 +87,67 @@
   
   <!-- Dev Tools -->
   <url>
-    <loc>https://toolstack.juvvv.com/tool/timestamp</loc>
+    <loc>/tool/timestamp</loc>
     <lastmod>2024-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://toolstack.juvvv.com/tool/uuid</loc>
+    <loc>/tool/uuid</loc>
     <lastmod>2024-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://toolstack.juvvv.com/tool/regex</loc>
+    <loc>/tool/regex</loc>
     <lastmod>2024-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://toolstack.juvvv.com/tool/crontab</loc>
+    <loc>/tool/crontab</loc>
     <lastmod>2024-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://toolstack.juvvv.com/tool/docker-convert</loc>
+    <loc>/tool/docker-convert</loc>
     <lastmod>2024-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://toolstack.juvvv.com/tool/http-request</loc>
+    <loc>/tool/http-request</loc>
     <lastmod>2024-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://toolstack.juvvv.com/tool/websocket</loc>
+    <loc>/tool/websocket</loc>
     <lastmod>2024-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://toolstack.juvvv.com/tool/text-diff</loc>
+    <loc>/tool/text-diff</loc>
     <lastmod>2024-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://toolstack.juvvv.com/tool/text-template</loc>
+    <loc>/tool/text-template</loc>
     <lastmod>2024-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://toolstack.juvvv.com/tool/chmod</loc>
+    <loc>/tool/chmod</loc>
     <lastmod>2024-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://toolstack.juvvv.com/tool/ua-parser</loc>
+    <loc>/tool/ua-parser</loc>
     <lastmod>2024-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -155,13 +155,13 @@
   
   <!-- Utility Tools -->
   <url>
-    <loc>https://toolstack.juvvv.com/tool/qrcode</loc>
+    <loc>/tool/qrcode</loc>
     <lastmod>2024-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://toolstack.juvvv.com/tool/color</loc>
+    <loc>/tool/color</loc>
     <lastmod>2024-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
