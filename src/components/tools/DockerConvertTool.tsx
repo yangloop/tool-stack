@@ -51,7 +51,7 @@ export function DockerConvertTool() {
     try {
       const opts = await convertRunToOptions(dockerRunCommand);
       if (opts) {
-        // 直接使用 opts 生成 compose，而不是依赖状态中的 options
+        // 直接使用 opts 生成 compose，避免状态延迟
         const { generateDockerCompose } = await import('./docker-convert/generators');
         const compose = await generateDockerCompose(opts, serviceName);
         setComposeYaml(compose);

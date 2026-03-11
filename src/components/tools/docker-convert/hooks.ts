@@ -3,8 +3,6 @@
 import { useState, useCallback } from 'react';
 import type { DockerRunOptions } from './types';
 import { defaultOptions } from './types';
-import { parseDockerRun, parseCompose } from './parsers';
-import { generateDockerCompose, generateDockerRun, generateDockerRunFromCompose } from './generators';
 
 export function useDockerConverter() {
   const [options, setOptions] = useState<DockerRunOptions>(defaultOptions);
@@ -12,6 +10,8 @@ export function useDockerConverter() {
 
   const convertRunToOptions = useCallback(async (command: string): Promise<DockerRunOptions | null> => {
     setError('');
+    // 动态导入 parsers
+    const { parseDockerRun } = await import('./parsers');
     const { options: opts, error: err } = await parseDockerRun(command);
     if (err) {
       setError(err);
@@ -25,6 +25,8 @@ export function useDockerConverter() {
 
   const convertComposeToOptions = useCallback(async (yaml: string): Promise<DockerRunOptions | null> => {
     setError('');
+    // 动态导入 parsers
+    const { parseCompose } = await import('./parsers');
     const { options: opts, error: err } = await parseCompose(yaml);
     if (err) {
       setError(err);
@@ -37,14 +39,18 @@ export function useDockerConverter() {
   }, []);
 
   const getComposeConfig = useCallback(async (serviceName: string): Promise<string> => {
+    // 动态导入 generators
+    const { generateDockerCompose } = await import('./generators');
     return generateDockerCompose(options, serviceName);
   }, [options]);
 
-  const getRunCommand = useCallback((): string => {
+  const getRunCommand = useCallback(async (): Promise<string> => {
+    const { generateDockerRun } = await import('./generators');
     return generateDockerRun(options);
   }, [options]);
 
   const getRunCommandFromCompose = useCallback(async (yaml: string): Promise<string> => {
+    const { generateDockerRunFromCompose } = await import('./generators');
     return generateDockerRunFromCompose(yaml);
   }, []);
 
@@ -94,6 +100,7 @@ export function useDockerConverter() {
 
   return {
     options,
+    setOptions,
     error,
     setError,
     convertRunToOptions,
