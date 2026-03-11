@@ -74,7 +74,7 @@ const toolNames = {
 };
 
 // 支持从环境变量读取域名，默认为空（使用相对路径）
-const baseUrl = process.env.SITE_URL || '';
+const siteUrl = process.env.SITE_URL || '';
 
 // 读取模板 HTML
 const templatePath = path.join(distDir, 'index.html');
@@ -85,15 +85,18 @@ tools.forEach(toolId => {
   const toolName = toolNames[toolId];
   const description = toolDescriptions[toolId] || `ToolStack ${toolName} - 免费在线开发工具`;
   
+  // 构建 URL（绝对或相对）
+  const toolUrl = siteUrl ? `${siteUrl}/tool/${toolId}` : `/tool/${toolId}`;
+  
   // 替换模板中的 SEO 内容
   let html = template
     .replace(/<title>.*?<\/title>/, `<title>${toolName} - ToolStack</title>`)
     .replace(/<meta name="description" content=".*?"\/>/, `<meta name="description" content="${description}"/>`)
     .replace(/<meta property="og:title" content=".*?"\/>/, `<meta property="og:title" content="${toolName} - ToolStack"/>`)
     .replace(/<meta property="og:description" content=".*?"\/>/, `<meta property="og:description" content="${description}"/>`)
-    .replace(/<meta property="og:url" content=".*?"\/>/, `<meta property="og:url" content="${baseUrl}/tool/${toolId}"/>`)
-    .replace(/<link rel="canonical" href=".*?"\/>/, `<link rel="canonical" href="${baseUrl}/tool/${toolId}"/>`)
-    .replace(/"url": "https:\/\/toolstack\.juvvv\.com"/, `"url": "${baseUrl}/tool/${toolId}"`);
+    .replace(/<meta property="og:url" content=".*?"\/>/, `<meta property="og:url" content="${toolUrl}"/>`)
+    .replace(/<link rel="canonical" href=".*?"\/>/, `<link rel="canonical" href="${toolUrl}"/>`)
+    .replace(/"url": "https:\/\/toolstack\.juvvv\.com"/, `"url": "${toolUrl}"`);
 
   // 创建工具目录
   const toolDir = path.join(distDir, 'tool', toolId);
