@@ -1,0 +1,32 @@
+{
+  "name": "ToolStack - 开发者工具箱",
+  "short_name": "ToolStack",
+  "description": "免费在线 IT 工具集合，提供 JSON 格式化、Base64 编解码、RSA 密钥生成等 20+ 款开发者实用工具",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color":="#ffffff",
+  "theme_color": "#6366F1",
+  "icons": [
+    {
+      "src": "/favicon-16x16.svg",
+      "sizes": "16x16",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "/favicon-32x32.svg",
+      "sizes": "32x32",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "/favicon.svg",
+      "sizes": "48x48 72x72 96x96 128x128 256x256",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "/logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
