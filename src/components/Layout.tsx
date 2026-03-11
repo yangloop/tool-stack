@@ -93,9 +93,11 @@ export function Layout({ children, activeToolId }: LayoutProps) {
                 to="/"
                 className="flex items-center gap-3 cursor-pointer group"
               >
-                <div className="w-9 h-9 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center shadow-lg shadow-primary-500/25 group-hover:shadow-primary-500/40 transition-shadow">
-                  <Wrench className="w-4 h-4 text-white" />
-                </div>
+                <img 
+                  src="/logo.svg" 
+                  alt="ToolStack" 
+                  className="w-9 h-9 rounded-xl shadow-lg shadow-primary-500/25 group-hover:shadow-primary-500/40 transition-shadow"
+                />
                 <span className="text-xl font-bold text-gradient">
                   ToolStack
                 </span>
@@ -287,9 +289,11 @@ export function Layout({ children, activeToolId }: LayoutProps) {
           {isFullscreen && (
             <div className="sticky top-0 z-50 flex items-center justify-between px-6 py-3 glass-card border-b-0 mx-4 mt-4">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-primary-600 rounded-lg flex items-center justify-center">
-                  <Wrench className="w-4 h-4 text-white" />
-                </div>
+                <img 
+                  src="/logo.svg" 
+                  alt="ToolStack" 
+                  className="w-8 h-8 rounded-lg"
+                />
                 <span className="font-semibold text-surface-900 dark:text-surface-100">
                   {activeTool?.name || 'ToolStack'}
                 </span>
