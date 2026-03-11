@@ -1,54 +1,87 @@
-import { useState, useEffect } from 'react';
+import { BrowserRouter, Routes, Route, useParams, useLocation, Navigate } from 'react-router-dom';
+import { useEffect } from 'react';
 import { Layout } from './components/Layout';
 import { Home } from './components/Home';
 import { tools } from './data/tools';
 import { SEO, getToolSEO } from './components/SEO';
 
-function App() {
-  const [activeToolId, setActiveToolId] = useState<string>('');
-  const [, setSearchQuery] = useState('');
-
-  const activeTool = tools.find(t => t.id === activeToolId);
-
-  // 获取 SEO 配置
-  const seoConfig = activeTool 
-    ? getToolSEO(activeTool.id, activeTool.name)
-    : {
-        title: '',
-        description: '',
-        keywords: '',
-        pathname: '/'
-      };
-
-  // 更新页面 SEO
+// 工具页面组件
+function ToolPage() {
+  const { toolId } = useParams<{ toolId: string }>();
+  const tool = tools.find(t => t.id === toolId);
+  
   useEffect(() => {
-    if (activeTool) {
-      document.title = `${activeTool.name} - ToolStack`;
-    } else {
-      document.title = 'ToolStack - 开发者工具箱';
+    if (tool) {
+      document.title = `${tool.name} - ToolStack`;
     }
-  }, [activeTool]);
-
+  }, [tool]);
+  
+  if (!tool) {
+    return <Navigate to="/" replace />;
+  }
+  
+  const ToolComponent = tool.component;
+  const seoConfig = getToolSEO(tool.id, tool.name);
+  
   return (
     <>
       <SEO 
         title={seoConfig.title}
         description={seoConfig.description}
         keywords={seoConfig.keywords}
-        pathname={seoConfig.pathname}
+        pathname={`/tool/${tool.id}`}
       />
-      <Layout 
-        activeToolId={activeToolId} 
-        onToolSelect={setActiveToolId}
-        onSearch={setSearchQuery}
-      >
-        {activeTool ? (
-          <activeTool.component />
-        ) : (
-          <Home onToolSelect={setActiveToolId} />
-        )}
+      <Layout activeToolId={tool.id}>
+        <ToolComponent />
       </Layout>
     </>
+  );
+}
+
+// 首页组件
+function HomePage() {
+  useEffect(() => {
+    document.title = 'ToolStack - 开发者工具箱';
+  }, []);
+  
+  return (
+    <>
+      <SEO 
+        title=""
+        description=""
+        keywords=""
+        pathname="/"
+      />
+      <Layout activeToolId="">
+        <Home onToolSelect={(id) => {
+          window.location.href = `/tool/${id}`;
+        }} />
+      </Layout>
+    </>
+  );
+}
+
+// 滚动到顶部组件
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  
+  return null;
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      <ScrollToTop />
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/tool/:toolId" element={<ToolPage />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 

@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { 
   Menu, X, Github, Sun, Moon, Search, 
   AlignLeft, Code, Hash, Terminal, Wrench, Database, Clock, Globe, Send,
   Maximize2, Minimize2, Home, ChevronDown, Shield
 } from 'lucide-react';
 import { tools, categories } from '../data/tools';
-
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   AlignLeft, Code, Hash, Terminal, Wrench, Home, Database, Clock, Globe, Send, Shield,
@@ -14,16 +14,16 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
 interface LayoutProps {
   children: React.ReactNode;
   activeToolId?: string;
-  onToolSelect?: (toolId: string) => void;
-  onSearch?: (query: string) => void;
 }
 
-export function Layout({ children, activeToolId, onToolSelect, onSearch }: LayoutProps) {
+export function Layout({ children, activeToolId }: LayoutProps) {
   const [isDark, setIsDark] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
+  
+  const navigate = useNavigate();
 
   const toggleTheme = () => {
     setIsDark(!isDark);
@@ -32,11 +32,6 @@ export function Layout({ children, activeToolId, onToolSelect, onSearch }: Layou
 
   const toggleFullscreen = () => {
     setIsFullscreen(!isFullscreen);
-  };
-
-  const handleSearch = (value: string) => {
-    setSearchQuery(value);
-    onSearch?.(value);
   };
 
   const filteredTools = searchQuery
@@ -69,6 +64,17 @@ export function Layout({ children, activeToolId, onToolSelect, onSearch }: Layou
 
   const activeTool = tools.find(t => t.id === activeToolId);
 
+  // 处理工具选择
+  const handleToolSelect = (toolId: string) => {
+    if (toolId) {
+      navigate(`/tool/${toolId}`);
+    } else {
+      navigate('/');
+    }
+    setIsMobileMenuOpen(false);
+    setSearchQuery('');
+  };
+
   return (
     <div className={`min-h-screen bg-surface-50 dark:bg-surface-900 transition-colors duration-300 ${isDark ? 'dark' : ''}`}>
       {/* 顶部导航 - 全屏时隐藏 */}
@@ -83,9 +89,9 @@ export function Layout({ children, activeToolId, onToolSelect, onSearch }: Layou
               >
                 {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
               </button>
-              <div 
+              <Link 
+                to="/"
                 className="flex items-center gap-3 cursor-pointer group"
-                onClick={() => onToolSelect?.('')}
               >
                 <div className="w-9 h-9 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center shadow-lg shadow-primary-500/25 group-hover:shadow-primary-500/40 transition-shadow">
                   <Wrench className="w-4 h-4 text-white" />
@@ -93,7 +99,7 @@ export function Layout({ children, activeToolId, onToolSelect, onSearch }: Layou
                 <span className="text-xl font-bold text-gradient">
                   ToolStack
                 </span>
-              </div>
+              </Link>
             </div>
 
             {/* 搜索框 */}
@@ -104,7 +110,7 @@ export function Layout({ children, activeToolId, onToolSelect, onSearch }: Layou
                   type="text"
                   placeholder="搜索工具..."
                   value={searchQuery}
-                  onChange={(e) => handleSearch(e.target.value)}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                   className="input-search bg-surface-100 dark:bg-surface-800 border-0 focus:ring-2 focus:ring-primary-500/50"
                 />
                 <kbd className="absolute right-3 top-1/2 -translate-y-1/2 hidden sm:inline-flex px-2 py-0.5 text-[10px] font-medium text-surface-400 bg-surface-200 dark:bg-surface-700 rounded">
@@ -123,11 +129,11 @@ export function Layout({ children, activeToolId, onToolSelect, onSearch }: Layou
                 {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
               </button>
               <a
-                href="https://github.com"
+                href="https://gitee.com/yangloop/tool-stack"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hidden sm:flex p-2.5 text-surface-600 dark:text-surface-400 hover:bg-surface-100 dark:hover:bg-surface-800 rounded-xl transition-colors"
-                title="GitHub"
+                title="Gitee"
               >
                 <Github className="w-5 h-5" />
               </a>
@@ -150,19 +156,17 @@ export function Layout({ children, activeToolId, onToolSelect, onSearch }: Layou
           >
             <nav className="p-3 space-y-1">
               {/* 返回首页 */}
-              <button
-                onClick={() => {
-                  onToolSelect?.('');
-                  setIsMobileMenuOpen(false);
-                }}
+              <Link
+                to="/"
+                onClick={() => setIsMobileMenuOpen(false)}
                 className={`
-                  nav-item w-full
+                  nav-item w-full flex items-center gap-3
                   ${!activeToolId ? 'active' : ''}
                 `}
               >
                 <Home className="w-4 h-4" />
                 首页
-              </button>
+              </Link>
 
               <div className="h-px bg-surface-200 dark:bg-surface-700 my-2"></div>
 
@@ -174,7 +178,7 @@ export function Layout({ children, activeToolId, onToolSelect, onSearch }: Layou
                     type="text"
                     placeholder="搜索工具..."
                     value={searchQuery}
-                    onChange={(e) => handleSearch(e.target.value)}
+                    onChange={(e) => setSearchQuery(e.target.value)}
                     className="input-search w-full"
                   />
                 </div>
@@ -189,11 +193,7 @@ export function Layout({ children, activeToolId, onToolSelect, onSearch }: Layou
                   {filteredTools.map(tool => (
                     <button
                       key={tool.id}
-                      onClick={() => {
-                        onToolSelect?.(tool.id);
-                        setIsMobileMenuOpen(false);
-                        setSearchQuery('');
-                      }}
+                      onClick={() => handleToolSelect(tool.id)}
                       className="w-full px-3 py-2 rounded-xl text-sm text-surface-700 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-700 text-left transition-colors"
                     >
                       <div className="font-medium">{tool.name}</div>
@@ -240,12 +240,10 @@ export function Layout({ children, activeToolId, onToolSelect, onSearch }: Layou
                         ${isExpanded ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}
                       `}>
                         {catTools.map(tool => (
-                          <button
+                          <Link
                             key={tool.id}
-                            onClick={() => {
-                              onToolSelect?.(tool.id);
-                              setIsMobileMenuOpen(false);
-                            }}
+                            to={`/tool/${tool.id}`}
+                            onClick={() => setIsMobileMenuOpen(false)}
                             className={`
                               w-full flex items-center justify-between px-3 py-2 rounded-xl text-sm transition-colors
                               ${activeToolId === tool.id 
@@ -263,7 +261,7 @@ export function Layout({ children, activeToolId, onToolSelect, onSearch }: Layou
                                 <span className="px-1.5 py-0 text-[10px] bg-emerald-100 text-emerald-600 rounded-full">N</span>
                               )}
                             </div>
-                          </button>
+                          </Link>
                         ))}
                       </div>
                     </div>
