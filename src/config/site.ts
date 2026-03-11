@@ -1,50 +1,49 @@
-#!/usr/bin/env node
-/**
- * 生成静态 HTML 文件，便于搜索引擎抓取
- * 支持环境变量:
- *   - SITE_URL: 网站域名（如 https://example.com）
- *   - VITE_SITE_URL: 同上（vite 风格）
- */
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
+// 站点配置 - 支持环境变量覆盖
+export const siteConfig = {
+  // 域名 - 优先从环境变量读取，否则使用当前域名
+  url: import.meta.env.VITE_SITE_URL || (typeof window !== 'undefined' ? window.location.origin : ''),
+  
+  // 网站基本信息
+  name: import.meta.env.VITE_SITE_NAME || 'ToolStack',
+  title: import.meta.env.VITE_SITE_TITLE || 'ToolStack - 开发者工具箱',
+  description: import.meta.env.VITE_SITE_DESCRIPTION || 'ToolStack 是一个免费的在线 IT 工具集合，提供 JSON 格式化、Base64 编解码、RSA 密钥生成等 20+ 款开发者实用工具。',
+  keywords: '开发工具,在线工具,JSON格式化,Base64,哈希计算,UUID,二维码,时间戳,Docker,WebSocket,HTTP请求,正则测试,密码生成',
+  
+  // 语言
+  lang: import.meta.env.VITE_SITE_LANG || 'zh-CN',
+  
+  // 作者
+  author: 'ToolStack',
+  
+  // 社交媒体
+  og: {
+    type: 'website',
+    image: '/logo.svg',
+  },
+  
+  // Twitter
+  twitter: {
+    card: 'summary_large_image',
+    site: '',
+    creator: '',
+  },
+};
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// 获取完整 URL（支持相对或绝对）
+export function getFullUrl(path: string): string {
+  const baseUrl = siteConfig.url;
+  if (!baseUrl) {
+    // 使用相对路径
+    return path;
+  }
+  // 确保 baseUrl 不以斜杠结尾，path 以斜杠开头
+  const base = baseUrl.replace(/\/$/, '');
+  const p = path.startsWith('/') ? path : `/${path}`;
+  return `${base}${p}`;
+}
 
-const distDir = path.join(__dirname, '../dist');
-
-// 工具列表
-const tools = [
-  { id: 'json', category: 'format' },
-  { id: 'sql', category: 'format' },
-  { id: 'base64', category: 'encode' },
-  { id: 'base64-file', category: 'encode' },
-  { id: 'url', category: 'encode' },
-  { id: 'url-parser', category: 'encode' },
-  { id: 'html', category: 'encode' },
-  { id: 'jwt', category: 'encode' },
-  { id: 'hash', category: 'security' },
-  { id: 'rsa', category: 'security' },
-  { id: 'otp', category: 'security' },
-  { id: 'password', category: 'security' },
-  { id: 'timestamp', category: 'dev' },
-  { id: 'uuid', category: 'dev' },
-  { id: 'regex', category: 'dev' },
-  { id: 'crontab', category: 'dev' },
-  { id: 'docker-convert', category: 'dev' },
-  { id: 'http-request', category: 'dev' },
-  { id: 'websocket', category: 'dev' },
-  { id: 'text-diff', category: 'dev' },
-  { id: 'text-template', category: 'dev' },
-  { id: 'chmod', category: 'dev' },
-  { id: 'ua-parser', category: 'dev' },
-  { id: 'qrcode', category: 'utility' },
-  { id: 'color', category: 'utility' },
-];
-
-// 工具 SEO 配置（与 src/config/site.ts 保持一致）
-const toolSeoConfig = {
+// 工具 SEO 配置
+export const toolSeoConfig: Record<string, { title: string; description: string; keywords: string }> = {
   json: {
     title: 'JSON 格式化工具',
     description: '免费的在线 JSON 格式化工具，支持 JSON 压缩、验证、美化和高亮显示。',
@@ -172,100 +171,15 @@ const toolSeoConfig = {
   },
 };
 
-// 获取站点 URL（支持环境变量）
-const siteUrl = process.env.SITE_URL || process.env.VITE_SITE_URL || '';
-
-console.log(`🚀 开始生成静态 HTML 文件...`);
-console.log(`📍 站点 URL: ${siteUrl || '(使用相对路径)'}`);
-
-// 确保 dist 目录存在
-if (!fs.existsSync(distDir)) {
-  console.error('❌ dist 目录不存在，请先运行 npm run build');
-  process.exit(1);
-}
-
-// 读取模板 HTML
-const templatePath = path.join(distDir, 'index.html');
-if (!fs.existsSync(templatePath)) {
-  console.error('❌ 模板文件不存在:', templatePath);
-  process.exit(1);
-}
-
-const template = fs.readFileSync(templatePath, 'utf-8');
-
-// 生成工具页面的函数
-function generateToolPage(tool) {
-  const seo = toolSeoConfig[tool.id] || {
-    title: tool.id,
-    description: 'ToolStack 在线工具',
-    keywords: '在线工具,开发工具',
-  };
-
-  // 构建 URL
-  const toolPath = `/tool/${tool.id}`;
-  const toolUrl = siteUrl ? `${siteUrl.replace(/\/$/, '')}${toolPath}` : toolPath;
-  const imageUrl = siteUrl ? `${siteUrl.replace(/\/$/, '')}/logo.svg` : '/logo.svg';
-
-  // 页面标题
-  const pageTitle = `${seo.title} - ToolStack`;
-
-  // 替换模板中的 SEO 内容
-  let html = template
-    // 基础标签
-    .replace(/<title>.*?<\/title>/, `<title>${pageTitle}</title>`)
-    .replace(/<meta name="description" content=".*?"\/>/, `<meta name="description" content="${seo.description}"/>`)
-    .replace(/<meta name="keywords" content=".*?"\/>/, `<meta name="keywords" content="${seo.keywords}"/>`)
-    // Open Graph
-    .replace(/<meta property="og:title" content=".*?"\/>/, `<meta property="og:title" content="${pageTitle}"/>`)
-    .replace(/<meta property="og:description" content=".*?"\/>/, `<meta property="og:description" content="${seo.description}"/>`)
-    .replace(/<meta property="og:url" content=".*?"\/>/, `<meta property="og:url" content="${toolUrl}"/>`)
-    .replace(/<meta property="og:image" content=".*?"\/>/, `<meta property="og:image" content="${imageUrl}"/>`)
-    // Twitter
-    .replace(/<meta property="twitter:title" content=".*?"\/>/, `<meta property="twitter:title" content="${pageTitle}"/>`)
-    .replace(/<meta property="twitter:description" content=".*?"\/>/, `<meta property="twitter:description" content="${seo.description}"/>`)
-    .replace(/<meta property="twitter:image" content=".*?"\/>/, `<meta property="twitter:image" content="${imageUrl}"/>`)
-    // Canonical
-    .replace(/<link rel="canonical" href=".*?"\/>/, `<link rel="canonical" href="${toolUrl}"/>`)
-    // JSON-LD
-    .replace(/"url": "[^"]*"/, `"url": "${toolUrl}"`)
-    .replace(/"image": "[^"]*"/, `"image": "${imageUrl}"`)
-    .replace(/"name": "[^"]*"/, `"name": "${seo.title}"`)
-    .replace(/"description": "[^"]*"/, `"description": "${seo.description}"`);
-
-  return html;
-}
-
-// 为每个工具生成静态 HTML
-let successCount = 0;
-let failCount = 0;
-
-tools.forEach(tool => {
-  try {
-    const html = generateToolPage(tool);
-    
-    // 创建工具目录
-    const toolDir = path.join(distDir, 'tool', tool.id);
-    fs.mkdirSync(toolDir, { recursive: true });
-    
-    // 写入 HTML 文件
-    fs.writeFileSync(path.join(toolDir, 'index.html'), html);
-    console.log(`✓ Generated /tool/${tool.id}/index.html`);
-    successCount++;
-  } catch (error) {
-    console.error(`✗ Failed /tool/${tool.id}/index.html:`, error.message);
-    failCount++;
+// 获取工具的 SEO 配置
+export function getToolSeo(toolId: string) {
+  const tool = toolSeoConfig[toolId];
+  if (!tool) {
+    return {
+      title: toolId,
+      description: siteConfig.description,
+      keywords: siteConfig.keywords,
+    };
   }
-});
-
-// 输出统计
-console.log('\n' + '='.repeat(50));
-console.log(`✅ 生成完成: ${successCount} 个成功`);
-if (failCount > 0) {
-  console.log(`❌ 失败: ${failCount} 个`);
-}
-console.log('='.repeat(50));
-
-// 如果失败则退出码非零
-if (failCount > 0) {
-  process.exit(1);
+  return tool;
 }

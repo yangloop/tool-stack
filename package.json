@@ -8,7 +8,8 @@
     "build": "tsc && vite build && npm run generate-static",
     "preview": "vite preview",
     "generate-static": "node scripts/generate-static.js",
-    "update-domain": "node scripts/update-domain.js"
+    "update-domain": "node scripts/update-domain.js",
+    "postbuild": "echo '构建完成。如需指定域名，请运行: SITE_URL=https://your-domain.com npm run update-domain'"
   },
   "devDependencies": {
     "@types/qrcode": "^1.5.6",
