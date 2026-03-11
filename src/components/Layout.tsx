@@ -336,9 +336,10 @@ export function Layout({ children, activeToolId }: LayoutProps) {
             </div>
           </div>
 
-          {/* 页脚 - ICP备案 */}
+          {/* 页脚 - 版权信息和ICP备案 */}
           {!isFullscreen && (
-            <footer className="mt-6 py-4 text-center text-xs text-surface-400 border-t border-surface-200 dark:border-surface-700">
+            <footer className="mt-6 py-4 text-center text-xs text-surface-400 border-t border-surface-200 dark:border-surface-700 space-y-2">
+              <div>© 2026 ToolStack</div>
               <a 
                 href="https://beian.miit.gov.cn/" 
                 target="_blank" 
