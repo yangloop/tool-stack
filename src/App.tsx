@@ -3,7 +3,6 @@ import { useEffect } from 'react';
 import { Layout } from './components/Layout';
 import { Home } from './components/Home';
 import { tools } from './data/tools';
-import { SEO, getToolSEO } from './components/SEO';
 
 // 工具页面组件
 function ToolPage() {
@@ -21,20 +20,11 @@ function ToolPage() {
   }
   
   const ToolComponent = tool.component;
-  const seoConfig = getToolSEO(tool.id, tool.name);
   
   return (
-    <>
-      <SEO 
-        title={seoConfig.title}
-        description={seoConfig.description}
-        keywords={seoConfig.keywords}
-        pathname={`/tool/${tool.id}`}
-      />
-      <Layout activeToolId={tool.id}>
-        <ToolComponent />
-      </Layout>
-    </>
+    <Layout activeToolId={tool.id}>
+      <ToolComponent />
+    </Layout>
   );
 }
 
@@ -45,19 +35,11 @@ function HomePage() {
   }, []);
   
   return (
-    <>
-      <SEO 
-        title=""
-        description=""
-        keywords=""
-        pathname="/"
-      />
-      <Layout activeToolId="">
-        <Home onToolSelect={(id) => {
-          window.location.href = `/tool/${id}`;
-        }} />
-      </Layout>
-    </>
+    <Layout activeToolId="">
+      <Home onToolSelect={(id) => {
+        window.location.href = `/tool/${id}`;
+      }} />
+    </Layout>
   );
 }
 
