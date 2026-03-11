@@ -52,6 +52,7 @@
     @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-medium text-sm;
     @apply transition-all duration-200 ease-out;
     @apply active:scale-95;
+    @apply whitespace-nowrap;
   }
 
   .btn-primary {

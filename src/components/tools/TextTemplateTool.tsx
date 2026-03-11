@@ -351,7 +351,7 @@ export function TextTemplateTool() {
           <div className="flex gap-2 sm:gap-3">
             <button
               onClick={syncVariables}
-              className="btn-secondary text-xs sm:text-sm flex-1 sm:flex-none"
+              className="btn-secondary text-xs sm:text-sm flex-1 sm:flex-none whitespace-nowrap"
               disabled={extractedVars.length === 0}
             >
               <Variable className="w-3.5 h-3.5" />
@@ -360,7 +360,7 @@ export function TextTemplateTool() {
             </button>
             <button
               onClick={() => setShowSettings(!showSettings)}
-              className="btn-ghost text-xs sm:text-sm flex-1 sm:flex-none"
+              className="btn-ghost text-xs sm:text-sm flex-1 sm:flex-none whitespace-nowrap"
             >
               <Settings className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">设置</span>
@@ -437,7 +437,7 @@ export function TextTemplateTool() {
                 模板
               </h3>
               <div className="flex gap-2">
-                <button onClick={() => setTemplate('')} className="btn-ghost text-xs">
+                <button onClick={() => setTemplate('')} className="btn-ghost text-xs whitespace-nowrap">
                   <Trash2 className="w-3 h-3" />
                 </button>
               </div>
@@ -467,7 +467,7 @@ export function TextTemplateTool() {
                 <Variable className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-500" />
                 变量定义
               </h3>
-              <button onClick={addVariable} className="btn-secondary text-[10px] sm:text-xs px-2 sm:px-3">
+              <button onClick={addVariable} className="btn-secondary text-[10px] sm:text-xs px-2 sm:px-3 whitespace-nowrap">
                 <Plus className="w-3 h-3" />
                 添加
               </button>
@@ -516,7 +516,7 @@ export function TextTemplateTool() {
                   数据表格
                 </h3>
                 <div className="flex gap-2">
-                  <button onClick={addDataRow} className="btn-secondary text-[10px] sm:text-xs px-2 sm:px-3">
+                  <button onClick={addDataRow} className="btn-secondary text-[10px] sm:text-xs px-2 sm:px-3 whitespace-nowrap">
                     <Plus className="w-3 h-3" />
                     添加行
                   </button>
@@ -585,11 +585,11 @@ export function TextTemplateTool() {
                   {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
                   {copied ? '已复制' : '复制'}
                 </button>
-                <button onClick={exportResult} className="btn-secondary text-xs">
+                <button onClick={exportResult} className="btn-secondary text-xs whitespace-nowrap">
                   <Download className="w-3.5 h-3.5" />
                   导出
                 </button>
-                <button onClick={clearAll} className="btn-ghost text-xs text-red-500">
+                <button onClick={clearAll} className="btn-ghost text-xs text-red-500 whitespace-nowrap">
                   <Trash2 className="w-3.5 h-3.5" />
                 </button>
               </div>
