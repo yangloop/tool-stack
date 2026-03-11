@@ -127,24 +127,59 @@ export function TextTemplateTool() {
     return Array.from(vars);
   }, [template, getDelimiterRegex]);
 
-  // 单条替换
+  // 获取当前分隔符的打开和关闭标记
+  const getDelimiterMarkers = useCallback((): { open: string; close: string } => {
+    if (useCustomDelimiter) {
+      const match = customDelimiter.match(/^(.+?)(\w+)(.+?)$/);
+      if (match) {
+        return { open: match[1], close: match[3] };
+      }
+      return { open: '{{', close: '}}' };
+    }
+    const opt = delimiterOptions[delimiterIndex];
+    if (opt.pattern.includes('{{')) return { open: '{{', close: '}}' };
+    if (opt.pattern.includes('${')) return { open: '${', close: '}' };
+    if (opt.pattern.includes('%%')) return { open: '%', close: '%' };
+    if (opt.pattern.includes('[[')) return { open: '[[', close: ']]' };
+    if (opt.pattern.includes('<%')) return { open: '<%', close: '%>' };
+    if (opt.pattern.includes('##')) return { open: '#', close: '#' };
+    return { open: '{{', close: '}}' };
+  }, [delimiterIndex, customDelimiter, useCustomDelimiter]);
+
+  // 单条替换 - 先处理条件块，再处理变量
   const replaceSingle = useCallback((text: string, values: Record<string, string>): string => {
     const regex = getDelimiterRegex();
     if (!regex) return text;
     
-    return text.replace(regex, (match, varName) => {
+    const { open, close } = getDelimiterMarkers();
+    let result = text;
+    
+    // 处理 {{#if var}}...{{/if}} 条件块
+    const ifPattern = new RegExp(
+      open.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + 
+      '\\s*#if\\s+(\\w+)\\s*' + 
+      close.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + 
+      '([\\s\\S]*?)' +
+      open.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + 
+      '\\s*/if\\s*' + 
+      close.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'),
+      'g'
+    );
+    
+    result = result.replace(ifPattern, (_, varName, content) => {
+      const value = values[varName];
+      // 变量有值（非空字符串）时显示内容，否则删除整个块
+      return value && value.trim() !== '' ? content : '';
+    });
+    
+    // 处理普通变量
+    result = result.replace(regex, (match, varName) => {
       const key = varName.trim();
-      // 支持简单的条件语句 {{#if note}}...{{/if}}
-      if (key.startsWith('#if ')) {
-        const conditionVar = key.slice(4).trim();
-        return values[conditionVar] ? '' : '\n{{/if}}';
-      }
-      if (key === '/if') {
-        return '';
-      }
       return values[key] !== undefined ? values[key] : match;
     });
-  }, [getDelimiterRegex]);
+    
+    return result;
+  }, [getDelimiterRegex, getDelimiterMarkers]);
 
   // 批量替换结果
   const batchResult = useMemo(() => {
