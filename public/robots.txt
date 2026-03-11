@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://toolstack.example.com/sitemap.xml
+
+# Disallow
+Disallow: /api/
