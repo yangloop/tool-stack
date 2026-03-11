@@ -4,7 +4,7 @@
   "description": "免费在线 IT 工具集合，提供 JSON 格式化、Base64 编解码、RSA 密钥生成等 20+ 款开发者实用工具",
   "start_url": "/",
   "display": "standalone",
-  "background_color":="#ffffff",
+  "background_color": "#ffffff",
   "theme_color": "#6366F1",
   "icons": [
     {
