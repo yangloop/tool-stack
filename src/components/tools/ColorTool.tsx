@@ -2,6 +2,15 @@ import { useState } from 'react';
 import { Copy, Check, Palette } from 'lucide-react';
 import { useClipboard } from '../../hooks/useLocalStorage';
 import { AdFooter } from '../ads';
+import { ColorPicker, ColorSwatch } from '../common';
+
+// 预设颜色
+const presetColors = [
+  '#ef4444', '#f97316', '#f59e0b', '#84cc16', '#22c55e',
+  '#14b8a6', '#06b6d4', '#0ea5e9', '#3b82f6', '#6366f1',
+  '#8b5cf6', '#a855f7', '#d946ef', '#ec4899', '#f43f5e',
+  '#78716c', '#52525b', '#171717', '#ffffff', '#000000'
+];
 
 export function ColorTool() {
   const [hex, setHex] = useState('#3B82F6');
@@ -144,25 +153,28 @@ export function ColorTool() {
         </div>
       </div>
 
+      {/* 预设颜色 */}
+      <div className="card mb-4">
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+          预设颜色
+        </label>
+        <ColorSwatch 
+          colors={presetColors}
+          selectedColor={hex}
+          onSelect={handleHexChange}
+        />
+      </div>
+
       {/* 输入区域 */}
       <div className="grid md:grid-cols-3 gap-4">
         {/* HEX */}
         <div className="card space-y-3">
-          <label className="font-medium text-gray-700 dark:text-gray-300">HEX</label>
-          <div className="flex items-center gap-2">
-            <input
-              type="color"
-              value={hex}
-              onChange={(e) => handleHexChange(e.target.value)}
-              className="w-10 h-10 rounded cursor-pointer"
-            />
-            <input
-              type="text"
-              value={hex}
-              onChange={(e) => handleHexChange(e.target.value)}
-              className="flex-1 px-3 py-2 font-mono text-sm bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg dark:text-white"
-            />
-          </div>
+          <ColorPicker 
+            label="HEX"
+            color={hex}
+            onChange={handleHexChange}
+            showCopy
+          />
         </div>
 
         {/* RGB */}

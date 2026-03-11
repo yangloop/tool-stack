@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Download, QrCode, Image as ImageIcon, RefreshCw, AlertTriangle } from 'lucide-react';
 import QRCodeLib from 'qrcode';
 import { AdFooter } from '../ads';
+import { ColorPicker } from '../common';
 
 // 预设颜色
 const presetColors = [
@@ -27,65 +28,6 @@ function getContrastRatio(color1: string, color2: string): number {
   const lighter = Math.max(l1, l2);
   const darker = Math.min(l1, l2);
   return (lighter + 0.05) / (darker + 0.05);
-}
-
-interface ColorPickerProps {
-  label: string;
-  color: string;
-  onChange: (color: string) => void;
-  presetColors?: string[];
-}
-
-function ColorPicker({ label, color, onChange, presetColors = [] }: ColorPickerProps) {
-  return (
-    <div className="w-full">
-      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-        {label}
-      </label>
-      <div className="flex items-center gap-2">
-        {/* 原生颜色选择器按钮 */}
-        <div className="relative flex-shrink-0">
-          <input
-            type="color"
-            value={color}
-            onChange={(e) => onChange(e.target.value)}
-            className="w-10 h-10 p-0 border-2 border-gray-200 dark:border-slate-600 rounded-lg cursor-pointer overflow-hidden"
-            style={{ padding: 0 }}
-          />
-        </div>
-        {/* 颜色输入 */}
-        <input
-          type="text"
-          value={color}
-          onChange={(e) => onChange(e.target.value)}
-          className="min-w-0 flex-1 px-3 py-2.5 bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg text-sm font-mono dark:text-white uppercase"
-          placeholder="#000000"
-          maxLength={7}
-        />
-      </div>
-
-      {/* 预设颜色 */}
-      {presetColors.length > 0 && (
-        <div className="mt-3">
-          <div className="flex flex-wrap gap-1.5">
-            {presetColors.map((presetColor) => (
-              <button
-                key={presetColor}
-                onClick={() => onChange(presetColor)}
-                className={`w-6 h-6 rounded-md border-2 transition-all flex-shrink-0 ${
-                  color.toLowerCase() === presetColor.toLowerCase()
-                    ? 'border-blue-500 scale-110'
-                    : 'border-gray-200 dark:border-slate-600 hover:scale-105'
-                }`}
-                style={{ backgroundColor: presetColor }}
-                title={presetColor}
-              />
-            ))}
-          </div>
-        </div>
-      )}
-    </div>
-  );
 }
 
 export function QrCodeTool() {

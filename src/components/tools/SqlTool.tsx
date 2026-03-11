@@ -3,218 +3,249 @@ import {
   Copy, Check, Download, Upload, Trash2, 
   Database, AlertCircle, AlignLeft, Minimize2
 } from 'lucide-react';
+import { format } from 'sql-formatter';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import type { CSSProperties } from 'react';
 import { downloadFile, readFile } from '../../utils/helpers';
 import { useClipboard } from '../../hooks/useLocalStorage';
 import { AdInArticle, AdFooter } from '../ads';
 
-// SQL 关键字
-const sqlKeywords = [
-  'SELECT', 'FROM', 'WHERE', 'INSERT', 'UPDATE', 'DELETE', 'CREATE', 'DROP',
-  'TABLE', 'DATABASE', 'INDEX', 'VIEW', 'JOIN', 'LEFT', 'RIGHT', 'INNER', 'OUTER',
-  'ON', 'GROUP', 'BY', 'ORDER', 'HAVING', 'LIMIT', 'OFFSET', 'UNION', 'ALL',
-  'AND', 'OR', 'NOT', 'NULL', 'IS', 'IN', 'EXISTS', 'BETWEEN', 'LIKE',
-  'AS', 'DISTINCT', 'COUNT', 'SUM', 'AVG', 'MAX', 'MIN', 'VALUES', 'INTO',
-  'ALTER', 'ADD', 'COLUMN', 'PRIMARY', 'KEY', 'FOREIGN', 'REFERENCES',
-  'COMMIT', 'ROLLBACK', 'TRANSACTION', 'BEGIN', 'END'
-];
+// 自定义语法高亮主题 - 与项目风格统一
+const customLightTheme: { [key: string]: CSSProperties } = {
+  'code[class*="language-"]': {
+    color: '#374151',
+    background: 'transparent',
+    fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
+    fontSize: '14px',
+    lineHeight: '1.6',
+  },
+  'pre[class*="language-"]': {
+    color: '#374151',
+    background: 'transparent',
+    fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
+    fontSize: '14px',
+    lineHeight: '1.6',
+    padding: '1rem',
+    margin: 0,
+  },
+  'comment': {
+    color: '#9ca3af',
+    fontStyle: 'italic',
+  },
+  'prolog': {
+    color: '#9ca3af',
+  },
+  'doctype': {
+    color: '#9ca3af',
+  },
+  'cdata': {
+    color: '#9ca3af',
+  },
+  'punctuation': {
+    color: '#6b7280',
+  },
+  'property': {
+    color: '#2563eb',
+  },
+  'tag': {
+    color: '#2563eb',
+  },
+  'boolean': {
+    color: '#2563eb',
+  },
+  'number': {
+    color: '#ea580c',
+  },
+  'constant': {
+    color: '#2563eb',
+  },
+  'symbol': {
+    color: '#2563eb',
+  },
+  'deleted': {
+    color: '#dc2626',
+  },
+  'selector': {
+    color: '#059669',
+  },
+  'attr-name': {
+    color: '#ea580c',
+  },
+  'string': {
+    color: '#059669',
+  },
+  'char': {
+    color: '#059669',
+  },
+  'builtin': {
+    color: '#7c3aed',
+  },
+  'inserted': {
+    color: '#059669',
+  },
+  'operator': {
+    color: '#6b7280',
+  },
+  'entity': {
+    color: '#6b7280',
+    cursor: 'help',
+  },
+  'url': {
+    color: '#6b7280',
+  },
+  'variable': {
+    color: '#374151',
+  },
+  'atrule': {
+    color: '#2563eb',
+    fontWeight: 600,
+  },
+  'attr-value': {
+    color: '#059669',
+  },
+  'keyword': {
+    color: '#2563eb',
+    fontWeight: 600,
+  },
+  'function': {
+    color: '#7c3aed',
+  },
+  'class-name': {
+    color: '#2563eb',
+    fontWeight: 600,
+  },
+  'regex': {
+    color: '#ea580c',
+  },
+  'important': {
+    color: '#2563eb',
+    fontWeight: 'bold',
+  },
+  'bold': {
+    fontWeight: 'bold',
+  },
+  'italic': {
+    fontStyle: 'italic',
+  },
+};
 
-// SQL 数据类型
-const sqlTypes = [
-  'INT', 'INTEGER', 'BIGINT', 'SMALLINT', 'TINYINT', 'DECIMAL', 'NUMERIC',
-  'FLOAT', 'DOUBLE', 'REAL', 'VARCHAR', 'CHAR', 'TEXT', 'STRING',
-  'DATE', 'TIME', 'DATETIME', 'TIMESTAMP', 'BOOLEAN', 'BOOL',
-  'BLOB', 'BINARY', 'VARBINARY', 'JSON', 'XML'
-];
-
-// SQL 函数
-const sqlFunctions = [
-  'COUNT', 'SUM', 'AVG', 'MAX', 'MIN', 'CONCAT', 'SUBSTRING', 'LENGTH',
-  'UPPER', 'LOWER', 'TRIM', 'LTRIM', 'RTRIM', 'REPLACE', 'NOW', 'CURDATE',
-  'CURTIME', 'DATE', 'YEAR', 'MONTH', 'DAY', 'HOUR', 'MINUTE', 'SECOND',
-  'ROUND', 'FLOOR', 'CEILING', 'ABS', 'COALESCE', 'NULLIF', 'CASE', 'WHEN',
-  'THEN', 'ELSE', 'END', 'IF', 'IFNULL', 'ISNULL'
-];
-
-// SQL 语法高亮组件
-function SqlHighlighter({ sql, isDark }: { sql: string; isDark: boolean }) {
-  const highlight = (text: string) => {
-    const tokens: Array<{ type: string; value: string }> = [];
-    let i = 0;
-    
-    while (i < text.length) {
-      const char = text[i];
-      
-      // 字符串（单引号）
-      if (char === "'") {
-        let str = char;
-        i++;
-        while (i < text.length && text[i] !== "'") {
-          if (text[i] === '\\' && i + 1 < text.length) {
-            str += text[i] + text[i + 1];
-            i += 2;
-          } else {
-            str += text[i];
-            i++;
-          }
-        }
-        if (i < text.length) str += text[i];
-        tokens.push({ type: 'string', value: str });
-        i++;
-        continue;
-      }
-      
-      // 注释 --
-      if (char === '-' && text[i + 1] === '-') {
-        let comment = '';
-        while (i < text.length && text[i] !== '\n') {
-          comment += text[i];
-          i++;
-        }
-        tokens.push({ type: 'comment', value: comment });
-        continue;
-      }
-      
-      // 注释 /* */
-      if (char === '/' && text[i + 1] === '*') {
-        let comment = '';
-        while (i < text.length && !(text[i] === '*' && text[i + 1] === '/')) {
-          comment += text[i];
-          i++;
-        }
-        if (i < text.length) {
-          comment += '*/';
-          i += 2;
-        }
-        tokens.push({ type: 'comment', value: comment });
-        continue;
-      }
-      
-      // 数字
-      if (/\d/.test(char)) {
-        let num = '';
-        while (i < text.length && (/\d/.test(text[i]) || text[i] === '.')) {
-          num += text[i];
-          i++;
-        }
-        tokens.push({ type: 'number', value: num });
-        continue;
-      }
-      
-      // 标识符或关键字
-      if (/[a-zA-Z_]/.test(char)) {
-        let word = '';
-        while (i < text.length && /[a-zA-Z0-9_]/.test(text[i])) {
-          word += text[i];
-          i++;
-        }
-        
-        const upperWord = word.toUpperCase();
-        if (sqlKeywords.includes(upperWord)) {
-          tokens.push({ type: 'keyword', value: word });
-        } else if (sqlTypes.includes(upperWord)) {
-          tokens.push({ type: 'type', value: word });
-        } else if (sqlFunctions.includes(upperWord)) {
-          tokens.push({ type: 'function', value: word });
-        } else {
-          tokens.push({ type: 'identifier', value: word });
-        }
-        continue;
-      }
-      
-      // 运算符
-      if (/[+\-*/=<>!%&|]/.test(char)) {
-        let op = char;
-        if (i + 1 < text.length && /[=<>]/.test(text[i + 1])) {
-          op += text[i + 1];
-          i++;
-        }
-        tokens.push({ type: 'operator', value: op });
-        i++;
-        continue;
-      }
-      
-      // 标点符号
-      if (/[(),;.]/.test(char)) {
-        tokens.push({ type: 'punctuation', value: char });
-        i++;
-        continue;
-      }
-      
-      // 其他字符（空白等）
-      tokens.push({ type: 'plain', value: char });
-      i++;
-    }
-    
-    return tokens;
-  };
-
-  const tokens = highlight(sql);
-  
-  const colors: Record<string, string> = {
-    keyword: isDark ? '#f472b6' : '#db2777',
-    type: isDark ? '#60a5fa' : '#2563eb',
-    function: isDark ? '#a78bfa' : '#7c3aed',
-    string: isDark ? '#34d399' : '#059669',
-    number: isDark ? '#fb923c' : '#ea580c',
-    comment: isDark ? '#6b7280' : '#9ca3af',
-    operator: isDark ? '#f87171' : '#dc2626',
-    punctuation: isDark ? '#9ca3af' : '#6b7280',
-    identifier: isDark ? '#e5e7eb' : '#374151',
-    plain: isDark ? '#e5e7eb' : '#374151',
-  };
-
-  return (
-    <pre className="m-0 whitespace-pre-wrap break-words font-mono text-sm leading-relaxed">
-      {tokens.map((token, index) => (
-        <span key={index} style={{ color: colors[token.type] || colors.plain }}>
-          {token.value}
-        </span>
-      ))}
-    </pre>
-  );
-}
-
-// 简单的 SQL 格式化
-function formatSQL(sql: string): string {
-  let formatted = sql.replace(/\s+/g, ' ').trim();
-  
-  const keywords = [
-    'SELECT', 'FROM', 'WHERE', 'INSERT', 'UPDATE', 'DELETE', 'CREATE', 'DROP',
-    'TABLE', 'JOIN', 'LEFT', 'RIGHT', 'INNER', 'OUTER', 'ON', 'GROUP', 'BY',
-    'ORDER', 'HAVING', 'LIMIT', 'OFFSET', 'UNION', 'VALUES', 'SET', 'AND', 'OR'
-  ];
-  
-  // 关键字前加换行
-  keywords.forEach(kw => {
-    const regex = new RegExp(`\\b${kw}\\b`, 'gi');
-    formatted = formatted.replace(regex, match => `\n${match}`);
-  });
-  
-  // 处理逗号后的换行
-  formatted = formatted.replace(/,\s*/g, ',\n  ');
-  
-  // 处理括号
-  formatted = formatted.replace(/\(/g, '(');
-  formatted = formatted.replace(/\)/g, ')');
-  
-  // 缩进处理
-  const lines = formatted.split('\n');
-  let indent = 0;
-  const result: string[] = [];
-  
-  lines.forEach(line => {
-    line = line.trim();
-    if (!line) return;
-    
-    if (/^\)/.test(line)) indent = Math.max(0, indent - 1);
-    
-    result.push('  '.repeat(indent) + line);
-    
-    if (/\($/.test(line)) indent++;
-  });
-  
-  return result.join('\n').trim();
-}
+const customDarkTheme: { [key: string]: CSSProperties } = {
+  'code[class*="language-"]': {
+    color: '#e5e7eb',
+    background: 'transparent',
+    fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
+    fontSize: '14px',
+    lineHeight: '1.6',
+  },
+  'pre[class*="language-"]': {
+    color: '#e5e7eb',
+    background: 'transparent',
+    fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
+    fontSize: '14px',
+    lineHeight: '1.6',
+    padding: '1rem',
+    margin: 0,
+  },
+  'comment': {
+    color: '#6b7280',
+    fontStyle: 'italic',
+  },
+  'prolog': {
+    color: '#6b7280',
+  },
+  'doctype': {
+    color: '#6b7280',
+  },
+  'cdata': {
+    color: '#6b7280',
+  },
+  'punctuation': {
+    color: '#9ca3af',
+  },
+  'property': {
+    color: '#60a5fa',
+  },
+  'tag': {
+    color: '#60a5fa',
+  },
+  'boolean': {
+    color: '#60a5fa',
+  },
+  'number': {
+    color: '#fb923c',
+  },
+  'constant': {
+    color: '#60a5fa',
+  },
+  'symbol': {
+    color: '#60a5fa',
+  },
+  'deleted': {
+    color: '#f87171',
+  },
+  'selector': {
+    color: '#34d399',
+  },
+  'attr-name': {
+    color: '#fb923c',
+  },
+  'string': {
+    color: '#34d399',
+  },
+  'char': {
+    color: '#34d399',
+  },
+  'builtin': {
+    color: '#a78bfa',
+  },
+  'inserted': {
+    color: '#34d399',
+  },
+  'operator': {
+    color: '#9ca3af',
+  },
+  'entity': {
+    color: '#9ca3af',
+    cursor: 'help',
+  },
+  'url': {
+    color: '#9ca3af',
+  },
+  'variable': {
+    color: '#e5e7eb',
+  },
+  'atrule': {
+    color: '#60a5fa',
+    fontWeight: 600,
+  },
+  'attr-value': {
+    color: '#34d399',
+  },
+  'keyword': {
+    color: '#60a5fa',
+    fontWeight: 600,
+  },
+  'function': {
+    color: '#a78bfa',
+  },
+  'class-name': {
+    color: '#60a5fa',
+    fontWeight: 600,
+  },
+  'regex': {
+    color: '#fb923c',
+  },
+  'important': {
+    color: '#60a5fa',
+    fontWeight: 'bold',
+  },
+  'bold': {
+    fontWeight: 'bold',
+  },
+  'italic': {
+    fontStyle: 'italic',
+  },
+};
 
 // SQL 统计
 function SqlStats({ sql }: { sql: string }) {
@@ -250,6 +281,19 @@ export function SqlTool() {
     return () => observer.disconnect();
   }, []);
 
+  // 简化错误信息
+  const simplifyError = (errorMsg: string): string => {
+    // 提取关键错误信息
+    if (errorMsg.includes('Parse error')) {
+      const match = errorMsg.match(/token:\s*([^\s]+).*?at line (\d+)/i);
+      if (match) {
+        return `SQL 语法错误: 第 ${match[2]} 行附近有错误，请检查符号 "${match[1]}"`;
+      }
+      return 'SQL 语法错误: 请检查语句格式';
+    }
+    return '格式化失败: 请检查 SQL 语法';
+  };
+
   // 自动格式化
   useEffect(() => {
     if (!input.trim()) {
@@ -260,26 +304,45 @@ export function SqlTool() {
     
     try {
       if (viewMode === 'formatted') {
-        setOutput(formatSQL(input));
+        const formatted = format(input, {
+          language: 'sql',
+          tabWidth: 2,
+          keywordCase: 'upper',
+        });
+        setOutput(formatted);
       } else {
         setOutput(input.replace(/\s+/g, ' ').trim());
       }
       setError('');
     } catch (e) {
-      setError('格式化失败');
+      const errorMsg = e instanceof Error ? e.message : '未知错误';
+      setError(simplifyError(errorMsg));
+      setOutput(input);
     }
   }, [input, viewMode]);
 
   const handleFormat = () => {
     if (!input.trim()) return;
     setViewMode('formatted');
-    setOutput(formatSQL(input));
+    try {
+      const formatted = format(input, {
+        language: 'sql',
+        tabWidth: 2,
+        keywordCase: 'upper',
+      });
+      setOutput(formatted);
+      setError('');
+    } catch (e) {
+      const errorMsg = e instanceof Error ? e.message : '未知错误';
+      setError(simplifyError(errorMsg));
+    }
   };
 
   const handleCompress = () => {
     if (!input.trim()) return;
     setViewMode('compressed');
-    setOutput(input.replace(/\s+/g, ' ').trim());
+    const compressed = input.replace(/\s+/g, ' ').trim();
+    setOutput(compressed);
   };
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -418,16 +481,22 @@ export function SqlTool() {
           
           <div 
             ref={outputRef}
-            className="flex-1 min-h-[400px] p-4 bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg overflow-auto"
+            className="flex-1 min-h-[400px] bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg overflow-auto"
           >
             {output ? (
-              viewMode === 'formatted' ? (
-                <SqlHighlighter sql={output} isDark={isDark} />
-              ) : (
-                <pre className="font-mono text-sm text-gray-800 dark:text-gray-200 whitespace-pre-wrap break-all">
-                  {output}
-                </pre>
-              )
+              <SyntaxHighlighter
+                language="sql"
+                style={isDark ? customDarkTheme : customLightTheme}
+                customStyle={{
+                  margin: 0,
+                  padding: '1rem',
+                  background: 'transparent',
+                }}
+                wrapLines={true}
+                wrapLongLines={true}
+              >
+                {output}
+              </SyntaxHighlighter>
             ) : (
               <div className="h-full flex items-center justify-center text-gray-400 text-sm">
                 格式化后的 SQL 将显示在这里
@@ -441,13 +510,11 @@ export function SqlTool() {
       <div className="mt-4 card">
         <div className="flex flex-wrap items-center gap-4 text-xs">
           <span className="text-gray-500">语法高亮图例:</span>
-          <span className="text-pink-600 dark:text-pink-400">关键字 (SELECT)</span>
-          <span className="text-blue-600 dark:text-blue-400">数据类型 (INT)</span>
-          <span className="text-violet-600 dark:text-violet-400">函数 (COUNT)</span>
-          <span className="text-green-600 dark:text-green-400">字符串 ('text')</span>
-          <span className="text-orange-600 dark:text-orange-400">数字 (123)</span>
-          <span className="text-red-600 dark:text-red-400">运算符 (=)</span>
-          <span className="text-gray-500">-- 注释</span>
+          <span className={isDark ? 'text-blue-400 font-semibold' : 'text-blue-600 font-semibold'}>关键字 (SELECT)</span>
+          <span className={isDark ? 'text-purple-400' : 'text-purple-600'}>函数 (COUNT)</span>
+          <span className={isDark ? 'text-green-400' : 'text-green-600'}>字符串 ('text')</span>
+          <span className={isDark ? 'text-orange-400' : 'text-orange-600'}>数字 (123)</span>
+          <span className={isDark ? 'text-gray-500' : 'text-gray-400'}>-- 注释</span>
         </div>
       </div>
 

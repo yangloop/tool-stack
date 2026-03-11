@@ -15,6 +15,7 @@
 - 🛠️ **丰富工具** - 20+ 款常用开发工具
 - 💾 **本地优先** - 数据存储在本地，保护隐私
 - 🔌 **Web Worker** - RSA 密钥生成等耗时任务使用后台线程
+- 🎯 **专业组件** - 使用业界标准第三方库实现核心功能
 
 ## 🚀 在线演示
 
@@ -23,10 +24,10 @@
 ## 🛠️ 工具列表
 
 ### 格式化工具
-| 工具 | 描述 |
-|------|------|
-| JSON 工具 | 格式化、压缩、验证 JSON |
-| SQL 格式化 | SQL 语句美化、压缩和语法高亮 |
+| 工具 | 描述 | 技术亮点 |
+|------|------|----------|
+| JSON 工具 | 格式化、压缩、验证 JSON，支持树形查看 | [@uiw/react-json-view](https://github.com/uiwjs/react-json-view) |
+| SQL 格式化 | SQL 语句美化、压缩和语法高亮 | [sql-formatter](https://github.com/sql-formatter-org/sql-formatter) + [react-syntax-highlighter](https://github.com/react-syntax-highlighter/react-syntax-highlighter) |
 
 ### 编解码工具
 | 工具 | 描述 |
@@ -39,11 +40,11 @@
 | JWT 解码 | JWT 令牌解析和验证 |
 
 ### 加密与安全
-| 工具 | 描述 |
-|------|------|
-| RSA 密钥生成 | 生成 RSA 公钥私钥对，支持加解密测试（Web Worker） |
+| 工具 | 描述 | 技术亮点 |
+|------|------|----------|
+| RSA 密钥生成 | 生成 RSA 公钥私钥对，支持加解密测试（Web Worker） | [jsencrypt](https://github.com/travist/jsencrypt) |
 | 哈希计算 | MD5、SHA-1、SHA-256、SHA-512 计算 |
-| OTP 生成器 | TOTP 双因素认证码，兼容 Google Authenticator |
+| OTP 生成器 | TOTP 双因素认证码，兼容 Google Authenticator | [otpauth](https://github.com/hectorm/otpauth) |
 | 密码生成器 | 生成安全随机密码 |
 
 ### 开发工具
@@ -66,10 +67,10 @@
 | Chmod 计算器 | Linux 文件权限计算 |
 
 ### 实用工具
-| 工具 | 描述 |
-|------|------|
-| 二维码生成 | 生成自定义二维码 |
-| 颜色转换 | HEX、RGB、HSL 颜色转换 |
+| 工具 | 描述 | 技术亮点 |
+|------|------|----------|
+| 二维码生成 | 生成自定义二维码，支持颜色定制 | [react-colorful](https://github.com/omgovich/react-colorful) |
+| 颜色转换 | HEX、RGB、HSL 颜色转换，支持颜色选择器 | [react-colorful](https://github.com/omgovich/react-colorful) |
 
 ## 📦 技术栈
 
@@ -79,11 +80,21 @@
 - **样式**: Tailwind CSS 3 + 自定义设计系统
 - **路由**: React Router 7
 - **图标**: Lucide React
-- **第三方库**:
-  - `jsencrypt` - RSA 加密
-  - `otpauth` - TOTP 验证码
-  - `composerize` / `decomposerize` - Docker 命令转换
-  - `axios` - HTTP 请求
+
+### 核心第三方库
+
+| 库 | 用途 | 版本 |
+|---|------|------|
+| [react-colorful](https://github.com/omgovich/react-colorful) | 现代化颜色选择器组件 | ^5.x |
+| [@uiw/react-json-view](https://github.com/uiwjs/react-json-view) | JSON 格式化查看器 | ^2.x |
+| [sql-formatter](https://github.com/sql-formatter-org/sql-formatter) | SQL 语句格式化 | ^15.x |
+| [react-syntax-highlighter](https://github.com/react-syntax-highlighter/react-syntax-highlighter) | 语法高亮（Prism） | ^15.x |
+| [jsencrypt](https://github.com/travist/jsencrypt) | RSA 加密解密 | ^3.x |
+| [otpauth](https://github.com/hectorm/otpauth) | TOTP 双因素认证 | ^9.x |
+| [composerize](https://github.com/magicmark/composerize) | Docker 命令转换 | ^1.x |
+| [decomposerize](https://github.com/magicmark/composerize) | Docker Compose 转换 | ^1.x |
+| [axios](https://github.com/axios/axios) | HTTP 请求 | ^1.x |
+| [qrcode](https://github.com/soldair/node-qrcode) | 二维码生成 | ^1.x |
 
 ## 🏗️ 安装与运行
 
@@ -121,6 +132,7 @@ it-tools/
 │   │   │   ├── docker-convert/  # Docker 转换工具模块
 │   │   │   ├── http-request/    # HTTP 请求工具模块
 │   │   │   └── ...
+│   │   ├── common/         # 通用组件（颜色选择器等）
 │   │   ├── Layout.tsx      # 布局组件
 │   │   └── ads/            # 广告组件
 │   ├── data/
@@ -167,6 +179,8 @@ it-tools/
 - 使用 `useLocalStorage` Hook 持久化数据
 - 耗时任务使用 Web Worker 避免阻塞 UI
 - 支持浅色/深色模式切换
+- 优先使用成熟的第三方库实现核心功能
+- 颜色选择器等通用组件抽取到 `src/components/common/`
 
 ## 🤝 贡献指南
 
@@ -183,6 +197,10 @@ it-tools/
 ## 🙏 致谢
 
 感谢以下开源项目的支持：
+- [react-colorful](https://github.com/omgovich/react-colorful) - 现代化颜色选择器
+- [@uiw/react-json-view](https://github.com/uiwjs/react-json-view) - JSON 查看器
+- [sql-formatter](https://github.com/sql-formatter-org/sql-formatter) - SQL 格式化
+- [react-syntax-highlighter](https://github.com/react-syntax-highlighter/react-syntax-highlighter) - 语法高亮
 - [composerize](https://github.com/magicmark/composerize) - Docker 命令转换
 - [decomposerize](https://github.com/magicmark/composerize) - Docker Compose 转换
 - [jsencrypt](https://github.com/travist/jsencrypt) - RSA 加密

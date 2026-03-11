@@ -1,200 +1,14 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { 
   Copy, Check, Download, Upload, Trash2, 
-  Minimize2, FileJson, ChevronDown, ChevronRight,
-  Braces, Type, Hash, List, AlertCircle
+  Minimize2, FileJson, Braces, Type, Hash, List, AlertCircle
 } from 'lucide-react';
+import JsonView from '@uiw/react-json-view';
+import { lightTheme } from '@uiw/react-json-view/light';
+import { darkTheme } from '@uiw/react-json-view/dark';
 import { downloadFile, readFile } from '../../utils/helpers';
 import { useClipboard } from '../../hooks/useLocalStorage';
 import { AdInArticle, AdFooter } from '../ads';
-
-// JSON 语法高亮样式
-const jsonStyles: Record<string, React.CSSProperties> = {
-  root: { fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace', fontSize: '14px', lineHeight: '1.6' },
-  key: { color: '#2563eb' }, // blue-600
-  string: { color: '#059669' }, // emerald-600
-  number: { color: '#dc2626' }, // red-600
-  boolean: { color: '#7c3aed' }, // violet-600
-  null: { color: '#7c3aed' },
-  punctuation: { color: '#6b7280' }, // gray-500
-};
-
-// JSON 语法高亮组件
-function JsonHighlighter({ json, isDark }: { json: string; isDark: boolean }) {
-  const renderValue = (value: unknown, _key?: string, depth = 0): React.ReactNode => {
-    const indent = '  '.repeat(depth);
-    
-    if (value === null) {
-      return <span style={jsonStyles.null}>null</span>;
-    }
-    
-    if (typeof value === 'boolean') {
-      return <span style={jsonStyles.boolean}>{String(value)}</span>;
-    }
-    
-    if (typeof value === 'number') {
-      return <span style={jsonStyles.number}>{value}</span>;
-    }
-    
-    if (typeof value === 'string') {
-      return <span style={jsonStyles.string}>"{value}"</span>;
-    }
-    
-    if (Array.isArray(value)) {
-      if (value.length === 0) return <span style={jsonStyles.punctuation}>[]</span>;
-      return (
-        <span>
-          <span style={jsonStyles.punctuation}>[
-          {'\n'}</span>
-          {value.map((item, idx) => (
-            <span key={idx}>
-              <span style={jsonStyles.punctuation}>{indent}  </span>
-              {renderValue(item, undefined, depth + 1)}
-              {idx < value.length - 1 && <span style={jsonStyles.punctuation}>,</span>}
-              {'\n'}
-            </span>
-          ))}
-          <span style={jsonStyles.punctuation}>{indent}]</span>
-        </span>
-      );
-    }
-    
-    if (typeof value === 'object') {
-      const entries = Object.entries(value);
-      if (entries.length === 0) return <span style={jsonStyles.punctuation}>{}</span>;
-      return (
-        <span>
-          <span style={jsonStyles.punctuation}>{'{'}
-          {'\n'}</span>
-          {entries.map(([k, v], idx) => (
-            <span key={k}>
-              <span style={jsonStyles.punctuation}>{indent}  </span>
-              <span style={jsonStyles.key}>"{k}"</span>
-              <span style={jsonStyles.punctuation}>: </span>
-              {renderValue(v, k, depth + 1)}
-              {idx < entries.length - 1 && <span style={jsonStyles.punctuation}>,</span>}
-              {'\n'}
-            </span>
-          ))}
-          <span style={jsonStyles.punctuation}>{indent}{'}'}</span>
-        </span>
-      );
-    }
-    
-    return null;
-  };
-
-  try {
-    const parsed = JSON.parse(json);
-    return (
-      <pre style={{ 
-        ...jsonStyles.root, 
-        margin: 0, 
-        whiteSpace: 'pre-wrap', 
-        wordBreak: 'break-word',
-        color: isDark ? '#e5e7eb' : '#1f2937'
-      }}>
-        {renderValue(parsed)}
-      </pre>
-    );
-  } catch {
-    return <pre style={{ color: '#dc2626' }}>{json}</pre>;
-  }
-}
-
-// JSON 树形视图组件
-interface JsonTreeProps {
-  data: unknown;
-  name?: string;
-  depth?: number;
-  isLast?: boolean;
-  isDark: boolean;
-}
-
-function JsonTree({ data, name, depth = 0, isLast = true, isDark }: JsonTreeProps) {
-  const [isExpanded, setIsExpanded] = useState(true);
-  const isObject = data !== null && typeof data === 'object';
-  const isArray = Array.isArray(data);
-  const indent = depth * 16;
-  
-  const getTypeColor = (value: unknown): string => {
-    if (value === null) return isDark ? '#a78bfa' : '#7c3aed';
-    if (typeof value === 'boolean') return isDark ? '#a78bfa' : '#7c3aed';
-    if (typeof value === 'number') return isDark ? '#f87171' : '#dc2626';
-    if (typeof value === 'string') return isDark ? '#34d399' : '#059669';
-    return isDark ? '#9ca3af' : '#6b7280';
-  };
-
-  const renderValue = (value: unknown): string => {
-    if (value === null) return 'null';
-    if (typeof value === 'string') return `"${value}"`;
-    return String(value);
-  };
-
-  if (!isObject) {
-    return (
-      <div className="flex items-center py-0.5 font-mono text-sm" style={{ paddingLeft: indent }}>
-        {name !== undefined && (
-          <>
-            <span className="text-blue-600 dark:text-blue-400">"{name}"</span>
-            <span className="text-gray-500 mx-1">:</span>
-          </>
-        )}
-        <span style={{ color: getTypeColor(data) }}>{renderValue(data)}</span>
-        {!isLast && <span className="text-gray-500">,</span>}
-      </div>
-    );
-  }
-
-  const entries = isArray ? data.map((v, i) => [String(i), v] as const) : Object.entries(data as object);
-  const isEmpty = entries.length === 0;
-  const preview = isArray ? `Array[${entries.length}]` : `Object{${entries.length}}`;
-
-  return (
-    <div>
-      <div 
-        className="flex items-center py-0.5 cursor-pointer hover:bg-gray-100 dark:hover:bg-slate-800 rounded font-mono text-sm"
-        style={{ paddingLeft: indent }}
-        onClick={() => setIsExpanded(!isExpanded)}
-      >
-        <span className="text-gray-400 w-4">
-          {!isEmpty && (isExpanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />)}
-        </span>
-        {name !== undefined && (
-          <>
-            <span className="text-blue-600 dark:text-blue-400">"{name}"</span>
-            <span className="text-gray-500 mx-1">:</span>
-          </>
-        )}
-        {!isExpanded || isEmpty ? (
-          <span className="text-gray-400 italic">{isArray ? '[]' : '{}'} {preview}</span>
-        ) : (
-          <span className="text-gray-500">{isArray ? '[' : '{'}</span>
-        )}
-        {!isExpanded && !isLast && <span className="text-gray-500">,</span>}
-      </div>
-      
-      {isExpanded && !isEmpty && (
-        <div>
-          {entries.map(([key, value], idx) => (
-            <JsonTree
-              key={key}
-              data={value}
-              name={isArray ? undefined : key}
-              depth={depth + 1}
-              isLast={idx === entries.length - 1}
-              isDark={isDark}
-            />
-          ))}
-          <div className="flex items-center py-0.5 font-mono text-sm" style={{ paddingLeft: indent + 16 }}>
-            <span className="text-gray-500">{isArray ? ']' : '}'}</span>
-            {!isLast && <span className="text-gray-500">,</span>}
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
 
 // JSON 统计信息
 function JsonStats({ json }: { json: string }) {
@@ -258,15 +72,74 @@ function analyzeJson(data: unknown): Record<string, number> {
   return stats;
 }
 
+// 压缩视图组件
+function CompressedView({ data, isDark }: { data: object; isDark: boolean }) {
+  const compressed = useMemo(() => JSON.stringify(data), [data]);
+  
+  return (
+    <div className="h-full overflow-auto p-4">
+      <pre 
+        className={`font-mono text-sm whitespace-pre-wrap break-all bg-transparent ${
+          isDark ? 'text-gray-200' : 'text-gray-800'
+        }`}
+      >
+        {compressed}
+      </pre>
+    </div>
+  );
+}
+
+// 格式化视图组件
+function FormattedView({ data, isDark }: { data: object; isDark: boolean }) {
+  return (
+    <div className="h-full overflow-auto p-4">
+      <JsonView
+        value={data}
+        style={isDark ? darkTheme : lightTheme}
+        displayDataTypes={false}
+        enableClipboard={false}
+        collapsed={false}
+      />
+    </div>
+  );
+}
+
 export function JsonTool() {
   const [input, setInput] = useState('');
   const [output, setOutput] = useState('');
   const [error, setError] = useState('');
-  const [viewMode, setViewMode] = useState<'formatted' | 'tree' | 'compressed'>('formatted');
-  const [isDark] = useState(document.documentElement.classList.contains('dark'));
+  const [viewMode, setViewMode] = useState<'formatted' | 'compressed'>('formatted');
+  const [isDark, setIsDark] = useState(false);
   const { copied, copy } = useClipboard();
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
+  // 监听主题变化
+  useEffect(() => {
+    const checkDarkMode = () => {
+      setIsDark(document.documentElement.classList.contains('dark'));
+    };
+    checkDarkMode();
+    
+    // 监听主题变化
+    const observer = new MutationObserver(checkDarkMode);
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    
+    return () => observer.disconnect();
+  }, []);
+
+  // 解析输入的 JSON
+  const parsedData = useMemo(() => {
+    if (!input.trim()) return null;
+    try {
+      const parsed = JSON.parse(input);
+      // 确保返回的是对象类型
+      return typeof parsed === 'object' && parsed !== null ? parsed : null;
+    } catch {
+      return null;
+    }
+  }, [input]);
+
+  // 更新输出
   useEffect(() => {
     if (!input.trim()) {
       setOutput('');
@@ -275,8 +148,9 @@ export function JsonTool() {
     }
     try {
       const parsed = JSON.parse(input);
-      // 只有在非压缩模式下才自动格式化
-      if (viewMode !== 'compressed') {
+      if (viewMode === 'compressed') {
+        setOutput(JSON.stringify(parsed));
+      } else {
         setOutput(JSON.stringify(parsed, null, 2));
       }
       setError('');
@@ -302,7 +176,8 @@ export function JsonTool() {
     if (!input.trim()) return;
     try {
       const parsed = JSON.parse(input);
-      setOutput(JSON.stringify(parsed));
+      const compressed = JSON.stringify(parsed);
+      setOutput(compressed);
       setViewMode('compressed');
       setError('');
     } catch (e) {
@@ -313,13 +188,17 @@ export function JsonTool() {
   const handleEscape = () => {
     if (!input.trim()) return;
     setOutput(JSON.stringify(input));
+    setViewMode('formatted');
   };
 
   const handleUnescape = () => {
     if (!input.trim()) return;
     try {
       const unescaped = JSON.parse(input);
-      setOutput(typeof unescaped === 'string' ? unescaped : JSON.stringify(unescaped, null, 2));
+      const result = typeof unescaped === 'string' ? unescaped : JSON.stringify(unescaped, null, 2);
+      setInput(result);
+      setOutput(result);
+      setViewMode('formatted');
     } catch {
       setError('无效的转义字符串');
     }
@@ -444,16 +323,6 @@ export function JsonTool() {
                       格式化
                     </button>
                     <button
-                      onClick={() => setViewMode('tree')}
-                      className={`px-2 py-0.5 text-xs rounded transition-colors ${
-                        viewMode === 'tree' 
-                          ? 'bg-white dark:bg-slate-700 text-blue-600 shadow-sm' 
-                          : 'text-gray-500 hover:text-gray-700'
-                      }`}
-                    >
-                      树形
-                    </button>
-                    <button
                       onClick={() => setViewMode('compressed')}
                       className={`px-2 py-0.5 text-xs rounded transition-colors ${
                         viewMode === 'compressed' 
@@ -478,19 +347,13 @@ export function JsonTool() {
             )}
           </div>
           
-          <div className="flex-1 min-h-[400px] bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg overflow-auto">
-            {output ? (
-              <div className="p-4">
-                {viewMode === 'formatted' ? (
-                  <JsonHighlighter json={output} isDark={isDark} />
-                ) : viewMode === 'tree' ? (
-                  <JsonTree data={JSON.parse(output)} isDark={isDark} />
-                ) : (
-                  <pre className="font-mono text-sm text-gray-800 dark:text-gray-200 whitespace-pre-wrap break-all">
-                    {output}
-                  </pre>
-                )}
-              </div>
+          <div className="flex-1 min-h-[400px] bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg overflow-hidden">
+            {parsedData ? (
+              viewMode === 'formatted' ? (
+                <FormattedView data={parsedData as object} isDark={isDark} />
+              ) : (
+                <CompressedView data={parsedData as object} isDark={isDark} />
+              )
             ) : (
               <div className="h-full flex items-center justify-center text-gray-400 text-sm">
                 格式化后的 JSON 将显示在这里
