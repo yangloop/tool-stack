@@ -335,6 +335,20 @@ export function Layout({ children, activeToolId }: LayoutProps) {
               {children}
             </div>
           </div>
+
+          {/* 页脚 - ICP备案 */}
+          {!isFullscreen && (
+            <footer className="mt-6 py-4 text-center text-xs text-surface-400 border-t border-surface-200 dark:border-surface-700">
+              <a 
+                href="https://beian.miit.gov.cn/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="hover:text-primary-500 transition-colors"
+              >
+                陕ICP备2024042581号
+              </a>
+            </footer>
+          )}
         </main>
       </div>
     </div>
