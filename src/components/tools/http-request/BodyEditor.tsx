@@ -150,33 +150,37 @@ export function BodyEditor({
               </button>
             </div>
             {urlEncodedData.map((item, index) => (
-              <div key={index} className="flex items-center gap-1.5 group">
-                <input
-                  type="checkbox"
-                  checked={item.enabled}
-                  onChange={(e) => updateUrlEncodedItem(index, 'enabled', e.target.checked)}
-                  className="w-3.5 h-3.5 rounded border-gray-300 text-blue-500 focus:ring-blue-500"
-                />
-                <input
-                  type="text"
-                  value={item.key}
-                  onChange={(e) => updateUrlEncodedItem(index, 'key', e.target.value)}
-                  placeholder="字段名"
-                  className="flex-1 px-2.5 py-1.5 bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-md text-xs dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-                <input
-                  type="text"
-                  value={item.value}
-                  onChange={(e) => updateUrlEncodedItem(index, 'value', e.target.value)}
-                  placeholder="字段值"
-                  className="flex-1 px-2.5 py-1.5 bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-md text-xs dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-                <button 
-                  onClick={() => removeUrlEncodedItem(index)} 
-                  className="p-1.5 text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all"
-                >
-                  <Trash2 className="w-3.5 h-3.5" />
-                </button>
+              <div key={index} className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-1.5 group bg-gray-50/50 dark:bg-slate-800/50 sm:bg-transparent dark:sm:bg-transparent p-2 sm:p-0 rounded-lg sm:rounded-none">
+                <div className="flex items-center gap-1.5 flex-1">
+                  <input
+                    type="checkbox"
+                    checked={item.enabled}
+                    onChange={(e) => updateUrlEncodedItem(index, 'enabled', e.target.checked)}
+                    className="w-3.5 h-3.5 rounded border-gray-300 text-blue-500 focus:ring-blue-500 flex-shrink-0"
+                  />
+                  <input
+                    type="text"
+                    value={item.key}
+                    onChange={(e) => updateUrlEncodedItem(index, 'key', e.target.value)}
+                    placeholder="字段名"
+                    className="flex-1 min-w-0 px-2.5 py-1.5 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-md text-xs dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+                <div className="flex items-center gap-1.5 flex-1 pl-5 sm:pl-0">
+                  <input
+                    type="text"
+                    value={item.value}
+                    onChange={(e) => updateUrlEncodedItem(index, 'value', e.target.value)}
+                    placeholder="字段值"
+                    className="flex-1 min-w-0 px-2.5 py-1.5 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-md text-xs dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                  <button 
+                    onClick={() => removeUrlEncodedItem(index)} 
+                    className="p-1.5 text-gray-400 hover:text-red-500 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all flex-shrink-0"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
               </div>
             ))}
           </div>
@@ -195,56 +199,62 @@ export function BodyEditor({
               </button>
             </div>
             {formData.map((item, index) => (
-              <div key={index} className="flex items-center gap-1.5 group">
-                <input
-                  type="checkbox"
-                  checked={item.enabled}
-                  onChange={(e) => updateFormDataItem(index, 'enabled', e.target.checked)}
-                  className="w-3.5 h-3.5 rounded border-gray-300 text-blue-500 focus:ring-blue-500"
-                />
-                <input
-                  type="text"
-                  value={item.key}
-                  onChange={(e) => updateFormDataItem(index, 'key', e.target.value)}
-                  placeholder="字段名"
-                  className="flex-1 px-2.5 py-1.5 bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-md text-xs dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-                <select
-                  value={item.type}
-                  onChange={(e) => updateFormDataItem(index, 'type', e.target.value as 'text' | 'file')}
-                  className="px-2 py-1.5 bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-md text-xs dark:text-white"
-                >
-                  <option value="text">Text</option>
-                  <option value="file">File</option>
-                </select>
-                {item.type === 'text' ? (
+              <div key={index} className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-1.5 group bg-gray-50/50 dark:bg-slate-800/50 sm:bg-transparent dark:sm:bg-transparent p-2 sm:p-0 rounded-lg sm:rounded-none">
+                {/* 移动端：第一行 - checkbox + key + type */}
+                <div className="flex items-center gap-1.5 flex-1">
+                  <input
+                    type="checkbox"
+                    checked={item.enabled}
+                    onChange={(e) => updateFormDataItem(index, 'enabled', e.target.checked)}
+                    className="w-3.5 h-3.5 rounded border-gray-300 text-blue-500 focus:ring-blue-500 flex-shrink-0"
+                  />
                   <input
                     type="text"
-                    value={item.value}
-                    onChange={(e) => updateFormDataItem(index, 'value', e.target.value)}
-                    placeholder="字段值"
-                    className="flex-1 px-2.5 py-1.5 bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-md text-xs dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    value={item.key}
+                    onChange={(e) => updateFormDataItem(index, 'key', e.target.value)}
+                    placeholder="字段名"
+                    className="flex-1 min-w-0 px-2.5 py-1.5 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-md text-xs dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
-                ) : (
-                  <div className="flex-1 px-2.5 py-1">
+                  <select
+                    value={item.type}
+                    onChange={(e) => updateFormDataItem(index, 'type', e.target.value as 'text' | 'file')}
+                    className="px-2 py-1.5 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-md text-xs dark:text-white flex-shrink-0"
+                  >
+                    <option value="text">Text</option>
+                    <option value="file">File</option>
+                  </select>
+                </div>
+                {/* 移动端：第二行 - value + delete */}
+                <div className="flex items-center gap-1.5 flex-1 pl-5 sm:pl-0">
+                  {item.type === 'text' ? (
                     <input
-                      type="file"
-                      className="w-full text-xs"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) {
-                          updateFormDataItem(index, 'value', file.name);
-                        }
-                      }}
+                      type="text"
+                      value={item.value}
+                      onChange={(e) => updateFormDataItem(index, 'value', e.target.value)}
+                      placeholder="字段值"
+                      className="flex-1 min-w-0 px-2.5 py-1.5 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-md text-xs dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
-                  </div>
-                )}
-                <button 
-                  onClick={() => removeFormDataItem(index)} 
-                  className="p-1.5 text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all"
-                >
-                  <Trash2 className="w-3.5 h-3.5" />
-                </button>
+                  ) : (
+                    <div className="flex-1 min-w-0 px-2.5 py-1.5 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-md">
+                      <input
+                        type="file"
+                        className="w-full text-xs min-w-0"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            updateFormDataItem(index, 'value', file.name);
+                          }
+                        }}
+                      />
+                    </div>
+                  )}
+                  <button 
+                    onClick={() => removeFormDataItem(index)} 
+                    className="p-1.5 text-gray-400 hover:text-red-500 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all flex-shrink-0"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
               </div>
             ))}
           </div>

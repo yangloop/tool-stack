@@ -112,50 +112,50 @@ export function ColorTool() {
 
   return (
     <div className="max-w-4xl mx-auto">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-          <Palette className="w-6 h-6 text-blue-500" />
+      <div className="mb-4 sm:mb-6">
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+          <Palette className="w-5 h-5 sm:w-6 sm:h-6 text-blue-500" />
           颜色转换
         </h1>
-        <p className="text-gray-500 dark:text-gray-400 mt-1">
+        <p className="text-gray-500 dark:text-gray-400 mt-1 text-xs sm:text-sm">
           HEX、RGB、HSL 颜色格式互转
         </p>
       </div>
 
       {/* 颜色预览 */}
-      <div className="card mb-4">
+      <div className="card p-4 sm:p-6 mb-4">
         <div
-          className="w-full h-32 rounded-lg border border-gray-200 dark:border-slate-700"
+          className="w-full h-24 sm:h-32 rounded-lg border border-gray-200 dark:border-slate-700"
           style={{ backgroundColor: colorValue }}
         />
-        <div className="mt-4 flex flex-wrap gap-2">
+        <div className="mt-3 sm:mt-4 flex flex-wrap gap-2">
           <button
             onClick={() => copy(hex)}
-            className="flex items-center gap-2 px-3 py-1.5 bg-gray-100 dark:bg-slate-800 rounded-lg text-sm"
+            className={`btn-tool ${copied ? 'btn-ghost-success' : 'btn-secondary'}`}
           >
-            {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+            {copied ? <Check className="w-3.5 h-3.5 flex-shrink-0" /> : <Copy className="w-3.5 h-3.5 flex-shrink-0" />}
             {hex}
           </button>
           <button
             onClick={() => copy(`rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`)}
-            className="flex items-center gap-2 px-3 py-1.5 bg-gray-100 dark:bg-slate-800 rounded-lg text-sm"
+            className="btn-secondary btn-tool"
           >
-            <Copy className="w-4 h-4" />
+            <Copy className="w-3.5 h-3.5 flex-shrink-0" />
             rgb({rgb.r}, {rgb.g}, {rgb.b})
           </button>
           <button
             onClick={() => copy(`hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)`)}
-            className="flex items-center gap-2 px-3 py-1.5 bg-gray-100 dark:bg-slate-800 rounded-lg text-sm"
+            className="btn-secondary btn-tool"
           >
-            <Copy className="w-4 h-4" />
+            <Copy className="w-3.5 h-3.5 flex-shrink-0" />
             hsl({hsl.h}, {hsl.s}%, {hsl.l}%)
           </button>
         </div>
       </div>
 
       {/* 预设颜色 */}
-      <div className="card mb-4">
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+      <div className="card p-4 sm:p-6 mb-4">
+        <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 sm:mb-3">
           预设颜色
         </label>
         <ColorSwatch 
@@ -166,9 +166,9 @@ export function ColorTool() {
       </div>
 
       {/* 输入区域 */}
-      <div className="grid md:grid-cols-3 gap-4">
+      <div className="grid md:grid-cols-3 gap-3 sm:gap-4">
         {/* HEX */}
-        <div className="card space-y-3">
+        <div className="card p-4 sm:p-6 space-y-3">
           <ColorPicker 
             label="HEX"
             color={hex}
@@ -178,19 +178,19 @@ export function ColorTool() {
         </div>
 
         {/* RGB */}
-        <div className="card space-y-3">
-          <label className="font-medium text-gray-700 dark:text-gray-300">RGB</label>
+        <div className="card p-4 sm:p-6 space-y-3">
+          <label className="font-medium text-sm sm:text-base text-gray-700 dark:text-gray-300">RGB</label>
           <div className="space-y-2">
             {(['r', 'g', 'b'] as const).map((key) => (
               <div key={key} className="flex items-center gap-2">
-                <span className="w-4 text-sm text-gray-500 uppercase">{key}</span>
+                <span className="w-4 text-xs sm:text-sm text-gray-500 uppercase">{key}</span>
                 <input
                   type="number"
                   min={0}
                   max={255}
                   value={rgb[key]}
                   onChange={(e) => handleRgbChange(key, parseInt(e.target.value) || 0)}
-                  className="flex-1 px-3 py-1.5 text-sm bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg dark:text-white"
+                  className="flex-1 px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg dark:text-white"
                 />
               </div>
             ))}
@@ -198,21 +198,21 @@ export function ColorTool() {
         </div>
 
         {/* HSL */}
-        <div className="card space-y-3">
-          <label className="font-medium text-gray-700 dark:text-gray-300">HSL</label>
+        <div className="card p-4 sm:p-6 space-y-3">
+          <label className="font-medium text-sm sm:text-base text-gray-700 dark:text-gray-300">HSL</label>
           <div className="space-y-2">
             {(['h', 's', 'l'] as const).map((key) => (
               <div key={key} className="flex items-center gap-2">
-                <span className="w-4 text-sm text-gray-500 uppercase">{key}</span>
+                <span className="w-4 text-xs sm:text-sm text-gray-500 uppercase">{key}</span>
                 <input
                   type="number"
                   min={0}
                   max={key === 'h' ? 360 : 100}
                   value={hsl[key]}
                   onChange={(e) => handleHslChange(key, parseInt(e.target.value) || 0)}
-                  className="flex-1 px-3 py-1.5 text-sm bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg dark:text-white"
+                  className="flex-1 px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg dark:text-white"
                 />
-                <span className="text-sm text-gray-400">{key === 'h' ? '°' : '%'}</span>
+                <span className="text-xs sm:text-sm text-gray-400">{key === 'h' ? '°' : '%'}</span>
               </div>
             ))}
           </div>

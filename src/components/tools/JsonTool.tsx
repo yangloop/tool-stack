@@ -77,11 +77,12 @@ function CompressedView({ data, isDark }: { data: object; isDark: boolean }) {
   const compressed = useMemo(() => JSON.stringify(data), [data]);
   
   return (
-    <div className="h-full overflow-auto p-4">
+    <div className={`p-3 sm:p-4 min-h-full ${isDark ? 'bg-slate-900' : 'bg-gray-50'}`} style={{ minWidth: 0 }}>
       <pre 
-        className={`font-mono text-sm whitespace-pre-wrap break-all bg-transparent ${
-          isDark ? 'text-gray-200' : 'text-gray-800'
+        className={`font-mono text-xs sm:text-sm whitespace-pre-wrap break-all ${
+          isDark ? 'text-surface-200' : 'text-surface-800'
         }`}
+        style={{ wordBreak: 'break-all', overflowWrap: 'break-word', margin: 0, background: 'transparent' }}
       >
         {compressed}
       </pre>
@@ -92,14 +93,16 @@ function CompressedView({ data, isDark }: { data: object; isDark: boolean }) {
 // 格式化视图组件
 function FormattedView({ data, isDark }: { data: object; isDark: boolean }) {
   return (
-    <div className="h-full overflow-auto p-4">
-      <JsonView
-        value={data}
-        style={isDark ? darkTheme : lightTheme}
-        displayDataTypes={false}
-        enableClipboard={false}
-        collapsed={false}
-      />
+    <div className="p-2 sm:p-4" style={{ minWidth: 0 }}>
+      <div style={{ maxWidth: '100%' }}>
+        <JsonView
+          value={data}
+          style={isDark ? darkTheme : lightTheme}
+          displayDataTypes={false}
+          enableClipboard={false}
+          collapsed={false}
+        />
+      </div>
     </div>
   );
 }
@@ -228,44 +231,76 @@ export function JsonTool() {
   return (
     <div className="max-w-7xl mx-auto">
       {/* 标题 */}
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-          <FileJson className="w-7 h-7 text-blue-500" />
+      <div className="mb-4 sm:mb-6">
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+          <FileJson className="w-6 h-6 sm:w-7 sm:h-7 text-blue-500" />
           JSON 工具
         </h1>
-        <p className="text-gray-500 dark:text-gray-400 mt-1">
+        <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400 mt-1">
           JSON 格式化、压缩、验证、转义和高亮查看
         </p>
       </div>
 
       {/* 工具栏 */}
-      <div className="flex flex-wrap items-center gap-2 mb-4">
-        <button onClick={handleFormat} className="btn-primary text-sm">
-          格式化
-        </button>
-        <button onClick={handleCompress} className="btn-secondary text-sm">
-          <Minimize2 className="w-4 h-4" />
-          压缩
-        </button>
-        <button onClick={handleEscape} className="btn-secondary text-sm">
-          转义
-        </button>
-        <button onClick={handleUnescape} className="btn-secondary text-sm">
-          去转义
-        </button>
-        <div className="w-px h-6 bg-gray-300 dark:bg-slate-600 mx-1"></div>
-        <label className="btn-secondary text-sm cursor-pointer">
-          <Upload className="w-4 h-4" />
-          导入
-          <input type="file" accept=".json,.txt" onChange={handleFileUpload} className="hidden" />
-        </label>
-        <button onClick={handleDownload} disabled={!output} className="btn-secondary text-sm disabled:opacity-50">
-          <Download className="w-4 h-4" />
-          下载
-        </button>
-        <button onClick={() => { setInput(''); setOutput(''); }} className="btn-danger text-sm">
-          <Trash2 className="w-4 h-4" />
-          清空
+      <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-4">
+        {/* 主要操作组 */}
+        <div className="inline-flex bg-surface-100 dark:bg-surface-800 p-0.5 sm:p-1 rounded-lg sm:rounded-xl">
+          <button 
+            onClick={handleFormat} 
+            className="btn-primary btn-tool"
+          >
+            <FileJson className="w-3.5 h-3.5 flex-shrink-0" />
+            <span>格式</span>
+          </button>
+          <button 
+            onClick={handleCompress} 
+            className="btn-tool text-surface-700 dark:text-surface-300 hover:bg-white dark:hover:bg-surface-700"
+          >
+            <Minimize2 className="w-3.5 h-3.5 flex-shrink-0" />
+            <span>压缩</span>
+          </button>
+        </div>
+
+        {/* 次要操作组 */}
+        <div className="inline-flex bg-surface-100 dark:bg-surface-800 p-0.5 sm:p-1 rounded-lg sm:rounded-xl">
+          <button 
+            onClick={handleEscape} 
+            className="btn-tool text-surface-700 dark:text-surface-300 hover:bg-white dark:hover:bg-surface-700"
+          >
+            转义
+          </button>
+          <button 
+            onClick={handleUnescape} 
+            className="btn-tool text-surface-700 dark:text-surface-300 hover:bg-white dark:hover:bg-surface-700"
+          >
+            去转
+          </button>
+        </div>
+
+        {/* 文件操作组 */}
+        <div className="inline-flex bg-surface-100 dark:bg-surface-800 p-0.5 sm:p-1 rounded-lg sm:rounded-xl">
+          <label className="btn-tool text-surface-700 dark:text-surface-300 hover:bg-white dark:hover:bg-surface-700 cursor-pointer">
+            <Upload className="w-3.5 h-3.5 flex-shrink-0" />
+            <span>导入</span>
+            <input type="file" accept=".json,.txt" onChange={handleFileUpload} className="hidden" />
+          </label>
+          <button 
+            onClick={handleDownload} 
+            disabled={!output}
+            className="btn-tool text-surface-700 dark:text-surface-300 hover:bg-white dark:hover:bg-surface-700 disabled:opacity-40"
+          >
+            <Download className="w-3.5 h-3.5 flex-shrink-0" />
+            <span>下载</span>
+          </button>
+        </div>
+
+        {/* 清空按钮 */}
+        <button 
+          onClick={() => { setInput(''); setOutput(''); }}
+          className="btn-ghost-danger btn-tool"
+        >
+          <Trash2 className="w-3.5 h-3.5 flex-shrink-0" />
+          <span>清空</span>
         </button>
       </div>
 
@@ -278,10 +313,10 @@ export function JsonTool() {
       )}
 
       {/* 输入输出区域 */}
-      <div className="grid lg:grid-cols-2 gap-4">
+      <div className="grid lg:grid-cols-2 gap-3 sm:gap-4">
         {/* 输入区域 */}
-        <div className="card flex flex-col">
-          <div className="flex items-center justify-between mb-3">
+        <div className="card p-4 sm:p-6 min-w-0">
+          <div className="flex items-center justify-between mb-2 sm:mb-3">
             <div className="flex items-center gap-2">
               <span className="text-sm font-medium text-gray-700 dark:text-gray-300">输入</span>
               {input && (
@@ -296,14 +331,14 @@ export function JsonTool() {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="在此粘贴 JSON 数据..."
-            className="flex-1 min-h-[400px] p-4 font-mono text-sm bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg resize-none focus:ring-2 focus:ring-blue-500 dark:text-white"
+            className="w-full h-[250px] sm:h-[400px] p-3 sm:p-4 font-mono text-xs sm:text-sm bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg resize-y focus:ring-2 focus:ring-blue-500 dark:text-white whitespace-pre overflow-auto"
             spellCheck={false}
           />
         </div>
 
         {/* 输出区域 */}
-        <div className="card flex flex-col">
-          <div className="flex items-center justify-between mb-3">
+        <div className="card p-4 sm:p-6 min-w-0">
+          <div className="flex items-center justify-between mb-2 sm:mb-3">
             <div className="flex items-center gap-2">
               <span className="text-sm font-medium text-gray-700 dark:text-gray-300">输出</span>
               {output && (
@@ -314,21 +349,13 @@ export function JsonTool() {
                   <div className="flex bg-gray-100 dark:bg-slate-800 rounded p-0.5">
                     <button
                       onClick={() => setViewMode('formatted')}
-                      className={`px-2 py-0.5 text-xs rounded transition-colors ${
-                        viewMode === 'formatted' 
-                          ? 'bg-white dark:bg-slate-700 text-blue-600 shadow-sm' 
-                          : 'text-gray-500 hover:text-gray-700'
-                      }`}
+                      className={`btn-group-item ${viewMode === 'formatted' ? 'btn-group-item-active' : ''}`}
                     >
                       格式化
                     </button>
                     <button
                       onClick={() => setViewMode('compressed')}
-                      className={`px-2 py-0.5 text-xs rounded transition-colors ${
-                        viewMode === 'compressed' 
-                          ? 'bg-white dark:bg-slate-700 text-blue-600 shadow-sm' 
-                          : 'text-gray-500 hover:text-gray-700'
-                      }`}
+                      className={`btn-group-item ${viewMode === 'compressed' ? 'btn-group-item-active' : ''}`}
                     >
                       压缩
                     </button>
@@ -339,15 +366,15 @@ export function JsonTool() {
             {output && (
               <button 
                 onClick={handleCopy} 
-                className="flex items-center gap-1 text-xs text-blue-500 hover:text-blue-600"
+                className={`btn-tool ${copied ? 'btn-ghost-success' : 'btn-ghost'}`}
               >
-                {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
                 {copied ? '已复制' : '复制'}
               </button>
             )}
           </div>
           
-          <div className="flex-1 min-h-[400px] bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg overflow-hidden">
+          <div className="h-[250px] sm:h-[400px] bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg overflow-auto">
             {parsedData ? (
               viewMode === 'formatted' ? (
                 <FormattedView data={parsedData as object} isDark={isDark} />
@@ -365,8 +392,8 @@ export function JsonTool() {
 
       {/* 统计信息 */}
       {output && !error && (
-        <div className="mt-4 card">
-          <div className="flex items-center justify-between">
+        <div className="mt-3 sm:mt-4 card p-4 sm:p-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
             <span className="text-sm font-medium text-gray-700 dark:text-gray-300">JSON 统计</span>
             <JsonStats json={output} />
           </div>

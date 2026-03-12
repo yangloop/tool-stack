@@ -47,33 +47,180 @@
     @apply shadow-soft;
   }
 
-  /* 现代化按钮 */
+  /* ==================== 现代化按钮系统 ==================== */
+  
+  /* 基础按钮 */
   .btn {
     @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-medium text-sm;
     @apply transition-all duration-200 ease-out;
     @apply active:scale-95;
     @apply whitespace-nowrap;
+    @apply touch-manipulation;
+    min-height: 44px;
+    min-width: 44px;
   }
 
+  @media (min-width: 640px) {
+    .btn {
+      min-height: 0;
+      min-width: 0;
+    }
+  }
+
+  /* 主要按钮 - 用于主要操作 */
   .btn-primary {
-    @apply btn bg-primary-500 text-white shadow-lg shadow-primary-500/25;
-    @apply hover:bg-primary-600 hover:shadow-primary-500/40;
-    @apply active:bg-primary-700;
+    @apply btn;
+    @apply bg-gradient-to-r from-primary-500 to-primary-600 text-white;
+    @apply shadow-lg shadow-primary-500/25;
+    @apply hover:shadow-primary-500/40 hover:from-primary-600 hover:to-primary-700;
+    @apply active:from-primary-700 active:to-primary-800;
   }
 
+  /* 次要按钮 - 用于次要操作 */
   .btn-secondary {
-    @apply btn bg-surface-100 dark:bg-surface-700 text-surface-700 dark:text-surface-200;
+    @apply btn;
+    @apply bg-surface-100 dark:bg-surface-700 text-surface-700 dark:text-surface-200;
     @apply hover:bg-surface-200 dark:hover:bg-surface-600;
+    @apply active:bg-surface-300 dark:active:bg-surface-500;
   }
 
-  .btn-ghost {
-    @apply btn text-surface-600 dark:text-surface-400;
-    @apply hover:bg-surface-100 dark:hover:bg-surface-800 hover:text-surface-900 dark:hover:text-surface-100;
+  /* 成功按钮 - 用于确认、成功操作 */
+  .btn-success {
+    @apply btn;
+    @apply bg-gradient-to-r from-emerald-500 to-emerald-600 text-white;
+    @apply shadow-lg shadow-emerald-500/25;
+    @apply hover:shadow-emerald-500/40 hover:from-emerald-600 hover:to-emerald-700;
+    @apply active:from-emerald-700 active:to-emerald-800;
   }
 
+  /* 警告按钮 - 用于警告操作 */
+  .btn-warning {
+    @apply btn;
+    @apply bg-gradient-to-r from-amber-500 to-amber-600 text-white;
+    @apply shadow-lg shadow-amber-500/25;
+    @apply hover:shadow-amber-500/40 hover:from-amber-600 hover:to-amber-700;
+    @apply active:from-amber-700 active:to-amber-800;
+  }
+
+  /* 危险按钮 - 用于删除、清空、危险操作 */
   .btn-danger {
-    @apply btn bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400;
-    @apply hover:bg-red-100 dark:hover:bg-red-900/30;
+    @apply btn;
+    @apply bg-gradient-to-r from-red-500 to-red-600 text-white;
+    @apply shadow-lg shadow-red-500/25;
+    @apply hover:shadow-red-500/40 hover:from-red-600 hover:to-red-700;
+    @apply active:from-red-700 active:to-red-800;
+  }
+
+  /* 信息按钮 - 用于信息提示 */
+  .btn-info {
+    @apply btn;
+    @apply bg-gradient-to-r from-cyan-500 to-cyan-600 text-white;
+    @apply shadow-lg shadow-cyan-500/25;
+    @apply hover:shadow-cyan-500/40 hover:from-cyan-600 hover:to-cyan-700;
+    @apply active:from-cyan-700 active:to-cyan-800;
+  }
+
+  /* 幽灵按钮 - 用于低优先级操作 */
+  .btn-ghost {
+    @apply btn;
+    @apply text-surface-600 dark:text-surface-400;
+    @apply hover:bg-surface-100 dark:hover:bg-surface-800;
+    @apply hover:text-surface-900 dark:hover:text-surface-100;
+  }
+
+  /* 幽灵成功按钮 */
+  .btn-ghost-success {
+    @apply btn;
+    @apply text-emerald-600 dark:text-emerald-400;
+    @apply hover:bg-emerald-50 dark:hover:bg-emerald-900/20;
+    @apply hover:text-emerald-700 dark:hover:text-emerald-300;
+  }
+
+  /* 幽灵危险按钮 */
+  .btn-ghost-danger {
+    @apply btn;
+    @apply text-red-500 dark:text-red-400;
+    @apply hover:bg-red-50 dark:hover:bg-red-900/20;
+    @apply hover:text-red-600 dark:hover:text-red-300;
+  }
+
+  /* 图标按钮 - 仅显示图标 */
+  .btn-icon {
+    @apply inline-flex items-center justify-center;
+    @apply transition-all duration-200 ease-out;
+    @apply active:scale-95;
+    @apply rounded-xl;
+    @apply text-surface-600 dark:text-surface-400;
+    @apply hover:bg-surface-100 dark:hover:bg-surface-800;
+    @apply hover:text-surface-900 dark:hover:text-surface-100;
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  @media (min-width: 640px) {
+    .btn-icon {
+      min-height: 36px;
+      min-width: 36px;
+    }
+  }
+
+  /* 工具栏按钮 - 紧凑样式 */
+  .btn-tool {
+    @apply inline-flex items-center justify-center gap-1.5;
+    @apply px-3 py-2 rounded-lg;
+    @apply text-xs font-medium;
+    @apply transition-all duration-200 ease-out;
+    @apply active:scale-95;
+    @apply touch-manipulation;
+    min-height: 36px;
+    min-width: 44px;
+  }
+
+  /* 分段按钮组 */
+  .btn-group {
+    @apply inline-flex bg-surface-100 dark:bg-surface-800 p-1 rounded-xl;
+  }
+
+  .btn-group-item {
+    @apply inline-flex items-center justify-center gap-1.5;
+    @apply px-3 py-1.5 sm:px-4 sm:py-2;
+    @apply text-xs sm:text-sm font-medium;
+    @apply rounded-lg sm:rounded-xl;
+    @apply transition-all duration-200;
+    @apply text-surface-600 dark:text-surface-400;
+    @apply hover:text-surface-900 dark:hover:text-surface-200;
+    @apply touch-manipulation active:scale-95;
+    min-height: 36px;
+    min-width: 44px;
+  }
+
+  .btn-group-item-active {
+    @apply bg-white dark:bg-surface-700;
+    @apply text-primary-600 dark:text-primary-400;
+    @apply shadow-sm;
+  }
+
+  /* 操作按钮 - 带图标和文字的通用操作 */
+  .btn-action {
+    @apply inline-flex items-center justify-center gap-2;
+    @apply px-4 py-2.5 rounded-xl;
+    @apply text-sm font-medium;
+    @apply transition-all duration-200 ease-out;
+    @apply active:scale-95;
+    @apply touch-manipulation;
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* 浮动操作按钮 (FAB) */
+  .btn-fab {
+    @apply inline-flex items-center justify-center;
+    @apply w-14 h-14 rounded-full;
+    @apply bg-gradient-to-r from-primary-500 to-primary-600;
+    @apply text-white shadow-lg shadow-primary-500/30;
+    @apply hover:shadow-primary-500/50 hover:from-primary-600 hover:to-primary-700;
+    @apply active:scale-95;
+    @apply transition-all duration-200;
   }
 
   /* 现代化输入框 */
@@ -261,9 +408,166 @@ img, video {
   height: auto;
 }
 
+/* 移动端触摸优化 */
+.touch-manipulation {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* 侧边栏滑入动画优化 */
+@media (max-width: 1024px) {
+  aside {
+    will-change: transform;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* 优化滑动手柄 */
+  aside::after {
+    content: '';
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 40px;
+    background: linear-gradient(to bottom, transparent, rgba(148, 163, 184, 0.3), transparent);
+    border-radius: 2px;
+  }
+}
+
+/* 顶部导航滚动阴影增强 */
+header {
+  will-change: transform, box-shadow;
+}
+
+/* 移动端搜索框焦点优化 */
+@media (max-width: 768px) {
+  input[type="text"]:focus {
+    transform: scale(1.01);
+    transition: transform 0.2s ease;
+  }
+}
+
+/* 侧边栏分类折叠动画优化 */
+.max-h-0 {
+  transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease;
+}
+
+.max-h-\[500px\] {
+  transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+}
+
+/* 移动端优化：防止文本缩放 */
+@media screen and (max-width: 768px) {
+  /* 确保表单元素不会自动缩放 */
+  input, textarea, select {
+    font-size: 16px; /* 防止 iOS 缩放 */
+  }
+  
+  /* 优化按钮点击区域 */
+  button, [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* 导航链接优化 */
+  a {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+  
+  /* 减小卡片内边距 */
+  .card {
+    @apply p-4;
+  }
+  
+  /* 移动端优化滚动 */
+  .scroll-smooth {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* 安全区域适配 - iPhone X 及以上 */
+@supports (padding-top: env(safe-area-inset-top)) {
+  .safe-area-top {
+    padding-top: env(safe-area-inset-top);
+  }
+  
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  
+  .safe-area-left {
+    padding-left: env(safe-area-inset-left);
+  }
+  
+  .safe-area-right {
+    padding-right: env(safe-area-inset-right);
+  }
+}
+
+/* 响应式字体大小 */
+@media screen and (max-width: 640px) {
+  html {
+    font-size: 14px;
+  }
+}
+
+/* 移动端横屏优化 */
+@media screen and (max-height: 500px) and (orientation: landscape) {
+  header {
+    @apply py-2;
+  }
+  
+  .card {
+    @apply p-4;
+  }
+}
+
 /* 代码块样式优化 */
 pre {
   @apply bg-surface-900 text-surface-100 rounded-xl p-4 overflow-x-auto;
+  -webkit-overflow-scrolling: touch; /* iOS 平滑滚动 */
+}
+
+/* 移动端代码块优化 */
+@media screen and (max-width: 768px) {
+  pre {
+    @apply p-3 text-xs;
+  }
+  
+  code {
+    @apply text-xs;
+  }
+}
+
+/* 文本区域优化 */
+textarea {
+  @apply resize-y;
+  min-height: 120px;
+}
+
+@media screen and (max-width: 768px) {
+  textarea {
+    min-height: 100px;
+  }
+}
+
+/* 模态框/抽屉移动端优化 */
+@media screen and (max-width: 768px) {
+  .modal, .drawer {
+    @apply max-w-full;
+  }
+}
+
+/* 表格移动端优化 */
+@media screen and (max-width: 768px) {
+  table {
+    @apply block overflow-x-auto whitespace-nowrap;
+    -webkit-overflow-scrolling: touch;
+  }
 }
 
 code {

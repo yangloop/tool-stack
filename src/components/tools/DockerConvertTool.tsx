@@ -89,7 +89,7 @@ export function DockerConvertTool() {
 
   // 渲染解析结果预览
   const renderParsedInfo = (opts: DockerRunOptions) => (
-    <div className="p-4 bg-surface-50 dark:bg-surface-900/50 rounded-xl space-y-2">
+    <div className="p-3 sm:p-4 bg-surface-50 dark:bg-surface-900/50 rounded-xl space-y-2">
       <h4 className="text-sm font-medium text-surface-700 dark:text-surface-300">解析结果</h4>
       <div className="text-sm space-y-1">
         <p><span className="text-surface-500">镜像:</span> {opts.image}</p>
@@ -119,7 +119,7 @@ export function DockerConvertTool() {
       </div>
 
       {/* Tab 切换 */}
-      <div className="flex gap-1 border-b border-surface-200 dark:border-surface-700 mb-5">
+      <div className="flex gap-1 border-b border-surface-200 dark:border-surface-700 mb-4 sm:mb-5">
         {[
           { id: 'run-to-compose', label: 'Run → Compose', icon: Terminal },
           { id: 'compose-to-run', label: 'Compose → Run', icon: FileJson },
@@ -128,27 +128,27 @@ export function DockerConvertTool() {
           <button
             key={id}
             onClick={() => setActiveTab(id as typeof activeTab)}
-            className={`px-4 py-3 text-sm font-medium border-b-2 transition-all flex items-center gap-2 -mb-px ${
+            className={`px-3 py-2 sm:px-4 sm:py-3 text-sm font-medium border-b-2 transition-all flex items-center gap-2 -mb-px ${
               activeTab === id
                 ? 'border-primary-500 text-primary-600 dark:text-primary-400'
                 : 'border-transparent text-surface-500 hover:text-surface-700 dark:hover:text-surface-300'
             }`}
           >
-            <Icon className="w-4 h-4" />
+            <Icon className="w-3 h-3 sm:w-3.5 sm:h-3.5 sm:w-4 sm:h-4" />
             {label}
           </button>
         ))}
       </div>
 
       {activeTab === 'run-to-compose' && (
-        <div className="grid lg:grid-cols-2 gap-5">
-          <div className="card space-y-4">
+        <div className="grid lg:grid-cols-2 gap-3 sm:p-4 sm:gap-5">
+          <div className="card p-3 sm:p-6 space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="font-medium text-surface-900 dark:text-surface-100 flex items-center gap-2">
-                <Terminal className="w-4 h-4 text-primary-500" />
+              <h3 className="font-medium text-surface-900 dark:text-surface-100 flex items-center gap-1.5 sm:gap-2">
+                <Terminal className="w-3 h-3 sm:w-3.5 sm:h-3.5 sm:w-4 sm:h-4 text-primary-500" />
                 Docker Run 命令
               </h3>
-              <button onClick={() => setDockerRunCommand('')} className="btn-ghost text-xs">
+              <button onClick={() => setDockerRunCommand('')} className="btn-ghost-danger btn-icon">
                 <Trash2 className="w-3.5 h-3.5" />
               </button>
             </div>
@@ -157,22 +157,22 @@ export function DockerConvertTool() {
               value={dockerRunCommand}
               onChange={(e) => setDockerRunCommand(e.target.value)}
               placeholder="docker run -d --name myapp -p 8080:80 nginx"
-              className="w-full h-48 p-4 font-mono text-sm bg-surface-50 dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded-xl resize-none focus:ring-2 focus:ring-primary-500/50"
+              className="w-full h-40 sm:h-48 p-3 sm:p-4 font-mono text-sm bg-surface-50 dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded-xl resize-none focus:ring-2 focus:ring-primary-500/50"
             />
 
             {error && (
               <div className="flex items-center gap-2 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/30 rounded-xl text-sm text-red-600 dark:text-red-400">
-                <AlertCircle className="w-4 h-4" />
+                <AlertCircle className="w-3 h-3 sm:w-3.5 sm:h-3.5 sm:w-4 sm:h-4" />
                 {error}
               </div>
             )}
 
-            <div className="flex gap-3">
-              <button onClick={handleRunToCompose} disabled={isConverting} className="btn-primary flex-1">
-                {isConverting ? <Loader2 className="w-4 h-4 animate-spin" /> : <ArrowRightLeft className="w-4 h-4" />}
+            <div className="flex gap-2 sm:gap-3">
+              <button onClick={handleRunToCompose} disabled={isConverting} className="btn-primary btn-action flex-1">
+                {isConverting ? <Loader2 className="w-4 h-4 animate-spin flex-shrink-0" /> : <ArrowRightLeft className="w-4 h-4 flex-shrink-0" />}
                 {isConverting ? '转换中...' : '转换'}
               </button>
-              <button onClick={() => setDockerRunCommand('docker run -d --name nginx -p 8080:80 -v /data:/usr/share/nginx/html -e ENV=production --restart always nginx:latest')} className="btn-secondary text-xs">
+              <button onClick={() => setDockerRunCommand('docker run -d --name nginx -p 8080:80 -v /data:/usr/share/nginx/html -e ENV=production --restart always nginx:latest')} className="btn-secondary btn-tool">
                 示例
               </button>
             </div>
@@ -180,13 +180,13 @@ export function DockerConvertTool() {
             {options.image && renderParsedInfo(options)}
           </div>
 
-          <div className="card space-y-4">
+          <div className="card p-3 sm:p-6 space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="font-medium text-surface-900 dark:text-surface-100 flex items-center gap-2">
-                <FileJson className="w-4 h-4 text-emerald-500" />
+              <h3 className="font-medium text-surface-900 dark:text-surface-100 flex items-center gap-1.5 sm:gap-2">
+                <FileJson className="w-3 h-3 sm:w-3.5 sm:h-3.5 sm:w-4 sm:h-4 text-emerald-500" />
                 Docker Compose
               </h3>
-              <div className="flex gap-2">
+              <div className="flex gap-1.5 sm:gap-2">
                 <input
                   type="text"
                   value={serviceName}
@@ -197,12 +197,12 @@ export function DockerConvertTool() {
                 <button
                   onClick={() => copy(composeYaml)}
                   disabled={!composeYaml}
-                  className="btn-secondary text-xs"
+                  className={`btn-tool ${copied ? 'btn-ghost-success' : 'btn-secondary'}`}
                 >
-                  {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                  {copied ? <Check className="w-3.5 h-3.5 flex-shrink-0" /> : <Copy className="w-3.5 h-3.5 flex-shrink-0" />}
                 </button>
-                <button onClick={exportCompose} disabled={!composeYaml} className="btn-secondary text-xs">
-                  <Download className="w-3.5 h-3.5" />
+                <button onClick={exportCompose} disabled={!composeYaml} className="btn-secondary btn-tool">
+                  <Download className="w-3.5 h-3.5 flex-shrink-0" />
                 </button>
               </div>
             </div>
@@ -211,21 +211,21 @@ export function DockerConvertTool() {
               readOnly
               value={composeYaml}
               placeholder="点击转换按钮生成 docker-compose.yml..."
-              className="w-full h-96 p-4 font-mono text-sm bg-surface-50 dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded-xl resize-none"
+              className="w-full h-72 sm:h-96 p-3 sm:p-4 font-mono text-sm bg-surface-50 dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded-xl resize-none"
             />
           </div>
         </div>
       )}
 
       {activeTab === 'compose-to-run' && (
-        <div className="grid lg:grid-cols-2 gap-5">
-          <div className="card space-y-4">
+        <div className="grid lg:grid-cols-2 gap-3 sm:p-4 sm:gap-5">
+          <div className="card p-3 sm:p-6 space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="font-medium text-surface-900 dark:text-surface-100 flex items-center gap-2">
-                <FileJson className="w-4 h-4 text-emerald-500" />
+              <h3 className="font-medium text-surface-900 dark:text-surface-100 flex items-center gap-1.5 sm:gap-2">
+                <FileJson className="w-3 h-3 sm:w-3.5 sm:h-3.5 sm:w-4 sm:h-4 text-emerald-500" />
                 Docker Compose
               </h3>
-              <button onClick={() => setComposeInput('')} className="btn-ghost text-xs">
+              <button onClick={() => setComposeInput('')} className="btn-ghost-danger btn-icon">
                 <Trash2 className="w-3.5 h-3.5" />
               </button>
             </div>
@@ -234,39 +234,39 @@ export function DockerConvertTool() {
               value={composeInput}
               onChange={(e) => setComposeInput(e.target.value)}
               placeholder="version: &quot;3.8&quot;&#10;services:&#10;  web:&#10;    image: nginx&#10;    ports:&#10;      - 8080:80"
-              className="w-full h-96 p-4 font-mono text-sm bg-surface-50 dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded-xl resize-none focus:ring-2 focus:ring-primary-500/50"
+              className="w-full h-96 p-3 sm:p-4 font-mono text-sm bg-surface-50 dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded-xl resize-none focus:ring-2 focus:ring-primary-500/50"
             />
 
             {error && (
               <div className="flex items-center gap-2 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/30 rounded-xl text-sm text-red-600 dark:text-red-400">
-                <AlertCircle className="w-4 h-4" />
+                <AlertCircle className="w-3 h-3 sm:w-3.5 sm:h-3.5 sm:w-4 sm:h-4" />
                 {error}
               </div>
             )}
 
-            <div className="flex gap-3">
-              <button onClick={handleComposeToRun} disabled={isConverting} className="btn-primary flex-1">
-                {isConverting ? <Loader2 className="w-4 h-4 animate-spin" /> : <ArrowRightLeft className="w-4 h-4" />}
+            <div className="flex gap-2 sm:gap-3">
+              <button onClick={handleComposeToRun} disabled={isConverting} className="btn-primary btn-action flex-1">
+                {isConverting ? <Loader2 className="w-4 h-4 animate-spin flex-shrink-0" /> : <ArrowRightLeft className="w-4 h-4 flex-shrink-0" />}
                 {isConverting ? '转换中...' : '转换'}
               </button>
-              <button onClick={() => setComposeInput('version: "3.8"\nservices:\n  web:\n    image: nginx:latest\n    container_name: nginx\n    ports:\n      - "8080:80"\n    volumes:\n      - /data:/usr/share/nginx/html\n    environment:\n      - ENV=production\n    restart: always')} className="btn-secondary text-xs">
+              <button onClick={() => setComposeInput('version: "3.8"\nservices:\n  web:\n    image: nginx:latest\n    container_name: nginx\n    ports:\n      - "8080:80"\n    volumes:\n      - /data:/usr/share/nginx/html\n    environment:\n      - ENV=production\n    restart: always')} className="btn-secondary btn-tool">
                 示例
               </button>
             </div>
           </div>
 
-          <div className="card space-y-4">
+          <div className="card p-3 sm:p-6 space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="font-medium text-surface-900 dark:text-surface-100 flex items-center gap-2">
-                <Terminal className="w-4 h-4 text-primary-500" />
+              <h3 className="font-medium text-surface-900 dark:text-surface-100 flex items-center gap-1.5 sm:gap-2">
+                <Terminal className="w-3 h-3 sm:w-3.5 sm:h-3.5 sm:w-4 sm:h-4 text-primary-500" />
                 Docker Run 命令
               </h3>
               <button
                 onClick={() => copy(dockerRunCommand)}
                 disabled={!dockerRunCommand}
-                className="btn-secondary text-xs"
+                className={`btn-tool ${copied ? 'btn-ghost-success' : 'btn-secondary'}`}
               >
-                {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                {copied ? <Check className="w-3.5 h-3.5 flex-shrink-0" /> : <Copy className="w-3.5 h-3.5 flex-shrink-0" />}
               </button>
             </div>
             
@@ -274,7 +274,7 @@ export function DockerConvertTool() {
               readOnly
               value={dockerRunCommand}
               placeholder="点击转换按钮生成 docker run 命令..."
-              className="w-full h-48 p-4 font-mono text-sm bg-surface-50 dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded-xl resize-none"
+              className="w-full h-40 sm:h-48 p-3 sm:p-4 font-mono text-sm bg-surface-50 dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded-xl resize-none"
             />
 
             {options.image && renderParsedInfo(options)}
@@ -409,34 +409,34 @@ function FormConfigTab({
   };
 
   return (
-    <div className="grid lg:grid-cols-2 gap-5">
+    <div className="grid lg:grid-cols-2 gap-3 sm:p-4 sm:gap-5">
       <div className="card space-y-5 max-h-[800px] overflow-y-auto">
         <div className="flex items-center justify-between">
-          <h3 className="font-medium text-surface-900 dark:text-surface-100 flex items-center gap-2">
-            <Settings className="w-4 h-4 text-primary-500" />
+          <h3 className="font-medium text-surface-900 dark:text-surface-100 flex items-center gap-1.5 sm:gap-2">
+            <Settings className="w-3 h-3 sm:w-3.5 sm:h-3.5 sm:w-4 sm:h-4 text-primary-500" />
             容器配置
           </h3>
-          <div className="flex gap-2">
-            <button onClick={generate} disabled={isGenerating} className="btn-primary text-xs">
-              {isGenerating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : '生成'}
+          <div className="flex gap-1.5 sm:gap-2">
+            <button onClick={generate} disabled={isGenerating} className="btn-primary btn-tool">
+              {isGenerating ? <Loader2 className="w-3.5 h-3.5 animate-spin flex-shrink-0" /> : '生成'}
             </button>
-            <button onClick={resetOptions} className="btn-ghost text-xs">
+            <button onClick={resetOptions} className="btn-ghost btn-icon">
               <RotateCcw className="w-3.5 h-3.5" />
             </button>
           </div>
         </div>
 
         {/* 反向解析 */}
-        <div className="p-4 bg-surface-50 dark:bg-surface-900/50 rounded-xl space-y-3">
-          <h4 className="text-sm font-medium text-surface-700 dark:text-surface-300 flex items-center gap-2">
-            <ArrowRightLeft className="w-4 h-4" />
+        <div className="p-3 sm:p-4 bg-surface-50 dark:bg-surface-900/50 rounded-xl space-y-3">
+          <h4 className="text-sm font-medium text-surface-700 dark:text-surface-300 flex items-center gap-1.5 sm:gap-2">
+            <ArrowRightLeft className="w-3 h-3 sm:w-3.5 sm:h-3.5 sm:w-4 sm:h-4" />
             反向解析（粘贴命令自动填充表单）
           </h4>
           <textarea
             value={parseInput}
             onChange={(e) => setParseInput(e.target.value)}
             placeholder="粘贴 docker run 命令或 docker-compose 配置..."
-            className="w-full h-24 p-3 font-mono text-xs bg-white dark:bg-surface-800 border border-surface-200 dark:border-surface-700 rounded-xl resize-none"
+            className="w-full h-20 sm:h-24 p-3 font-mono text-xs bg-white dark:bg-surface-800 border border-surface-200 dark:border-surface-700 rounded-xl resize-none"
           />
           {parseError && (
             <div className="text-xs text-red-500">{parseError}</div>
@@ -444,9 +444,9 @@ function FormConfigTab({
           <button 
             onClick={handleParse} 
             disabled={isParsing || !parseInput.trim()} 
-            className="btn-secondary text-xs w-full"
+            className="btn-secondary btn-action w-full"
           >
-            {isParsing ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ArrowRightLeft className="w-3.5 h-3.5" />}
+            {isParsing ? <Loader2 className="w-4 h-4 animate-spin flex-shrink-0" /> : <ArrowRightLeft className="w-4 h-4 flex-shrink-0" />}
             {isParsing ? '解析中...' : '解析并填充表单'}
           </button>
         </div>
@@ -454,7 +454,7 @@ function FormConfigTab({
         {/* 基础配置 */}
         <div className="space-y-3">
           <h4 className="text-sm font-medium text-surface-700 dark:text-surface-300">基础配置</h4>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-2 sm:gap-3">
             <input
               type="text"
               value={options.image}
@@ -480,7 +480,7 @@ function FormConfigTab({
         </div>
 
         {/* 开关选项 */}
-        <div className="flex flex-wrap gap-3">
+        <div className="flex flex-wrap gap-2 sm:gap-3">
           {[
             { key: 'detach', label: '后台运行 (-d)' },
             { key: 'interactive', label: '交互模式 (-i)' },
@@ -493,7 +493,7 @@ function FormConfigTab({
                 type="checkbox"
                 checked={options[key as keyof DockerRunOptions] as boolean}
                 onChange={(e) => updateOption(key as keyof DockerRunOptions, e.target.checked)}
-                className="w-4 h-4 rounded border-surface-300 text-primary-500"
+                className="w-3 h-3 sm:w-3.5 sm:h-3.5 sm:w-4 sm:h-4 rounded border-surface-300 text-primary-500"
               />
               <span className="text-sm text-surface-600 dark:text-surface-400">{label}</span>
             </label>
@@ -507,7 +507,7 @@ function FormConfigTab({
           onAdd={() => addArrayItem('ports', { host: '', container: '', protocol: 'tcp' })}
           onRemove={(idx) => removeArrayItem('ports', idx)}
           renderItem={(port, idx) => (
-            <div className="flex gap-2">
+            <div className="flex gap-1.5 sm:gap-2">
               <input
                 type="text"
                 value={port.host}
@@ -534,7 +534,7 @@ function FormConfigTab({
           onAdd={() => addArrayItem('volumes', { host: '', container: '', mode: 'rw' })}
           onRemove={(idx) => removeArrayItem('volumes', idx)}
           renderItem={(vol, idx) => (
-            <div className="flex gap-2">
+            <div className="flex gap-1.5 sm:gap-2">
               <input
                 type="text"
                 value={vol.host}
@@ -569,7 +569,7 @@ function FormConfigTab({
           onAdd={() => addArrayItem('environment', { key: '', value: '' })}
           onRemove={(idx) => removeArrayItem('environment', idx)}
           renderItem={(env, idx) => (
-            <div className="flex gap-2">
+            <div className="flex gap-1.5 sm:gap-2">
               <input
                 type="text"
                 value={env.key}
@@ -592,7 +592,7 @@ function FormConfigTab({
         {/* 其他选项 */}
         <div className="space-y-3">
           <h4 className="text-sm font-medium text-surface-700 dark:text-surface-300">其他选项</h4>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-2 sm:gap-3">
             {[
               { key: 'restart', placeholder: '重启策略 (always/on-failure/no)' },
               { key: 'user', placeholder: '用户 (uid:gid)' },
@@ -618,7 +618,7 @@ function FormConfigTab({
       <div className="space-y-5">
         <OutputPanel
           title="Docker Run 命令"
-          icon={<Terminal className="w-4 h-4 text-primary-500" />}
+          icon={<Terminal className="w-3 h-3 sm:w-3.5 sm:h-3.5 sm:w-4 sm:h-4 text-primary-500" />}
           value={runCommand}
           onCopy={() => copy(runCommand)}
           copied={copied}
@@ -626,7 +626,7 @@ function FormConfigTab({
 
         <OutputPanel
           title="Docker Compose"
-          icon={<FileJson className="w-4 h-4 text-emerald-500" />}
+          icon={<FileJson className="w-3 h-3 sm:w-3.5 sm:h-3.5 sm:w-4 sm:h-4 text-emerald-500" />}
           value={composeConfig}
           onCopy={() => copy(composeConfig)}
           copied={copied}
@@ -652,14 +652,14 @@ function ArrayConfigSection<T>({ title, items, onAdd, onRemove, renderItem }: Ar
     <div className="space-y-2">
       <div className="flex items-center justify-between">
         <h4 className="text-sm font-medium text-surface-700 dark:text-surface-300">{title}</h4>
-        <button onClick={onAdd} className="btn-ghost text-xs">
+        <button onClick={onAdd} className="btn-ghost btn-icon">
           <Plus className="w-3.5 h-3.5" />
         </button>
       </div>
       {items.map((item, idx) => (
         <div key={idx} className="flex gap-2 items-center">
           {renderItem(item, idx)}
-          <button onClick={() => onRemove(idx)} className="text-surface-400 hover:text-red-500">
+          <button onClick={() => onRemove(idx)} className="btn-ghost-danger btn-icon p-1">
             <X className="w-4 h-4" />
           </button>
         </div>
@@ -689,13 +689,13 @@ function OutputPanel({
   onServiceNameChange 
 }: OutputPanelProps) {
   return (
-    <div className="card space-y-4">
+    <div className="card p-3 sm:p-6 space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="font-medium text-surface-900 dark:text-surface-100 flex items-center gap-2">
+        <h3 className="font-medium text-surface-900 dark:text-surface-100 flex items-center gap-1.5 sm:gap-2">
           {icon}
           {title}
         </h3>
-        <div className="flex gap-2">
+        <div className="flex gap-1.5 sm:gap-2">
           {onServiceNameChange && (
             <input
               type="text"
@@ -705,8 +705,8 @@ function OutputPanel({
               className="w-24 input text-xs py-1"
             />
           )}
-          <button onClick={onCopy} disabled={!value} className="btn-secondary text-xs">
-            {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+          <button onClick={onCopy} disabled={!value} className={`btn-tool ${copied ? 'btn-ghost-success' : 'btn-secondary'}`}>
+            {copied ? <Check className="w-3.5 h-3.5 flex-shrink-0" /> : <Copy className="w-3.5 h-3.5 flex-shrink-0" />}
           </button>
         </div>
       </div>
@@ -714,7 +714,7 @@ function OutputPanel({
         readOnly
         value={value}
         placeholder="点击生成按钮..."
-        className="w-full h-48 p-4 font-mono text-sm bg-surface-50 dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded-xl resize-none"
+        className="w-full h-40 sm:h-48 p-3 sm:p-4 font-mono text-sm bg-surface-50 dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded-xl resize-none"
       />
     </div>
   );

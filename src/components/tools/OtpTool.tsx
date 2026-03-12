@@ -211,7 +211,7 @@ export function OtpTool() {
       {/* 工具标题 */}
       <div className="tool-header">
         <div className="tool-icon">
-          <Shield className="w-6 h-6" />
+          <Shield className="w-5 h-5 sm:w-6 sm:h-6" />
         </div>
         <div className="flex-1">
           <h1 className="text-xl font-semibold text-surface-900 dark:text-surface-100">
@@ -221,13 +221,13 @@ export function OtpTool() {
             生成 TOTP 双因素认证验证码，支持 Google Authenticator
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <button onClick={handleExport} className="btn-secondary text-sm" disabled={accounts.length === 0}>
-            <Download className="w-4 h-4" />
+        <div className="flex items-center gap-1.5 sm:gap-2">
+          <button onClick={handleExport} className="btn-secondary btn-tool" disabled={accounts.length === 0}>
+            <Download className="w-3.5 h-3.5 flex-shrink-0" />
             导出
           </button>
-          <label className="btn-secondary text-sm cursor-pointer">
-            <Upload className="w-4 h-4" />
+          <label className="btn-secondary btn-tool cursor-pointer">
+            <Upload className="w-3.5 h-3.5 flex-shrink-0" />
             导入
             <input type="file" accept=".json" onChange={handleImport} className="hidden" />
           </label>
@@ -235,21 +235,21 @@ export function OtpTool() {
       </div>
 
       {/* 添加账户按钮 */}
-      <div className="flex justify-end mb-5">
+      <div className="flex justify-end mb-4 sm:mb-5">
         <button
           onClick={() => setShowAddForm(!showAddForm)}
-          className="btn-primary"
+          className="btn-primary btn-action"
         >
-          <Plus className="w-4 h-4" />
+          <Plus className="w-4 h-4 flex-shrink-0" />
           添加账户
         </button>
       </div>
 
       {/* 添加账户表单 */}
       {showAddForm && (
-        <div className="card mb-5 space-y-4">
+        <div className="card p-4 sm:p-6 mb-4 sm:mb-5 space-y-4">
           <h3 className="font-medium text-surface-900 dark:text-surface-100">添加新账户</h3>
-          <div className="grid md:grid-cols-2 gap-4">
+          <div className="grid md:grid-cols-2 gap-3 sm:gap-4">
             <div>
               <label className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1.5">
                 账户名称 <span className="text-red-500">*</span>
@@ -311,11 +311,11 @@ export function OtpTool() {
               </select>
             </div>
           </div>
-          <div className="flex justify-end gap-2">
-            <button onClick={() => setShowAddForm(false)} className="btn-ghost text-sm">
+          <div className="flex justify-end gap-1.5 sm:gap-2">
+            <button onClick={() => setShowAddForm(false)} className="btn-ghost btn-tool">
               取消
             </button>
-            <button onClick={handleAddAccount} className="btn-primary text-sm" disabled={!newAccount.name || !newAccount.secret}>
+            <button onClick={handleAddAccount} className="btn-primary btn-tool" disabled={!newAccount.name || !newAccount.secret}>
               添加
             </button>
           </div>
@@ -324,10 +324,10 @@ export function OtpTool() {
 
       {/* 二维码显示 */}
       {selectedAccount && qrCodeDataUrl && (
-        <div className="card mb-5 text-center">
+        <div className="card p-4 sm:p-6 mb-4 sm:mb-5 text-center">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-medium text-surface-900 dark:text-surface-100">二维码</h3>
-            <button onClick={() => setSelectedAccount(null)} className="text-surface-400 hover:text-surface-600">
+            <button onClick={() => setSelectedAccount(null)} className="btn-ghost btn-tool">
               关闭
             </button>
           </div>
@@ -338,7 +338,7 @@ export function OtpTool() {
 
       {/* 账户列表 */}
       {accounts.length === 0 ? (
-        <div className="card text-center py-12">
+        <div className="card p-4 sm:p-6 text-center py-12">
           <div className="w-16 h-16 bg-surface-100 dark:bg-surface-800 rounded-full flex items-center justify-center mx-auto mb-4">
             <Shield className="w-8 h-8 text-surface-400" />
           </div>
@@ -350,8 +350,8 @@ export function OtpTool() {
           {accounts.map((account) => {
             const codeInfo = codes.find(c => c.accountId === account.id);
             return (
-              <div key={account.id} className="card p-0 overflow-hidden">
-                <div className="p-5 flex items-center gap-4">
+              <div key={account.id} className="card p-0 overflow-hidden overflow-hidden">
+                <div className="p-4 sm:p-5 flex items-center gap-3 sm:gap-4">
                   {/* 进度环 */}
                   <div className="relative w-16 h-16 flex-shrink-0">
                     <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
@@ -392,7 +392,7 @@ export function OtpTool() {
                       </span>
                       <button
                         onClick={() => codeInfo?.code && handleCopyCode(codeInfo.code)}
-                        className="btn-ghost text-xs"
+                        className={`btn-icon ${copied ? 'text-emerald-500' : ''}`}
                         disabled={!codeInfo?.code || codeInfo.code === 'ERROR'}
                       >
                         {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
@@ -401,17 +401,17 @@ export function OtpTool() {
                   </div>
 
                   {/* 操作按钮 */}
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1.5 sm:gap-2">
                     <button
                       onClick={() => setSelectedAccount(selectedAccount === account.id ? null : account.id)}
-                      className="btn-ghost text-xs"
+                      className="btn-icon"
                       title="显示二维码"
                     >
                       <QrCode className="w-4 h-4" />
                     </button>
                     <button
                       onClick={() => handleDeleteAccount(account.id)}
-                      className="btn-danger text-xs"
+                      className="btn-ghost-danger btn-icon"
                       title="删除"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -425,8 +425,8 @@ export function OtpTool() {
       )}
 
       {/* 底部说明 */}
-      <div className="mt-6 p-4 bg-surface-50 dark:bg-surface-800/50 rounded-xl text-sm text-surface-500">
-        <h4 className="font-medium text-surface-700 dark:text-surface-300 mb-2 flex items-center gap-2">
+      <div className="mt-4 sm:mt-6 p-4 bg-surface-50 dark:bg-surface-800/50 rounded-xl text-sm text-surface-500">
+        <h4 className="font-medium text-surface-700 dark:text-surface-300 mb-2 flex items-center gap-1.5 sm:gap-2">
           <Clock className="w-4 h-4" />
           使用说明
         </h4>

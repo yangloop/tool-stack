@@ -254,7 +254,7 @@ function SqlStats({ sql }: { sql: string }) {
   const chars = sql.length;
   
   return (
-    <div className="flex flex-wrap gap-4 text-xs text-gray-500">
+    <div className="flex flex-wrap gap-2 sm:gap-4 text-xs text-gray-500">
       <span>{lines} 行</span>
       <span>{words} 词</span>
       <span>{chars} 字符</span>
@@ -371,56 +371,56 @@ export function SqlTool() {
   return (
     <div className="max-w-7xl mx-auto">
       {/* 标题 */}
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-          <Database className="w-7 h-7 text-blue-500" />
+      <div className="mb-4 sm:mb-6">
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+          <Database className="w-6 h-6 sm:w-7 sm:h-7 text-blue-500" />
           SQL 格式化
         </h1>
-        <p className="text-gray-500 dark:text-gray-400 mt-1">
+        <p className="text-gray-500 dark:text-gray-400 mt-1 text-xs sm:text-sm">
           SQL 语句美化、压缩和语法高亮
         </p>
       </div>
 
       {/* 工具栏 */}
       <div className="flex flex-wrap items-center gap-2 mb-4">
-        <button onClick={handleFormat} className="btn-primary text-sm">
-          <AlignLeft className="w-4 h-4" />
+        <button onClick={handleFormat} className="btn-primary btn-tool">
+          <AlignLeft className="w-3.5 h-3.5 flex-shrink-0" />
           格式化
         </button>
-        <button onClick={handleCompress} className="btn-secondary text-sm">
-          <Minimize2 className="w-4 h-4" />
+        <button onClick={handleCompress} className="btn-secondary btn-tool">
+          <Minimize2 className="w-3.5 h-3.5 flex-shrink-0" />
           压缩
         </button>
-        <div className="w-px h-6 bg-gray-300 dark:bg-slate-600 mx-1" />
-        <label className="btn-secondary text-sm cursor-pointer">
-          <Upload className="w-4 h-4" />
+        <div className="w-px h-5 sm:h-6 bg-gray-300 dark:bg-slate-600 mx-1 hidden sm:block" />
+        <label className="btn-secondary btn-tool cursor-pointer">
+          <Upload className="w-3.5 h-3.5 flex-shrink-0" />
           导入
           <input type="file" accept=".sql,.txt" onChange={handleFileUpload} className="hidden" />
         </label>
-        <button onClick={handleDownload} disabled={!output} className="btn-secondary text-sm disabled:opacity-50">
-          <Download className="w-4 h-4" />
+        <button onClick={handleDownload} disabled={!output} className="btn-secondary btn-tool disabled:opacity-50">
+          <Download className="w-3.5 h-3.5 flex-shrink-0" />
           下载
         </button>
-        <button onClick={() => { setInput(''); setOutput(''); }} className="btn-danger text-sm">
-          <Trash2 className="w-4 h-4" />
+        <button onClick={() => { setInput(''); setOutput(''); }} className="btn-ghost-danger btn-tool">
+          <Trash2 className="w-3.5 h-3.5 flex-shrink-0" />
           清空
         </button>
       </div>
 
       {error && (
-        <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg flex items-center gap-2 text-red-600 dark:text-red-400 text-sm">
-          <AlertCircle className="w-4 h-4 flex-shrink-0" />
+        <div className="mb-4 p-2.5 sm:p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg flex items-center gap-2 text-red-600 dark:text-red-400 text-xs sm:text-sm">
+          <AlertCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" />
           {error}
         </div>
       )}
 
       {/* 输入输出区域 */}
-      <div className="grid lg:grid-cols-2 gap-4">
+      <div className="grid lg:grid-cols-2 gap-3 sm:gap-4">
         {/* 输入区域 */}
-        <div className="card flex flex-col">
+        <div className="card p-4 sm:p-6 flex flex-col">
           <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">输入 SQL</span>
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">输入 SQL</span>
               {input && <SqlStats sql={input} />}
             </div>
           </div>
@@ -428,39 +428,31 @@ export function SqlTool() {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="在此粘贴 SQL 语句...\n\n例如:\nSELECT * FROM users WHERE id = 1;"
-            className="flex-1 min-h-[400px] p-4 font-mono text-sm bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg resize-none focus:ring-2 focus:ring-blue-500 dark:text-white"
+            className="flex-1 min-h-[300px] sm:min-h-[400px] p-3 sm:p-4 font-mono text-xs sm:text-sm bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg resize-none focus:ring-2 focus:ring-blue-500 dark:text-white"
             spellCheck={false}
           />
         </div>
 
         {/* 输出区域 */}
-        <div className="card flex flex-col">
+        <div className="card p-4 sm:p-6 flex flex-col">
           <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">输出</span>
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">输出</span>
               {output && (
                 <>
                   <span className="text-xs text-gray-400">
                     {output.length.toLocaleString()} 字符
                   </span>
-                  <div className="flex bg-gray-100 dark:bg-slate-800 rounded p-0.5">
+                  <div className="btn-group">
                     <button
                       onClick={() => setViewMode('formatted')}
-                      className={`px-2 py-0.5 text-xs rounded transition-colors ${
-                        viewMode === 'formatted' 
-                          ? 'bg-white dark:bg-slate-700 text-blue-600 shadow-sm' 
-                          : 'text-gray-500 hover:text-gray-700'
-                      }`}
+                      className={`btn-group-item ${viewMode === 'formatted' ? 'btn-group-item-active' : ''}`}
                     >
                       格式化
                     </button>
                     <button
                       onClick={() => setViewMode('compressed')}
-                      className={`px-2 py-0.5 text-xs rounded transition-colors ${
-                        viewMode === 'compressed' 
-                          ? 'bg-white dark:bg-slate-700 text-blue-600 shadow-sm' 
-                          : 'text-gray-500 hover:text-gray-700'
-                      }`}
+                      className={`btn-group-item ${viewMode === 'compressed' ? 'btn-group-item-active' : ''}`}
                     >
                       压缩
                     </button>
@@ -471,9 +463,9 @@ export function SqlTool() {
             {output && (
               <button 
                 onClick={handleCopy} 
-                className="flex items-center gap-1 text-xs text-blue-500 hover:text-blue-600"
+                className={`btn-tool ${copied ? 'btn-ghost-success' : 'btn-ghost'}`}
               >
-                {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                {copied ? <Check className="w-3.5 h-3.5 flex-shrink-0" /> : <Copy className="w-3.5 h-3.5 flex-shrink-0" />}
                 {copied ? '已复制' : '复制'}
               </button>
             )}
@@ -481,7 +473,7 @@ export function SqlTool() {
           
           <div 
             ref={outputRef}
-            className="flex-1 min-h-[400px] bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg overflow-auto"
+            className="flex-1 min-h-[300px] sm:min-h-[400px] bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg overflow-auto"
           >
             {output ? (
               <SyntaxHighlighter
@@ -498,7 +490,7 @@ export function SqlTool() {
                 {output}
               </SyntaxHighlighter>
             ) : (
-              <div className="h-full flex items-center justify-center text-gray-400 text-sm">
+              <div className="h-full flex items-center justify-center text-gray-400 text-xs sm:text-sm">
                 格式化后的 SQL 将显示在这里
               </div>
             )}
@@ -507,8 +499,8 @@ export function SqlTool() {
       </div>
 
       {/* 图例 */}
-      <div className="mt-4 card">
-        <div className="flex flex-wrap items-center gap-4 text-xs">
+      <div className="mt-4 card p-4 sm:p-6">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs">
           <span className="text-gray-500">语法高亮图例:</span>
           <span className={isDark ? 'text-blue-400 font-semibold' : 'text-blue-600 font-semibold'}>关键字 (SELECT)</span>
           <span className={isDark ? 'text-purple-400' : 'text-purple-600'}>函数 (COUNT)</span>

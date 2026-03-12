@@ -218,14 +218,14 @@ export function ChmodTool() {
       </div>
 
       {/* 快速结果 */}
-      <div className="card mb-5 space-y-4">
-        <div className="grid md:grid-cols-3 gap-4">
+      <div className="card p-3 sm:p-6 mb-4 sm:mb-5 space-y-4">
+        <div className="grid md:grid-cols-3 gap-3 sm:gap-3 sm:p-4">
           {/* 数字权限 */}
-          <div className="bg-surface-50 dark:bg-surface-900/50 p-4 rounded-xl border border-surface-200 dark:border-surface-700">
+          <div className="bg-surface-50 dark:bg-surface-900/50 p-3 sm:p-4 rounded-xl border border-surface-200 dark:border-surface-700">
             <label className="text-sm font-medium text-surface-600 dark:text-surface-400 mb-2 block">
               数字权限 (Numeric)
             </label>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 sm:gap-2">
               <input
                 type="text"
                 value={numericInput}
@@ -236,46 +236,46 @@ export function ChmodTool() {
               />
               <button
                 onClick={() => copyNum(numeric)}
-                className="btn-ghost"
+                className={`btn-icon ${copiedNum ? 'text-emerald-500' : ''}`}
               >
-                {copiedNum ? <Check className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4" />}
+                {copiedNum ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
               </button>
             </div>
           </div>
 
           {/* 符号权限 */}
-          <div className="bg-surface-50 dark:bg-surface-900/50 p-4 rounded-xl border border-surface-200 dark:border-surface-700">
+          <div className="bg-surface-50 dark:bg-surface-900/50 p-3 sm:p-4 rounded-xl border border-surface-200 dark:border-surface-700">
             <label className="text-sm font-medium text-surface-600 dark:text-surface-400 mb-2 block">
               符号权限 (Symbolic)
             </label>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 sm:gap-2">
               <span className="flex-1 text-2xl font-mono font-bold text-surface-900 dark:text-surface-100">
                 {symbolic}
               </span>
               <button
                 onClick={() => copySym(symbolic)}
-                className="btn-ghost"
+                className={`btn-icon ${copiedSym ? 'text-emerald-500' : ''}`}
               >
-                {copiedSym ? <Check className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4" />}
+                {copiedSym ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
               </button>
             </div>
           </div>
 
           {/* Chmod 命令 */}
-          <div className="bg-surface-50 dark:bg-surface-900/50 p-4 rounded-xl border border-surface-200 dark:border-surface-700">
+          <div className="bg-surface-50 dark:bg-surface-900/50 p-3 sm:p-4 rounded-xl border border-surface-200 dark:border-surface-700">
             <label className="text-sm font-medium text-surface-600 dark:text-surface-400 mb-2 block flex items-center gap-1">
-              <Terminal className="w-3.5 h-3.5" />
+              <Terminal className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
               命令
             </label>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 sm:gap-2">
               <code className="flex-1 text-sm font-mono text-surface-900 dark:text-surface-100 truncate">
                 {chmodCommand}
               </code>
               <button
                 onClick={() => copyCmd(chmodCommand)}
-                className="btn-ghost"
+                className={`btn-icon ${copiedCmd ? 'text-emerald-500' : ''}`}
               >
-                {copiedCmd ? <Check className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4" />}
+                {copiedCmd ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
               </button>
             </div>
           </div>
@@ -283,27 +283,27 @@ export function ChmodTool() {
       </div>
 
       {/* Tab 导航 */}
-      <div className="flex gap-1 border-b border-surface-200 dark:border-surface-700 mb-5">
+      <div className="flex gap-1 border-b border-surface-200 dark:border-surface-700 mb-4 sm:mb-5">
         <button
           onClick={() => setActiveTab('visual')}
-          className={`px-4 py-3 text-sm font-medium border-b-2 transition-all flex items-center gap-2 -mb-px ${
+          className={`px-3 py-2 sm:px-4 sm:py-3 text-sm font-medium border-b-2 transition-all flex items-center gap-2 -mb-px ${
             activeTab === 'visual'
               ? 'border-primary-500 text-primary-600 dark:text-primary-400'
               : 'border-transparent text-surface-500 hover:text-surface-700 dark:hover:text-surface-300'
           }`}
         >
-          <Shield className="w-4 h-4" />
+          <Shield className="w-3 h-3 sm:w-3.5 sm:h-3.5 sm:w-4 sm:h-4" />
           可视化设置
         </button>
         <button
           onClick={() => setActiveTab('command')}
-          className={`px-4 py-3 text-sm font-medium border-b-2 transition-all flex items-center gap-2 -mb-px ${
+          className={`px-3 py-2 sm:px-4 sm:py-3 text-sm font-medium border-b-2 transition-all flex items-center gap-2 -mb-px ${
             activeTab === 'command'
               ? 'border-primary-500 text-primary-600 dark:text-primary-400'
               : 'border-transparent text-surface-500 hover:text-surface-700 dark:hover:text-surface-300'
           }`}
         >
-          <Terminal className="w-4 h-4" />
+          <Terminal className="w-3 h-3 sm:w-3.5 sm:h-3.5 sm:w-4 sm:h-4" />
           常用命令
         </button>
       </div>
@@ -311,12 +311,12 @@ export function ChmodTool() {
       {activeTab === 'visual' && (
         <div className="space-y-5">
           {/* 预设按钮 */}
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-1.5 sm:gap-2">
             {presets.map((preset) => (
               <button
                 key={preset.value}
                 onClick={() => handleNumericInput(preset.value)}
-                className="px-3 py-1.5 text-sm bg-surface-100 dark:bg-surface-700 hover:bg-surface-200 dark:hover:bg-surface-600 text-surface-700 dark:text-surface-300 rounded-lg transition-colors"
+                className="btn-secondary btn-tool"
                 title={preset.desc}
               >
                 {preset.name}
@@ -325,44 +325,44 @@ export function ChmodTool() {
             <div className="flex-1" />
             <button
               onClick={resetPermissions}
-              className="btn-ghost text-sm"
+              className="btn-ghost btn-tool"
             >
-              <RefreshCw className="w-3.5 h-3.5" />
+              <RefreshCw className="w-3.5 h-3.5 flex-shrink-0" />
               重置
             </button>
           </div>
 
           {/* 权限设置表格 */}
-          <div className="card overflow-hidden">
-            <table className="w-full">
+          <div className="card p-0 sm:p-0 overflow-hidden">
+            <div className="overflow-x-auto"><table className="w-full">
               <thead className="bg-surface-50 dark:bg-surface-900/50">
                 <tr>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-surface-700 dark:text-surface-300">权限对象</th>
-                  <th className="px-4 py-3 text-center text-sm font-medium text-surface-700 dark:text-surface-300">
+                  <th className="px-3 py-2 sm:px-4 sm:py-3 text-left text-sm font-medium text-surface-700 dark:text-surface-300">权限对象</th>
+                  <th className="px-3 py-2 sm:px-4 sm:py-3 text-center text-sm font-medium text-surface-700 dark:text-surface-300">
                     <span className="inline-flex items-center gap-1 text-emerald-600 dark:text-emerald-400">
                       读 (r) <span className="text-surface-400">= 4</span>
                     </span>
                   </th>
-                  <th className="px-4 py-3 text-center text-sm font-medium text-surface-700 dark:text-surface-300">
+                  <th className="px-3 py-2 sm:px-4 sm:py-3 text-center text-sm font-medium text-surface-700 dark:text-surface-300">
                     <span className="inline-flex items-center gap-1 text-amber-600 dark:text-amber-400">
                       写 (w) <span className="text-surface-400">= 2</span>
                     </span>
                   </th>
-                  <th className="px-4 py-3 text-center text-sm font-medium text-surface-700 dark:text-surface-300">
+                  <th className="px-3 py-2 sm:px-4 sm:py-3 text-center text-sm font-medium text-surface-700 dark:text-surface-300">
                     <span className="inline-flex items-center gap-1 text-blue-600 dark:text-blue-400">
                       执行 (x) <span className="text-surface-400">= 1</span>
                     </span>
                   </th>
-                  <th className="px-4 py-3 text-center text-sm font-medium text-surface-700 dark:text-surface-300">值</th>
+                  <th className="px-3 py-2 sm:px-4 sm:py-3 text-center text-sm font-medium text-surface-700 dark:text-surface-300">值</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-surface-100 dark:divide-surface-800">
                 {/* 所有者 */}
                 <tr className="hover:bg-surface-50 dark:hover:bg-surface-900/30">
-                  <td className="px-4 py-4">
-                    <div className="flex items-center gap-3">
+                  <td className="px-3 py-3 sm:px-4 sm:py-4">
+                    <div className="flex items-center gap-2 sm:gap-3">
                       <div className="w-10 h-10 bg-primary-100 dark:bg-primary-900/30 rounded-lg flex items-center justify-center">
-                        <User className="w-5 h-5 text-primary-600 dark:text-primary-400" />
+                        <User className="w-3 h-3 sm:w-3.5 sm:h-3.5 sm:w-4 sm:h-4 sm:w-5 sm:h-5 text-primary-600 dark:text-primary-400" />
                       </div>
                       <div>
                         <div className="font-medium text-surface-900 dark:text-surface-100">所有者 (Owner)</div>
@@ -371,7 +371,7 @@ export function ChmodTool() {
                     </div>
                   </td>
                   {(['read', 'write', 'execute'] as const).map((perm) => (
-                    <td key={perm} className="px-4 py-4 text-center">
+                    <td key={perm} className="px-3 py-3 sm:px-4 sm:py-4 text-center">
                       <label className="inline-flex items-center justify-center cursor-pointer group" title={getPermissionDescription(perm)}>
                         <input
                           type="checkbox"
@@ -393,7 +393,7 @@ export function ChmodTool() {
                       </label>
                     </td>
                   ))}
-                  <td className="px-4 py-4 text-center">
+                  <td className="px-3 py-3 sm:px-4 sm:py-4 text-center">
                     <span className="text-2xl font-mono font-bold text-surface-900 dark:text-surface-100">
                       {(permissions.owner.read ? 4 : 0) + (permissions.owner.write ? 2 : 0) + (permissions.owner.execute ? 1 : 0)}
                     </span>
@@ -402,10 +402,10 @@ export function ChmodTool() {
 
                 {/* 组 */}
                 <tr className="hover:bg-surface-50 dark:hover:bg-surface-900/30">
-                  <td className="px-4 py-4">
-                    <div className="flex items-center gap-3">
+                  <td className="px-3 py-3 sm:px-4 sm:py-4">
+                    <div className="flex items-center gap-2 sm:gap-3">
                       <div className="w-10 h-10 bg-amber-100 dark:bg-amber-900/30 rounded-lg flex items-center justify-center">
-                        <Users className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+                        <Users className="w-3 h-3 sm:w-3.5 sm:h-3.5 sm:w-4 sm:h-4 sm:w-5 sm:h-5 text-amber-600 dark:text-amber-400" />
                       </div>
                       <div>
                         <div className="font-medium text-surface-900 dark:text-surface-100">所属组 (Group)</div>
@@ -414,7 +414,7 @@ export function ChmodTool() {
                     </div>
                   </td>
                   {(['read', 'write', 'execute'] as const).map((perm) => (
-                    <td key={perm} className="px-4 py-4 text-center">
+                    <td key={perm} className="px-3 py-3 sm:px-4 sm:py-4 text-center">
                       <label className="inline-flex items-center justify-center cursor-pointer group" title={getPermissionDescription(perm)}>
                         <input
                           type="checkbox"
@@ -436,7 +436,7 @@ export function ChmodTool() {
                       </label>
                     </td>
                   ))}
-                  <td className="px-4 py-4 text-center">
+                  <td className="px-3 py-3 sm:px-4 sm:py-4 text-center">
                     <span className="text-2xl font-mono font-bold text-surface-900 dark:text-surface-100">
                       {(permissions.group.read ? 4 : 0) + (permissions.group.write ? 2 : 0) + (permissions.group.execute ? 1 : 0)}
                     </span>
@@ -445,10 +445,10 @@ export function ChmodTool() {
 
                 {/* 其他用户 */}
                 <tr className="hover:bg-surface-50 dark:hover:bg-surface-900/30">
-                  <td className="px-4 py-4">
-                    <div className="flex items-center gap-3">
+                  <td className="px-3 py-3 sm:px-4 sm:py-4">
+                    <div className="flex items-center gap-2 sm:gap-3">
                       <div className="w-10 h-10 bg-surface-100 dark:bg-surface-700 rounded-lg flex items-center justify-center">
-                        <Users className="w-5 h-5 text-surface-600 dark:text-surface-400" />
+                        <Users className="w-3 h-3 sm:w-3.5 sm:h-3.5 sm:w-4 sm:h-4 sm:w-5 sm:h-5 text-surface-600 dark:text-surface-400" />
                       </div>
                       <div>
                         <div className="font-medium text-surface-900 dark:text-surface-100">其他用户 (Others)</div>
@@ -457,7 +457,7 @@ export function ChmodTool() {
                     </div>
                   </td>
                   {(['read', 'write', 'execute'] as const).map((perm) => (
-                    <td key={perm} className="px-4 py-4 text-center">
+                    <td key={perm} className="px-3 py-3 sm:px-4 sm:py-4 text-center">
                       <label className="inline-flex items-center justify-center cursor-pointer group" title={getPermissionDescription(perm)}>
                         <input
                           type="checkbox"
@@ -479,23 +479,23 @@ export function ChmodTool() {
                       </label>
                     </td>
                   ))}
-                  <td className="px-4 py-4 text-center">
+                  <td className="px-3 py-3 sm:px-4 sm:py-4 text-center">
                     <span className="text-2xl font-mono font-bold text-surface-900 dark:text-surface-100">
                       {(permissions.others.read ? 4 : 0) + (permissions.others.write ? 2 : 0) + (permissions.others.execute ? 1 : 0)}
                     </span>
                   </td>
                 </tr>
               </tbody>
-            </table>
+            </table></div>
           </div>
 
           {/* 特殊权限 */}
-          <div className="card space-y-4">
-            <h3 className="font-medium text-surface-900 dark:text-surface-100 flex items-center gap-2">
-              <Lock className="w-5 h-5 text-red-500" />
+          <div className="card p-3 sm:p-6 space-y-4">
+            <h3 className="font-medium text-surface-900 dark:text-surface-100 flex items-center gap-1.5 sm:gap-2">
+              <Lock className="w-3 h-3 sm:w-3.5 sm:h-3.5 sm:w-4 sm:h-4 sm:w-5 sm:h-5 text-red-500" />
               特殊权限 (Setuid/Setgid/Sticky)
             </h3>
-            <div className="grid sm:grid-cols-3 gap-4">
+            <div className="grid sm:grid-cols-3 gap-3 sm:gap-3 sm:p-4">
               {[
                 { key: 'setuid', label: 'Setuid (4)', desc: '以所有者身份执行', icon: User },
                 { key: 'setgid', label: 'Setgid (2)', desc: '以组身份执行/继承组', icon: Users },
@@ -503,7 +503,7 @@ export function ChmodTool() {
               ].map(({ key, label, desc, icon: Icon }) => (
                 <label
                   key={key}
-                  className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${
+                  className={`p-3 sm:p-4 rounded-xl border-2 cursor-pointer transition-all ${
                     permissions.special[key as keyof typeof permissions.special]
                       ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20'
                       : 'border-surface-200 dark:border-surface-700 hover:border-surface-300 dark:hover:border-surface-600'
@@ -515,13 +515,13 @@ export function ChmodTool() {
                     onChange={(e) => updatePermission('special', key, e.target.checked)}
                     className="sr-only"
                   />
-                  <div className="flex items-start gap-3">
+                  <div className="flex items-start gap-2 sm:gap-3">
                     <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
                       permissions.special[key as keyof typeof permissions.special]
                         ? 'bg-primary-500 text-white'
                         : 'bg-surface-100 dark:bg-surface-800 text-surface-500'
                     }`}>
-                      <Icon className="w-5 h-5" />
+                      <Icon className="w-3 h-3 sm:w-3.5 sm:h-3.5 sm:w-4 sm:h-4 sm:w-5 sm:h-5" />
                     </div>
                     <div>
                       <div className="font-medium text-surface-900 dark:text-surface-100">{label}</div>
@@ -534,18 +534,18 @@ export function ChmodTool() {
           </div>
 
           {/* 权限说明 */}
-          <div className="card space-y-3">
+          <div className="card p-3 sm:p-6 space-y-3">
             <h3 className="font-medium text-surface-900 dark:text-surface-100">权限说明</h3>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 text-sm">
-              <div className="flex items-start gap-2">
+              <div className="flex items-start gap-1.5 sm:gap-2">
                 <span className="w-6 h-6 rounded bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-xs font-bold">r</span>
                 <span className="text-surface-600 dark:text-surface-400">读取文件内容 / 列出目录</span>
               </div>
-              <div className="flex items-start gap-2">
+              <div className="flex items-start gap-1.5 sm:gap-2">
                 <span className="w-6 h-6 rounded bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 flex items-center justify-center text-xs font-bold">w</span>
                 <span className="text-surface-600 dark:text-surface-400">修改文件 / 创建删除文件</span>
               </div>
-              <div className="flex items-start gap-2">
+              <div className="flex items-start gap-1.5 sm:gap-2">
                 <span className="w-6 h-6 rounded bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center text-xs font-bold">x</span>
                 <span className="text-surface-600 dark:text-surface-400">执行文件 / 进入目录</span>
               </div>
@@ -557,9 +557,9 @@ export function ChmodTool() {
       {activeTab === 'command' && (
         <div className="space-y-5">
           {/* 常用命令参考 */}
-          <div className="card space-y-4">
-            <h3 className="font-medium text-surface-900 dark:text-surface-100 flex items-center gap-2">
-              <Terminal className="w-5 h-5 text-primary-500" />
+          <div className="card p-3 sm:p-6 space-y-4">
+            <h3 className="font-medium text-surface-900 dark:text-surface-100 flex items-center gap-1.5 sm:gap-2">
+              <Terminal className="w-3 h-3 sm:w-3.5 sm:h-3.5 sm:w-4 sm:h-4 sm:w-5 sm:h-5 text-primary-500" />
               常用 Chmod 命令
             </h3>
             <div className="space-y-3">
@@ -576,13 +576,13 @@ export function ChmodTool() {
                 { cmd: 'chmod g+s directory', desc: '设置 Setgid 位（目录继承组）' },
               ].map(({ cmd, desc }, idx) => (
                 <div key={idx} className="flex items-center justify-between p-3 bg-surface-50 dark:bg-surface-900/50 rounded-lg">
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2 sm:gap-3">
                     <code className="text-sm font-mono text-primary-600 dark:text-primary-400">{cmd}</code>
                     <span className="text-sm text-surface-500">{desc}</span>
                   </div>
                   <button
                     onClick={() => navigator.clipboard.writeText(cmd)}
-                    className="btn-ghost text-xs"
+                    className="btn-icon"
                   >
                     <Copy className="w-3.5 h-3.5" />
                   </button>
@@ -592,13 +592,13 @@ export function ChmodTool() {
           </div>
 
           {/* 数字权限速查表 */}
-          <div className="card space-y-4">
-            <h3 className="font-medium text-surface-900 dark:text-surface-100 flex items-center gap-2">
-              <Shield className="w-5 h-5 text-emerald-500" />
+          <div className="card p-3 sm:p-6 space-y-4">
+            <h3 className="font-medium text-surface-900 dark:text-surface-100 flex items-center gap-1.5 sm:gap-2">
+              <Shield className="w-3 h-3 sm:w-3.5 sm:h-3.5 sm:w-4 sm:h-4 sm:w-5 sm:h-5 text-emerald-500" />
               数字权限速查表
             </h3>
             <div className="overflow-x-auto">
-              <table className="w-full text-sm">
+              <div className="overflow-x-auto"><table className="w-full text-sm">
                 <thead className="bg-surface-50 dark:bg-surface-900/50">
                   <tr>
                     <th className="px-4 py-2 text-left font-medium text-surface-700 dark:text-surface-300">数字</th>
@@ -616,7 +616,7 @@ export function ChmodTool() {
                   <tr><td className="px-4 py-2 font-mono">6</td><td className="px-4 py-2 font-mono">rw-</td><td className="px-4 py-2 text-surface-500">读取和写入</td></tr>
                   <tr><td className="px-4 py-2 font-mono">7</td><td className="px-4 py-2 font-mono">rwx</td><td className="px-4 py-2 text-surface-500">全部权限</td></tr>
                 </tbody>
-              </table>
+              </table></div>
             </div>
           </div>
         </div>

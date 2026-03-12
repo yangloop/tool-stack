@@ -95,9 +95,9 @@ export function QrCodeTool() {
 
   return (
     <div className="max-w-4xl mx-auto">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-          <QrCode className="w-7 h-7 text-blue-500" />
+      <div className="mb-4 sm:mb-6">
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+          <QrCode className="w-6 h-6 sm:w-7 sm:h-7 text-blue-500" />
           二维码生成器
         </h1>
         <p className="text-gray-500 dark:text-gray-400 mt-1">
@@ -105,32 +105,32 @@ export function QrCodeTool() {
         </p>
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-6">
+      <div className="grid lg:grid-cols-2 gap-4 sm:gap-6">
         {/* 设置区域 */}
-        <div className="card space-y-5">
+        <div className="card p-4 sm:p-6 space-y-4 sm:space-y-5">
           {/* 内容输入 */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               内容
             </label>
             <textarea
               value={text}
               onChange={(e) => setText(e.target.value)}
               placeholder="输入文本、URL 或任何内容..."
-              className="w-full h-28 p-3 text-sm bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg resize-none focus:ring-2 focus:ring-blue-500 dark:text-white"
+              className="w-full h-24 sm:h-28 p-2 sm:p-3 text-xs sm:text-sm bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg resize-none focus:ring-2 focus:ring-blue-500 dark:text-white"
             />
           </div>
 
           {/* 尺寸和纠错级别 */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-3 sm:gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 尺寸
               </label>
               <select
                 value={size}
                 onChange={(e) => setSize(Number(e.target.value))}
-                className="w-full px-3 py-2 bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg text-sm dark:text-white"
+                className="w-full px-2 sm:px-3 py-2 bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg text-xs sm:text-sm dark:text-white"
               >
                 <option value={128}>128 x 128</option>
                 <option value={256}>256 x 256</option>
@@ -140,13 +140,13 @@ export function QrCodeTool() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 纠错级别
               </label>
               <select
                 value={errorCorrection}
                 onChange={(e) => setErrorCorrection(e.target.value as typeof errorCorrection)}
-                className="w-full px-3 py-2 bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg text-sm dark:text-white"
+                className="w-full px-2 sm:px-3 py-2 bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg text-xs sm:text-sm dark:text-white"
               >
                 <option value="L">L - 低 (7%)</option>
                 <option value="M">M - 中 (15%)</option>
@@ -157,28 +157,28 @@ export function QrCodeTool() {
           </div>
 
           {/* 颜色选择器 */}
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">颜色设置</span>
-              <div className="flex gap-2">
+          <div className="space-y-3 sm:space-y-4">
+            <div className="flex items-center justify-between flex-wrap gap-2">
+              <span className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">颜色设置</span>
+              <div className="flex flex-wrap gap-2">
                 <button
                   onClick={swapColors}
-                  className="flex items-center gap-1 px-2 py-1 text-xs bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-gray-400 rounded hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors"
+                  className="btn-secondary btn-tool"
                   title="反转颜色"
                 >
-                  <RefreshCw className="w-3 h-3" />
+                  <RefreshCw className="w-3.5 h-3.5 flex-shrink-0" />
                   反转
                 </button>
                 <button
                   onClick={randomizeColors}
-                  className="px-2 py-1 text-xs bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-gray-400 rounded hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors"
+                  className="btn-secondary btn-tool"
                   title="随机颜色"
                 >
                   🎲 随机
                 </button>
                 <button
                   onClick={resetColors}
-                  className="px-2 py-1 text-xs bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-gray-400 rounded hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors"
+                  className="btn-secondary btn-tool"
                   title="重置默认"
                 >
                   重置
@@ -186,7 +186,7 @@ export function QrCodeTool() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <ColorPicker
                 label="前景色（二维码颜色）"
                 color={fgColor}
@@ -221,7 +221,7 @@ export function QrCodeTool() {
         </div>
 
         {/* 预览区域 */}
-        <div className="card flex flex-col items-center justify-center min-h-[400px]">
+        <div className="card p-4 sm:p-6 flex flex-col items-center justify-center min-h-[300px] sm:min-h-[400px]">
           {text.trim() ? (
             <>
               <canvas
@@ -231,9 +231,9 @@ export function QrCodeTool() {
               <div className="mt-4 flex gap-2">
                 <button
                   onClick={handleDownload}
-                  className="btn-primary"
+                  className="btn-primary btn-action"
                 >
-                  <Download className="w-4 h-4" />
+                  <Download className="w-4 h-4 flex-shrink-0" />
                   下载 PNG
                 </button>
               </div>
@@ -243,7 +243,7 @@ export function QrCodeTool() {
             </>
           ) : (
             <div className="text-center text-gray-400">
-              <ImageIcon className="w-16 h-16 mx-auto mb-4 opacity-50" />
+              <ImageIcon className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-4 opacity-50" />
               <p>输入内容生成二维码</p>
               <p className="text-xs mt-2">支持 URL、文本、联系方式等</p>
             </div>

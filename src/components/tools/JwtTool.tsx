@@ -68,37 +68,38 @@ export function JwtTool() {
     <div className="max-w-4xl mx-auto animate-fade-in">
       {/* 工具标题 */}
       <div className="tool-header">
-        <div className="tool-icon">
-          <Key className="w-6 h-6" />
+        <div className="tool-icon w-9 h-9 sm:w-10 sm:h-10">
+          <Key className="w-5 h-5 sm:w-6 sm:h-6" />
         </div>
-        <div className="flex-1">
-          <h1 className="text-xl font-semibold text-surface-900 dark:text-surface-100">
+        <div className="flex-1 min-w-0">
+          <h1 className="text-lg sm:text-xl font-semibold text-surface-900 dark:text-surface-100">
             JWT 解码
           </h1>
-          <p className="text-sm text-surface-500 mt-0.5">
+          <p className="text-xs sm:text-sm text-surface-500 mt-0.5">
             解析和验证 JWT 令牌，查看 Header、Payload 和 Signature
           </p>
         </div>
         <button
           onClick={loadExample}
-          className="btn-secondary text-sm"
+          className="btn-secondary btn-tool"
         >
-          <Sparkles className="w-4 h-4" />
-          加载示例
+          <Sparkles className="w-3.5 h-3.5 flex-shrink-0" />
+          <span className="hidden sm:inline">加载示例</span>
+          <span className="sm:hidden">示例</span>
         </button>
       </div>
 
       {/* 输入区域 */}
-      <div className="card mb-5">
+      <div className="card p-4 sm:p-6 mb-4 sm:mb-5">
         <div className="flex items-center justify-between mb-3">
-          <label className="text-sm font-medium text-surface-700 dark:text-surface-300">
+          <label className="text-xs sm:text-sm font-medium text-surface-700 dark:text-surface-300">
             JWT Token
           </label>
           <div className="flex items-center gap-2">
             {input && (
               <button
                 onClick={clearInput}
-                className="text-xs text-surface-400 hover:text-red-500 transition-colors"
+                className="btn-ghost-danger btn-tool"
               >
                 清空
               </button>
@@ -112,23 +113,23 @@ export function JwtTool() {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
-          className="w-full h-28 p-4 font-mono text-sm bg-surface-50 dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded-xl resize-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 transition-all"
+          className="w-full h-24 sm:h-28 p-3 sm:p-4 font-mono text-xs sm:text-sm bg-surface-50 dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded-xl resize-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 transition-all"
           spellCheck={false}
         />
         
         {/* JWT 结构说明 */}
         {!input && (
-          <div className="mt-4 p-4 bg-surface-50 dark:bg-surface-900/30 rounded-xl">
+          <div className="mt-4 p-3 sm:p-4 bg-surface-50 dark:bg-surface-900/30 rounded-xl">
             <div className="flex items-center gap-2 mb-2">
-              <Shield className="w-4 h-4 text-surface-400" />
+              <Shield className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-surface-400" />
               <span className="text-xs font-medium text-surface-500">JWT 结构</span>
             </div>
-            <div className="flex flex-wrap items-center gap-2 text-xs font-mono">
-              <span className="px-2 py-1 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 rounded">Header</span>
+            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 text-xs font-mono">
+              <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 rounded">Header</span>
               <span className="text-surface-400">.</span>
-              <span className="px-2 py-1 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400 rounded">Payload</span>
+              <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400 rounded">Payload</span>
               <span className="text-surface-400">.</span>
-              <span className="px-2 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 rounded">Signature</span>
+              <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 rounded">Signature</span>
             </div>
           </div>
         )}
@@ -136,57 +137,57 @@ export function JwtTool() {
 
       {/* 解析结果 */}
       {result && (
-        <div className="space-y-4">
+        <div className="space-y-3 sm:space-y-4">
           {result.error ? (
-            <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/30 text-red-600 dark:text-red-400 rounded-xl flex items-center gap-2">
-              <span className="w-2 h-2 bg-red-500 rounded-full" />
+            <div className="p-3 sm:p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/30 text-red-600 dark:text-red-400 rounded-xl flex items-center gap-2 text-xs sm:text-sm">
+              <span className="w-2 h-2 bg-red-500 rounded-full flex-shrink-0" />
               {result.error}
             </div>
           ) : (
             <>
               {/* Header */}
-              <div className="card">
+              <div className="card p-4 sm:p-6">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
-                    <span className="px-2 py-0.5 text-[10px] font-medium bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 rounded">Header</span>
-                    <span className="text-sm font-medium text-surface-700 dark:text-surface-300">头部信息</span>
+                    <span className="px-1.5 py-0.5 text-[9px] sm:text-[10px] font-medium bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 rounded">Header</span>
+                    <span className="text-xs sm:text-sm font-medium text-surface-700 dark:text-surface-300">头部信息</span>
                   </div>
                   <button
                     onClick={() => copyHeader(JSON.stringify(result.header, null, 2))}
-                    className="btn-ghost text-xs"
+                    className={`btn-tool ${copiedHeader ? 'btn-ghost-success' : 'btn-ghost'}`}
                   >
-                    {copiedHeader ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                    {copiedHeader ? <Check className="w-3.5 h-3.5 flex-shrink-0" /> : <Copy className="w-3.5 h-3.5 flex-shrink-0" />}
                     {copiedHeader ? '已复制' : '复制'}
                   </button>
                 </div>
-                <pre className="p-4 bg-surface-50 dark:bg-surface-900/50 rounded-xl overflow-x-auto text-sm font-mono text-surface-700 dark:text-surface-300">
+                <pre className="p-3 sm:p-4 bg-surface-50 dark:bg-surface-900/50 rounded-xl overflow-x-auto text-xs sm:text-sm font-mono text-surface-700 dark:text-surface-300">
                   {JSON.stringify(result.header, null, 2)}
                 </pre>
               </div>
 
               {/* Payload */}
-              <div className="card">
+              <div className="card p-4 sm:p-6">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
-                    <span className="px-2 py-0.5 text-[10px] font-medium bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400 rounded">Payload</span>
-                    <span className="text-sm font-medium text-surface-700 dark:text-surface-300">载荷数据</span>
+                    <span className="px-1.5 py-0.5 text-[9px] sm:text-[10px] font-medium bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400 rounded">Payload</span>
+                    <span className="text-xs sm:text-sm font-medium text-surface-700 dark:text-surface-300">载荷数据</span>
                   </div>
                   <button
                     onClick={() => copyPayload(JSON.stringify(result.payload, null, 2))}
-                    className="btn-ghost text-xs"
+                    className={`btn-tool ${copiedPayload ? 'btn-ghost-success' : 'btn-ghost'}`}
                   >
-                    {copiedPayload ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                    {copiedPayload ? <Check className="w-3.5 h-3.5 flex-shrink-0" /> : <Copy className="w-3.5 h-3.5 flex-shrink-0" />}
                     {copiedPayload ? '已复制' : '复制'}
                   </button>
                 </div>
-                <pre className="p-4 bg-surface-50 dark:bg-surface-900/50 rounded-xl overflow-x-auto text-sm font-mono text-surface-700 dark:text-surface-300">
+                <pre className="p-3 sm:p-4 bg-surface-50 dark:bg-surface-900/50 rounded-xl overflow-x-auto text-xs sm:text-sm font-mono text-surface-700 dark:text-surface-300">
                   {JSON.stringify(result.payload, null, 2)}
                 </pre>
                 
                 {/* 常用字段解析 */}
                 {'exp' in result.payload && (
-                  <div className="mt-3 p-3 bg-surface-100 dark:bg-surface-800 rounded-lg">
-                    <div className="flex items-center justify-between text-xs">
+                  <div className="mt-3 p-2 sm:p-3 bg-surface-100 dark:bg-surface-800 rounded-lg">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 text-xs">
                       <span className="text-surface-500">过期时间 (exp)</span>
                       <span className="font-mono text-surface-700 dark:text-surface-300">
                         {new Date((result.payload as { exp: number }).exp * 1000).toLocaleString()}
@@ -195,8 +196,8 @@ export function JwtTool() {
                   </div>
                 )}
                 {'iat' in result.payload && (
-                  <div className="mt-2 p-3 bg-surface-100 dark:bg-surface-800 rounded-lg">
-                    <div className="flex items-center justify-between text-xs">
+                  <div className="mt-2 p-2 sm:p-3 bg-surface-100 dark:bg-surface-800 rounded-lg">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 text-xs">
                       <span className="text-surface-500">签发时间 (iat)</span>
                       <span className="font-mono text-surface-700 dark:text-surface-300">
                         {new Date((result.payload as { iat: number }).iat * 1000).toLocaleString()}
@@ -207,21 +208,21 @@ export function JwtTool() {
               </div>
 
               {/* Signature */}
-              <div className="card">
+              <div className="card p-4 sm:p-6">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
-                    <span className="px-2 py-0.5 text-[10px] font-medium bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 rounded">Signature</span>
-                    <span className="text-sm font-medium text-surface-700 dark:text-surface-300">签名</span>
+                    <span className="px-1.5 py-0.5 text-[9px] sm:text-[10px] font-medium bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 rounded">Signature</span>
+                    <span className="text-xs sm:text-sm font-medium text-surface-700 dark:text-surface-300">签名</span>
                   </div>
                   <button
                     onClick={() => copySignature(result.signature)}
-                    className="btn-ghost text-xs"
+                    className={`btn-tool ${copiedSignature ? 'btn-ghost-success' : 'btn-ghost'}`}
                   >
-                    {copiedSignature ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                    {copiedSignature ? <Check className="w-3.5 h-3.5 flex-shrink-0" /> : <Copy className="w-3.5 h-3.5 flex-shrink-0" />}
                     {copiedSignature ? '已复制' : '复制'}
                   </button>
                 </div>
-                <div className="p-4 bg-surface-50 dark:bg-surface-900/50 rounded-xl font-mono text-xs break-all text-surface-600 dark:text-surface-400">
+                <div className="p-3 sm:p-4 bg-surface-50 dark:bg-surface-900/50 rounded-xl font-mono text-xs break-all text-surface-600 dark:text-surface-400">
                   {result.signature}
                 </div>
               </div>

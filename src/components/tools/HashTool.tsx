@@ -82,9 +82,9 @@ export function HashTool() {
 
   return (
     <div className="max-w-4xl mx-auto">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-          <Hash className="w-6 h-6 text-blue-500" />
+      <div className="mb-4 sm:mb-6">
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+          <Hash className="w-5 h-5 sm:w-6 sm:h-6 text-blue-500" />
           哈希计算
         </h1>
         <p className="text-gray-500 dark:text-gray-400 mt-1">
@@ -92,29 +92,29 @@ export function HashTool() {
         </p>
       </div>
 
-      <div className="card mb-4 space-y-4">
+      <div className="card p-4 sm:p-6 mb-4 space-y-3 sm:space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             输入文本
           </label>
           <textarea
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="输入要计算哈希的文本..."
-            className="w-full h-32 p-4 font-mono text-sm bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg resize-none focus:ring-2 focus:ring-blue-500 dark:text-white"
+            className="w-full h-24 sm:h-32 p-3 sm:p-4 font-mono text-xs sm:text-sm bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg resize-none focus:ring-2 focus:ring-blue-500 dark:text-white"
           />
         </div>
 
-        <div className="flex gap-4">
-          <label className="btn-secondary cursor-pointer">
-            <Upload className="w-4 h-4" />
+        <div className="flex flex-wrap gap-3 sm:gap-4">
+          <label className="btn-secondary btn-tool cursor-pointer">
+            <Upload className="w-3.5 h-3.5 flex-shrink-0" />
             从文件导入
             <input type="file" onChange={handleFileUpload} className="hidden" />
           </label>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             HMAC 密钥（可选）
           </label>
           <input
@@ -122,15 +122,15 @@ export function HashTool() {
             value={hmacKey}
             onChange={(e) => setHmacKey(e.target.value)}
             placeholder="输入 HMAC 密钥..."
-            className="w-full px-4 py-2 font-mono text-sm bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-blue-500 dark:text-white"
+            className="w-full px-3 sm:px-4 py-2 font-mono text-xs sm:text-sm bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-blue-500 dark:text-white"
           />
         </div>
       </div>
 
       {Object.keys(results).length > 0 && (
-        <div className="space-y-3">
+        <div className="space-y-2 sm:space-y-3">
           {algorithms.map(({ id, name, bit }) => (
-            <div key={id} className="card">
+            <div key={id} className="card p-4 sm:p-6">
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
                   <span className="font-medium text-gray-900 dark:text-white">{name}</span>
@@ -138,29 +138,29 @@ export function HashTool() {
                 </div>
                 <button
                   onClick={() => copy(results[id])}
-                  className="flex items-center gap-1 text-sm text-blue-500 hover:text-blue-600"
+                  className={`btn-tool ${copied ? 'btn-ghost-success' : 'btn-ghost'}`}
                 >
-                  {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                  {copied ? <Check className="w-3.5 h-3.5 flex-shrink-0" /> : <Copy className="w-3.5 h-3.5 flex-shrink-0" />}
                   复制
                 </button>
               </div>
-              <div className="p-3 bg-gray-50 dark:bg-slate-900 rounded-lg font-mono text-sm break-all dark:text-white">
+              <div className="p-2 sm:p-3 bg-gray-50 dark:bg-slate-900 rounded-lg font-mono text-xs sm:text-sm break-all dark:text-white">
                 {results[id]}
               </div>
               
               {hmacKey && results[`${id}_HMAC`] && (
                 <>
-                  <div className="mt-3 flex items-center gap-2">
+                  <div className="mt-2 sm:mt-3 flex items-center gap-2">
                     <span className="font-medium text-gray-700 dark:text-gray-300">HMAC-{name}</span>
                     <button
                       onClick={() => copy(results[`${id}_HMAC`])}
-                      className="flex items-center gap-1 text-xs text-blue-500"
+                      className={`btn-tool ${copied ? 'btn-ghost-success' : 'btn-ghost'}`}
                     >
-                      {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+                      {copied ? <Check className="w-3 h-3 flex-shrink-0" /> : <Copy className="w-3 h-3 flex-shrink-0" />}
                       复制
                     </button>
                   </div>
-                  <div className="mt-1 p-3 bg-gray-50 dark:bg-slate-900 rounded-lg font-mono text-sm break-all dark:text-white">
+                  <div className="mt-1 p-2 sm:p-3 bg-gray-50 dark:bg-slate-900 rounded-lg font-mono text-xs sm:text-sm break-all dark:text-white">
                     {results[`${id}_HMAC`]}
                   </div>
                 </>

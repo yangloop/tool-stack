@@ -31,39 +31,32 @@ export function Base64Tool() {
 
   return (
     <div className="max-w-4xl mx-auto">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Base64 编解码</h1>
-        <p className="text-gray-500 dark:text-gray-400 mt-1">
+      <div className="mb-4 sm:mb-6">
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">Base64 编解码</h1>
+        <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400 mt-1">
           Base64 编码和解码工具
         </p>
       </div>
 
-      <div className="card mb-4">
-        <div className="flex items-center gap-4 mb-4">
+      <div className="card mb-4 p-4 sm:p-6">
+        <div className="flex items-center gap-2 sm:gap-4 mb-4">
           <button
             onClick={() => setMode('encode')}
-            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-              mode === 'encode'
-                ? 'bg-blue-500 text-white'
-                : 'bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-gray-300'
-            }`}
+            className={`btn-group-item ${mode === 'encode' ? 'btn-group-item-active' : ''}`}
           >
             编码
           </button>
           <button
             onClick={() => setMode('decode')}
-            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-              mode === 'decode'
-                ? 'bg-blue-500 text-white'
-                : 'bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-gray-300'
-            }`}
+            className={`btn-group-item ${mode === 'decode' ? 'btn-group-item-active' : ''}`}
           >
             解码
           </button>
           <button
             onClick={switchMode}
-            className="p-2 text-gray-500 hover:text-blue-500 transition-colors"
+            className="btn-icon"
             title="交换"
+            aria-label="交换输入输出"
           >
             <ArrowRightLeft className="w-5 h-5" />
           </button>
@@ -78,7 +71,8 @@ export function Base64Tool() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder={mode === 'encode' ? '输入要编码的文本...' : '输入要解码的 Base64...'}
-              className="w-full h-40 p-4 font-mono text-sm bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg resize-none focus:ring-2 focus:ring-blue-500 dark:text-white"
+              className="w-full h-32 sm:h-40 p-3 sm:p-4 font-mono text-xs sm:text-sm bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg resize-none focus:ring-2 focus:ring-blue-500 dark:text-white"
+              enterKeyHint="done"
             />
           </div>
 
@@ -90,9 +84,9 @@ export function Base64Tool() {
               {output && output !== '转换失败：无效的输入' && (
                 <button
                   onClick={() => copy(output)}
-                  className="flex items-center gap-1 text-sm text-blue-500 hover:text-blue-600"
+                  className={`btn-tool ${copied ? 'btn-ghost-success' : 'btn-ghost'}`}
                 >
-                  {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                  {copied ? <Check className="w-3.5 h-3.5 flex-shrink-0" /> : <Copy className="w-3.5 h-3.5 flex-shrink-0" />}
                   {copied ? '已复制' : '复制'}
                 </button>
               )}
@@ -101,7 +95,7 @@ export function Base64Tool() {
               value={output}
               readOnly
               placeholder="结果..."
-              className={`w-full h-40 p-4 font-mono text-sm border rounded-lg resize-none dark:text-white ${
+              className={`w-full h-32 sm:h-40 p-3 sm:p-4 font-mono text-xs sm:text-sm border rounded-lg resize-none dark:text-white ${
                 output === '转换失败：无效的输入'
                   ? 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-600'
                   : 'bg-gray-50 dark:bg-slate-900 border-gray-200 dark:border-slate-700'

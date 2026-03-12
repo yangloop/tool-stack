@@ -277,106 +277,108 @@ const version = "2.0";`);
     <div className="max-w-7xl mx-auto animate-fade-in">
       {/* 工具标题 */}
       <div className="tool-header">
-        <div className="tool-icon">
-          <GitCompare className="w-6 h-6" />
+        <div className="tool-icon w-9 h-9 sm:w-10 sm:h-10">
+          <GitCompare className="w-5 h-5 sm:w-6 sm:h-6" />
         </div>
-        <div className="flex-1">
-          <h1 className="text-xl font-semibold text-surface-900 dark:text-surface-100">
+        <div className="flex-1 min-w-0">
+          <h1 className="text-lg sm:text-xl font-semibold text-surface-900 dark:text-surface-100">
             文本对比
           </h1>
-          <p className="text-sm text-surface-500 mt-0.5">
+          <p className="text-xs sm:text-sm text-surface-500 mt-0.5">
             比较两段文本的差异，支持行内字符级高亮
           </p>
         </div>
         <button
           onClick={loadExample}
-          className="btn-secondary text-sm"
+          className="btn-secondary btn-tool"
         >
-          <Sparkles className="w-4 h-4" />
-          加载示例
+          <Sparkles className="w-3.5 h-3.5 flex-shrink-0" />
+          <span className="hidden sm:inline">加载示例</span>
+          <span className="sm:hidden">示例</span>
         </button>
       </div>
 
       {/* 输入区域 */}
-      <div className="grid lg:grid-cols-2 gap-4 mb-5">
+      <div className="grid lg:grid-cols-2 gap-3 sm:gap-4 mb-4 sm:mb-5">
         {/* 左侧输入 */}
-        <div className="card">
+        <div className="card p-4 sm:p-6">
           <div className="flex items-center justify-between mb-3">
-            <span className="text-sm font-medium text-surface-700 dark:text-surface-300">原文本</span>
+            <span className="text-xs sm:text-sm font-medium text-surface-700 dark:text-surface-300">原文本</span>
             <span className="text-xs text-surface-400">{leftText.length} 字符</span>
           </div>
           <textarea
             value={leftText}
             onChange={(e) => setLeftText(e.target.value)}
             placeholder="在此粘贴原始文本..."
-            className="w-full h-48 p-4 font-mono text-sm bg-surface-50 dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded-xl resize-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 transition-all"
+            className="w-full h-36 sm:h-48 p-3 sm:p-4 font-mono text-xs sm:text-sm bg-surface-50 dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded-xl resize-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 transition-all"
             spellCheck={false}
           />
         </div>
 
         {/* 右侧输入 */}
-        <div className="card">
+        <div className="card p-4 sm:p-6">
           <div className="flex items-center justify-between mb-3">
-            <span className="text-sm font-medium text-surface-700 dark:text-surface-300">对比文本</span>
+            <span className="text-xs sm:text-sm font-medium text-surface-700 dark:text-surface-300">对比文本</span>
             <span className="text-xs text-surface-400">{rightText.length} 字符</span>
           </div>
           <textarea
             value={rightText}
             onChange={(e) => setRightText(e.target.value)}
             placeholder="在此粘贴对比文本..."
-            className="w-full h-48 p-4 font-mono text-sm bg-surface-50 dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded-xl resize-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 transition-all"
+            className="w-full h-36 sm:h-48 p-3 sm:p-4 font-mono text-xs sm:text-sm bg-surface-50 dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded-xl resize-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 transition-all"
             spellCheck={false}
           />
         </div>
       </div>
 
       {/* 工具栏 */}
-      <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-4 sm:mb-5">
         <div className="flex items-center gap-2">
           <button
             onClick={handleSwap}
-            className="btn-secondary text-sm"
+            className="btn-secondary btn-tool"
             disabled={!leftText && !rightText}
           >
-            <ArrowLeftRight className="w-4 h-4" />
+            <ArrowLeftRight className="w-3.5 h-3.5 flex-shrink-0" />
             交换
           </button>
           <button
             onClick={handleClear}
-            className="btn-ghost text-sm text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
+            className="btn-ghost-danger btn-tool"
             disabled={!leftText && !rightText}
           >
-            <Trash2 className="w-4 h-4" />
+            <Trash2 className="w-3.5 h-3.5 flex-shrink-0" />
             清空
           </button>
         </div>
 
-        <div className="flex items-center gap-3">
-          <label className="flex items-center gap-2 text-sm text-surface-600 dark:text-surface-400 cursor-pointer">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+          <label className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-surface-600 dark:text-surface-400 cursor-pointer">
             <input
               type="checkbox"
               checked={showInlineDiff}
               onChange={(e) => setShowInlineDiff(e.target.checked)}
-              className="w-4 h-4 rounded border-surface-300 text-primary-500 focus:ring-primary-500"
+              className="w-3.5 h-3.5 sm:w-4 sm:h-4 rounded border-surface-300 text-primary-500 focus:ring-primary-500"
             />
-            行内差异高亮
+            <span className="hidden sm:inline">行内差异高亮</span>
+            <span className="sm:hidden">行内高亮</span>
           </label>
-          <label className="flex items-center gap-2 text-sm text-surface-600 dark:text-surface-400 cursor-pointer">
+          <label className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-surface-600 dark:text-surface-400 cursor-pointer">
             <input
               type="checkbox"
               checked={showEqualLines}
               onChange={(e) => setShowEqualLines(e.target.checked)}
-              className="w-4 h-4 rounded border-surface-300 text-primary-500 focus:ring-primary-500"
+              className="w-3.5 h-3.5 sm:w-4 sm:h-4 rounded border-surface-300 text-primary-500 focus:ring-primary-500"
             />
             显示相同行
           </label>
-          <div className="h-4 w-px bg-surface-300 dark:bg-surface-600" />
+          <div className="h-4 w-px bg-surface-300 dark:bg-surface-600 hidden sm:block" />
           <button
             onClick={handleCopyDiff}
-            className="btn-secondary text-sm"
+            className={`btn-tool ${copied ? 'btn-ghost-success' : 'btn-secondary'}`}
             disabled={stats.insertCount === 0 && stats.deleteCount === 0 && stats.modifyCount === 0}
           >
-            {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+            {copied ? <Check className="w-3.5 h-3.5 flex-shrink-0" /> : <Copy className="w-3.5 h-3.5 flex-shrink-0" />}
             {copied ? '已复制' : '复制差异'}
           </button>
         </div>
@@ -384,21 +386,21 @@ const version = "2.0";`);
 
       {/* 统计信息 */}
       {(leftText || rightText) && (
-        <div className="flex flex-wrap items-center gap-3 mb-5">
-          <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 rounded-lg text-sm">
-            <span className="w-2 h-2 bg-emerald-500 rounded-full" />
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-4 sm:mb-5">
+          <div className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 rounded-lg text-xs sm:text-sm">
+            <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-emerald-500 rounded-full" />
             相同: {stats.equalCount} 行
           </div>
-          <div className="flex items-center gap-2 px-3 py-1.5 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded-lg text-sm">
-            <span className="w-2 h-2 bg-red-500 rounded-full" />
+          <div className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded-lg text-xs sm:text-sm">
+            <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-red-500 rounded-full" />
             删除: {stats.deleteCount} 行
           </div>
-          <div className="flex items-center gap-2 px-3 py-1.5 bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-400 rounded-lg text-sm">
-            <span className="w-2 h-2 bg-primary-500 rounded-full" />
+          <div className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-400 rounded-lg text-xs sm:text-sm">
+            <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-primary-500 rounded-full" />
             新增: {stats.insertCount} 行
           </div>
-          <div className="flex items-center gap-2 px-3 py-1.5 bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 rounded-lg text-sm">
-            <span className="w-2 h-2 bg-amber-500 rounded-full" />
+          <div className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 rounded-lg text-xs sm:text-sm">
+            <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-amber-500 rounded-full" />
             修改: {stats.modifyCount} 行
           </div>
         </div>
@@ -408,14 +410,14 @@ const version = "2.0";`);
       {leftText && rightText && (
         <div className="card overflow-hidden p-0">
           {/* 结果头部 */}
-          <div className="flex items-center justify-between px-5 py-3 border-b border-surface-200 dark:border-surface-700 bg-surface-50/50 dark:bg-surface-800/50">
+          <div className="flex items-center justify-between px-3 sm:px-5 py-2.5 sm:py-3 border-b border-surface-200 dark:border-surface-700 bg-surface-50/50 dark:bg-surface-800/50">
             <div className="flex items-center gap-2">
-              <FileText className="w-4 h-4 text-surface-500" />
-              <span className="text-sm font-medium text-surface-700 dark:text-surface-300">
+              <FileText className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-surface-500" />
+              <span className="text-xs sm:text-sm font-medium text-surface-700 dark:text-surface-300">
                 对比结果
               </span>
               {showInlineDiff && (
-                <span className="badge-primary text-[10px]">行内高亮已开启</span>
+                <span className="badge-primary text-[9px] sm:text-[10px]">行内高亮</span>
               )}
             </div>
             <span className="text-xs text-surface-400">
@@ -425,22 +427,22 @@ const version = "2.0";`);
 
           {/* 图例说明 */}
           {showInlineDiff && (
-            <div className="flex items-center gap-4 px-5 py-2 border-b border-surface-200 dark:border-surface-700 bg-surface-50/30 dark:bg-surface-800/30 text-xs">
+            <div className="flex flex-wrap items-center gap-3 sm:gap-4 px-3 sm:px-5 py-2 border-b border-surface-200 dark:border-surface-700 bg-surface-50/30 dark:bg-surface-800/30 text-xs">
               <span className="text-surface-500">图例:</span>
               <span className="flex items-center gap-1">
-                <span className="w-3 h-3 bg-red-200 dark:bg-red-800/60 rounded" />
+                <span className="w-2.5 h-2.5 sm:w-3 sm:h-3 bg-red-200 dark:bg-red-800/60 rounded" />
                 <span className="text-surface-600 dark:text-surface-400">删除</span>
               </span>
               <span className="flex items-center gap-1">
-                <span className="w-3 h-3 bg-emerald-200 dark:bg-emerald-800/60 rounded" />
+                <span className="w-2.5 h-2.5 sm:w-3 sm:h-3 bg-emerald-200 dark:bg-emerald-800/60 rounded" />
                 <span className="text-surface-600 dark:text-surface-400">新增</span>
               </span>
             </div>
           )}
 
           {/* 对比表格 */}
-          <div className="overflow-auto max-h-[600px]">
-            <table className="w-full text-sm">
+          <div className="overflow-auto max-h-[400px] sm:max-h-[600px]">
+            <table className="w-full text-xs sm:text-sm">
               <tbody>
                 {filteredResult.map((line, index) => (
                   <tr
@@ -454,17 +456,17 @@ const version = "2.0";`);
                     `}
                   >
                     {/* 左侧行号 */}
-                    <td className="w-12 px-3 py-1.5 text-right text-xs text-surface-400 font-mono border-r border-surface-200 dark:border-surface-700 select-none">
+                    <td className="w-10 sm:w-12 px-2 sm:px-3 py-1.5 text-right text-[10px] sm:text-xs text-surface-400 font-mono border-r border-surface-200 dark:border-surface-700 select-none">
                       {line.leftLineNum ?? ''}
                     </td>
                     {/* 左侧内容 */}
-                    <td className="w-1/2 px-4 py-1.5 font-mono text-xs border-r border-surface-200 dark:border-surface-700">
+                    <td className="w-1/2 px-2 sm:px-4 py-1.5 font-mono text-[10px] sm:text-xs border-r border-surface-200 dark:border-surface-700">
                       {line.leftContent && (
                         <span className={`
                           ${line.type === 'delete' ? 'text-red-700 dark:text-red-400' : 'text-surface-700 dark:text-surface-300'}
                         `}>
-                          {line.type === 'delete' && <span className="text-red-500 mr-2">-</span>}
-                          {line.type === 'modify' && <span className="text-amber-500 mr-2">~</span>}
+                          {line.type === 'delete' && <span className="text-red-500 mr-1 sm:mr-2">-</span>}
+                          {line.type === 'modify' && <span className="text-amber-500 mr-1 sm:mr-2">~</span>}
                           {line.type === 'modify' && showInlineDiff ? (
                             <InlineDiff oldStr={line.leftContent} newStr={line.rightContent} side="left" />
                           ) : (
@@ -474,17 +476,17 @@ const version = "2.0";`);
                       )}
                     </td>
                     {/* 右侧行号 */}
-                    <td className="w-12 px-3 py-1.5 text-right text-xs text-surface-400 font-mono border-r border-surface-200 dark:border-surface-700 select-none">
+                    <td className="w-10 sm:w-12 px-2 sm:px-3 py-1.5 text-right text-[10px] sm:text-xs text-surface-400 font-mono border-r border-surface-200 dark:border-surface-700 select-none">
                       {line.rightLineNum ?? ''}
                     </td>
                     {/* 右侧内容 */}
-                    <td className="w-1/2 px-4 py-1.5 font-mono text-xs">
+                    <td className="w-1/2 px-2 sm:px-4 py-1.5 font-mono text-[10px] sm:text-xs">
                       {line.rightContent && (
                         <span className={`
                           ${line.type === 'insert' ? 'text-primary-700 dark:text-primary-400' : 'text-surface-700 dark:text-surface-300'}
                         `}>
-                          {line.type === 'insert' && <span className="text-primary-500 mr-2">+</span>}
-                          {line.type === 'modify' && <span className="text-amber-500 mr-2">~</span>}
+                          {line.type === 'insert' && <span className="text-primary-500 mr-1 sm:mr-2">+</span>}
+                          {line.type === 'modify' && <span className="text-amber-500 mr-1 sm:mr-2">~</span>}
                           {line.type === 'modify' && showInlineDiff ? (
                             <InlineDiff oldStr={line.leftContent} newStr={line.rightContent} side="right" />
                           ) : (
@@ -500,12 +502,12 @@ const version = "2.0";`);
           </div>
 
           {filteredResult.length === 0 && (
-            <div className="p-12 text-center">
-              <div className="w-16 h-16 bg-surface-100 dark:bg-surface-800 rounded-full flex items-center justify-center mx-auto mb-4">
-                <GitCompare className="w-8 h-8 text-surface-400" />
+            <div className="p-8 sm:p-12 text-center">
+              <div className="w-12 h-12 sm:w-16 sm:h-16 bg-surface-100 dark:bg-surface-800 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                <GitCompare className="w-6 h-6 sm:w-8 sm:h-8 text-surface-400" />
               </div>
-              <p className="text-surface-500">暂无差异</p>
-              <p className="text-sm text-surface-400 mt-1">两段文本完全相同</p>
+              <p className="text-surface-500 text-sm">暂无差异</p>
+              <p className="text-xs sm:text-sm text-surface-400 mt-1">两段文本完全相同</p>
             </div>
           )}
         </div>

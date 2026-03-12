@@ -178,7 +178,7 @@ function InfoCard({
   return (
     <div className={`p-4 rounded-xl border ${colorClasses[color]}`}>
       <div className="flex items-center gap-2 mb-3">
-        <Icon className={`w-5 h-5 ${iconColors[color]}`} />
+        <Icon className={`w-4 h-4 sm:w-5 sm:h-5 ${iconColors[color]}`} />
         <span className="font-semibold text-gray-900 dark:text-white">{title}</span>
       </div>
       <div className="space-y-2">
@@ -249,9 +249,9 @@ export function UaParserTool() {
   return (
     <div className="max-w-5xl mx-auto space-y-6">
       {/* 标题 */}
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-          <Terminal className="w-7 h-7 text-blue-500" />
+      <div className="mb-4 sm:mb-6">
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-1.5 sm:gap-2">
+          <Terminal className="w-6 h-6 sm:w-7 sm:h-7 text-blue-500" />
           User Agent 分析器
         </h1>
         <p className="text-gray-500 dark:text-gray-400 mt-1">
@@ -260,25 +260,25 @@ export function UaParserTool() {
       </div>
 
       {/* UA 输入 */}
-      <div className="card space-y-3">
+      <div className="card p-4 sm:p-6 space-y-3">
         <div className="flex items-center justify-between">
           <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
             User Agent 字符串
           </label>
-          <div className="flex gap-2">
+          <div className="flex gap-1.5 sm:gap-2">
             <button
               onClick={handleCopy}
               disabled={!ua}
-              className="flex items-center gap-1 px-3 py-1.5 text-xs bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-gray-400 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-700 disabled:opacity-50"
+              className={`btn-tool disabled:opacity-50 ${copied ? 'btn-ghost-success' : 'btn-secondary'}`}
             >
-              {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+              {copied ? <Check className="w-3.5 h-3.5 flex-shrink-0" /> : <Copy className="w-3.5 h-3.5 flex-shrink-0" />}
               {copied ? '已复制' : '复制'}
             </button>
             <button
               onClick={handleReset}
-              className="flex items-center gap-1 px-3 py-1.5 text-xs bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-gray-400 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-700"
+              className="btn-secondary btn-tool"
             >
-              <RefreshCw className="w-3.5 h-3.5" />
+              <RefreshCw className="w-3.5 h-3.5 flex-shrink-0" />
               重置
             </button>
           </div>
@@ -287,14 +287,14 @@ export function UaParserTool() {
           value={ua}
           onChange={(e) => setUa(e.target.value)}
           placeholder="输入 User Agent 字符串..."
-          className="w-full h-24 p-3 font-mono text-xs bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg resize-none dark:text-white"
+          className="w-full h-20 sm:h-24 p-3 font-mono text-xs bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg resize-none dark:text-white"
         />
       </div>
 
       {parsed && (
         <>
           {/* 信息卡片网格 */}
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             {/* 浏览器信息 */}
             <InfoCard
               icon={Globe}
@@ -346,11 +346,11 @@ export function UaParserTool() {
 
           {/* 浏览器特性 */}
           <div className="card">
-            <h3 className="font-medium text-gray-900 dark:text-white mb-3 flex items-center gap-2">
-              <Info className="w-5 h-5 text-blue-500" />
+            <h3 className="font-medium text-gray-900 dark:text-white mb-3 flex items-center gap-1.5 sm:gap-2">
+              <Info className="w-4 h-4 sm:w-5 sm:h-5 text-blue-500" />
               浏览器特性支持
             </h3>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-1.5 sm:gap-2">
               <FeatureTag enabled={parsed.features.cookies} label="Cookies" />
               <FeatureTag enabled={parsed.features.localStorage} label="LocalStorage" />
               <FeatureTag enabled={parsed.features.sessionStorage} label="SessionStorage" />
@@ -367,9 +367,9 @@ export function UaParserTool() {
             >
               <span className="font-medium text-gray-900 dark:text-white">原始 User Agent</span>
               {showRaw ? (
-                <ChevronUp className="w-5 h-5 text-gray-400" />
+                <ChevronUp className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
               ) : (
-                <ChevronDown className="w-5 h-5 text-gray-400" />
+                <ChevronDown className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
               )}
             </button>
             {showRaw && (
@@ -385,7 +385,7 @@ export function UaParserTool() {
 
       {/* 提示信息 */}
       <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-sm text-blue-700 dark:text-blue-400">
-        <p className="flex items-start gap-2">
+        <p className="flex items-start gap-1.5 sm:gap-2">
           <Info className="w-4 h-4 mt-0.5 flex-shrink-0" />
           <span>
             User Agent 字符串可以被浏览器或用户修改，解析结果仅供参考。

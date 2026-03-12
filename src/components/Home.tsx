@@ -58,33 +58,33 @@ export function Home({ onToolSelect }: HomeProps) {
         </div>
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4xIj48Y2lyY2xlIGN4PSIzMCIgY3k9IjMwIiByPSIyIi8+PC9nPjwvZz48L3N2Zz4=')]"></div>
         
-        <div className="relative px-8 py-12 md:py-16">
+        <div className="relative px-4 sm:px-8 py-8 sm:py-12 md:py-16">
           <div className="flex items-center gap-2 mb-4">
             <span className="px-3 py-1 bg-white/20 backdrop-blur rounded-full text-xs font-medium">
               v2.0 全新发布
             </span>
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 tracking-tight">
             ToolStack <span className="text-primary-200">开发者工具箱</span>
           </h1>
-          <p className="text-primary-100 text-lg max-w-2xl mb-8 leading-relaxed">
+          <p className="text-primary-100 text-base sm:text-lg max-w-2xl mb-6 sm:mb-8 leading-relaxed">
             简洁高效的在线工具集合，助力开发效率提升。支持 JSON 格式化、Base64 编解码、二维码生成等 20+ 实用工具。
           </p>
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-col sm:flex-row flex-wrap gap-3">
             <button
               onClick={() => handleToolClick('json')}
-              className="inline-flex items-center gap-2 px-6 py-3 bg-white text-primary-600 rounded-xl font-medium hover:bg-primary-50 transition-colors shadow-lg shadow-black/10"
+              className="inline-flex items-center justify-center sm:justify-start gap-2 px-5 sm:px-6 py-3 bg-white text-primary-600 rounded-xl font-medium hover:bg-primary-50 transition-colors shadow-lg shadow-black/10 touch-manipulation"
             >
               <FileJson className="w-5 h-5" />
-              JSON 格式化
-              <ArrowRight className="w-4 h-4" />
+              <span>JSON 格式化</span>
+              <ArrowRight className="w-4 h-4 hidden sm:inline" />
             </button>
             <button
               onClick={() => handleToolClick('base64')}
-              className="inline-flex items-center gap-2 px-6 py-3 bg-primary-400/30 text-white rounded-xl font-medium hover:bg-primary-400/40 transition-colors backdrop-blur"
+              className="inline-flex items-center justify-center sm:justify-start gap-2 px-5 sm:px-6 py-3 bg-primary-400/30 text-white rounded-xl font-medium hover:bg-primary-400/40 transition-colors backdrop-blur touch-manipulation"
             >
               <Code className="w-5 h-5" />
-              Base64 编解码
+              <span>Base64 编解码</span>
             </button>
           </div>
         </div>
@@ -92,7 +92,7 @@ export function Home({ onToolSelect }: HomeProps) {
 
       {/* 最近使用 + 收藏 */}
       {(recentToolsList.length > 0 || favoriteToolsList.length > 0) && (
-        <div className="grid md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
           {/* 最近使用 */}
           {recentToolsList.length > 0 && (
             <section className="card">
@@ -136,7 +136,7 @@ export function Home({ onToolSelect }: HomeProps) {
       {/* 分类快捷入口 - 玻璃拟态风格 */}
       <section>
         <h2 className="text-lg font-semibold text-surface-900 dark:text-surface-100 mb-5">工具分类</h2>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
           {categories.map(cat => {
             const Icon = iconMap[cat.icon] || Wrench;
             const catToolsList = tools.filter(t => t.category === cat.id);
@@ -144,12 +144,12 @@ export function Home({ onToolSelect }: HomeProps) {
               <button
                 key={cat.id}
                 onClick={() => onToolSelect(catToolsList[0]?.id || '')}
-                className="group p-5 bg-surface-0 dark:bg-surface-800 rounded-2xl border border-surface-200 dark:border-surface-700 hover:border-primary-300 dark:hover:border-primary-500 hover:shadow-lg hover:shadow-primary-500/10 transition-all text-left"
+                className="group p-4 sm:p-5 bg-surface-0 dark:bg-surface-800 rounded-2xl border border-surface-200 dark:border-surface-700 hover:border-primary-300 dark:hover:border-primary-500 hover:shadow-lg hover:shadow-primary-500/10 transition-all text-left touch-manipulation"
               >
-                <div className="w-12 h-12 bg-gradient-to-br from-surface-100 to-surface-200 dark:from-surface-700 dark:to-surface-600 rounded-xl flex items-center justify-center mb-4 group-hover:from-primary-500 group-hover:to-primary-600 transition-all duration-300">
-                  <Icon className="w-6 h-6 text-surface-600 dark:text-surface-400 group-hover:text-white transition-colors" />
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-surface-100 to-surface-200 dark:from-surface-700 dark:to-surface-600 rounded-xl flex items-center justify-center mb-3 sm:mb-4 group-hover:from-primary-500 group-hover:to-primary-600 transition-all duration-300">
+                  <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-surface-600 dark:text-surface-400 group-hover:text-white transition-colors" />
                 </div>
-                <h3 className="font-medium text-surface-900 dark:text-surface-100 mb-1">{cat.name}</h3>
+                <h3 className="font-medium text-surface-900 dark:text-surface-100 mb-1 text-sm sm:text-base">{cat.name}</h3>
                 <p className="text-xs text-surface-500">{catToolsList.length} 个工具</p>
               </button>
             );
@@ -167,7 +167,7 @@ export function Home({ onToolSelect }: HomeProps) {
             <h2 className="text-lg font-semibold text-surface-900 dark:text-surface-100">热门推荐</h2>
           </div>
         </div>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           {hotTools.map(tool => (
             <ToolCard 
               key={tool.id} 
@@ -188,24 +188,24 @@ export function Home({ onToolSelect }: HomeProps) {
       </section>
 
       {/* 功能特性展示 */}
-      <section className="grid md:grid-cols-3 gap-6">
-        <div className="card text-center p-6">
-          <div className="w-14 h-14 mx-auto mb-4 bg-primary-50 dark:bg-primary-900/20 rounded-2xl flex items-center justify-center">
-            <Zap className="w-7 h-7 text-primary-500" />
+      <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
+        <div className="card text-center p-5 sm:p-6">
+          <div className="w-12 h-12 sm:w-14 sm:h-14 mx-auto mb-3 sm:mb-4 bg-primary-50 dark:bg-primary-900/20 rounded-2xl flex items-center justify-center">
+            <Zap className="w-6 h-6 sm:w-7 sm:h-7 text-primary-500" />
           </div>
           <h3 className="font-semibold text-surface-900 dark:text-surface-100 mb-2">极速响应</h3>
           <p className="text-sm text-surface-500">所有工具均在本地运行，无需服务器，即刻响应</p>
         </div>
-        <div className="card text-center p-6">
-          <div className="w-14 h-14 mx-auto mb-4 bg-emerald-50 dark:bg-emerald-900/20 rounded-2xl flex items-center justify-center">
-            <Shield className="w-7 h-7 text-emerald-500" />
+        <div className="card text-center p-5 sm:p-6">
+          <div className="w-12 h-12 sm:w-14 sm:h-14 mx-auto mb-3 sm:mb-4 bg-emerald-50 dark:bg-emerald-900/20 rounded-2xl flex items-center justify-center">
+            <Shield className="w-6 h-6 sm:w-7 sm:h-7 text-emerald-500" />
           </div>
           <h3 className="font-semibold text-surface-900 dark:text-surface-100 mb-2">隐私安全</h3>
           <p className="text-sm text-surface-500">数据不上传服务器，完全在浏览器本地处理</p>
         </div>
-        <div className="card text-center p-6">
-          <div className="w-14 h-14 mx-auto mb-4 bg-purple-50 dark:bg-purple-900/20 rounded-2xl flex items-center justify-center">
-            <Sparkles className="w-7 h-7 text-purple-500" />
+        <div className="card text-center p-5 sm:p-6">
+          <div className="w-12 h-12 sm:w-14 sm:h-14 mx-auto mb-3 sm:mb-4 bg-purple-50 dark:bg-purple-900/20 rounded-2xl flex items-center justify-center">
+            <Sparkles className="w-6 h-6 sm:w-7 sm:h-7 text-purple-500" />
           </div>
           <h3 className="font-semibold text-surface-900 dark:text-surface-100 mb-2">持续更新</h3>
           <p className="text-sm text-surface-500">不断添加新工具，优化现有功能体验</p>
@@ -221,6 +221,50 @@ export function Home({ onToolSelect }: HomeProps) {
           <h2 className="font-semibold text-surface-900 dark:text-surface-100">最近更新</h2>
         </div>
         <div className="space-y-4">
+          <div className="flex items-start gap-4">
+            <div className="flex flex-col items-center">
+              <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
+              <div className="w-px h-full bg-surface-200 dark:bg-surface-700 mt-2"></div>
+            </div>
+            <div className="pb-4">
+              <span className="badge bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300 mb-1">FIX</span>
+              <p className="text-sm text-surface-700 dark:text-surface-300 mt-1">优化按钮风格，统一视觉体验</p>
+              <p className="text-xs text-surface-400 mt-1">2026-03-12</p>
+            </div>
+          </div>
+          <div className="flex items-start gap-4">
+            <div className="flex flex-col items-center">
+              <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
+              <div className="w-px h-full bg-surface-200 dark:bg-surface-700 mt-2"></div>
+            </div>
+            <div className="pb-4">
+              <span className="badge bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300 mb-1">FIX</span>
+              <p className="text-sm text-surface-700 dark:text-surface-300 mt-1">适配移动端，优化手机浏览体验</p>
+              <p className="text-xs text-surface-400 mt-1">2026-03-12</p>
+            </div>
+          </div>
+          <div className="flex items-start gap-4">
+            <div className="flex flex-col items-center">
+              <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+              <div className="w-px h-full bg-surface-200 dark:bg-surface-700 mt-2"></div>
+            </div>
+            <div className="pb-4">
+              <span className="badge-success mb-1">NEW</span>
+              <p className="text-sm text-surface-700 dark:text-surface-300 mt-1">新增文本对比工具，支持差异高亮和实时对比</p>
+              <p className="text-xs text-surface-400 mt-1">2026-03-12</p>
+            </div>
+          </div>
+          <div className="flex items-start gap-4">
+            <div className="flex flex-col items-center">
+              <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+              <div className="w-px h-full bg-surface-200 dark:bg-surface-700 mt-2"></div>
+            </div>
+            <div className="pb-4">
+              <span className="badge-success mb-1">NEW</span>
+              <p className="text-sm text-surface-700 dark:text-surface-300 mt-1">新增 WebSocket 调试工具和 HTTP 请求工具</p>
+              <p className="text-xs text-surface-400 mt-1">2026-03-11</p>
+            </div>
+          </div>
           <div className="flex items-start gap-4">
             <div className="flex flex-col items-center">
               <div className="w-3 h-3 bg-green-500 rounded-full"></div>

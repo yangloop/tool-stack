@@ -237,19 +237,19 @@ export function RegexTool() {
 
   return (
     <div className="max-w-4xl mx-auto">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-          <Search className="w-6 h-6 text-blue-500" />
+      <div className="mb-4 sm:mb-6">
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+          <Search className="w-5 h-5 sm:w-6 sm:h-6 text-blue-500" />
           正则表达式测试
         </h1>
-        <p className="text-gray-500 dark:text-gray-400 mt-1">
+        <p className="text-gray-500 dark:text-gray-400 mt-1 text-xs sm:text-sm">
           在线测试和验证正则表达式
         </p>
       </div>
 
       {/* 常用模式 */}
-      <div className="card mb-4">
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+      <div className="card p-4 sm:p-6 mb-4">
+        <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
           常用模式
         </label>
         <div className="flex flex-wrap gap-2">
@@ -257,7 +257,7 @@ export function RegexTool() {
             <button
               key={name}
               onClick={() => setPattern(p)}
-              className="px-3 py-1.5 text-sm bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-gray-300 rounded-full hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors"
+              className="btn-secondary btn-tool rounded-full text-xs"
             >
               {name}
             </button>
@@ -266,20 +266,20 @@ export function RegexTool() {
       </div>
 
       {/* 正则输入 */}
-      <div className="card mb-4 space-y-4">
+      <div className="card p-4 sm:p-6 mb-4 space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             正则表达式
           </label>
-          <div className="flex gap-2">
-            <span className="flex items-center px-3 bg-gray-100 dark:bg-slate-800 text-gray-500 rounded-lg font-mono">/</span>
+          <div className="flex flex-wrap sm:flex-nowrap gap-2">
+            <span className="flex items-center px-2 sm:px-3 bg-gray-100 dark:bg-slate-800 text-gray-500 rounded-lg font-mono text-xs sm:text-sm">/</span>
             
             {/* 高亮输入框容器 */}
-            <div className="flex-1 relative font-mono text-sm">
+            <div className="flex-1 relative font-mono text-xs sm:text-sm min-w-0">
               {/* 高亮层 */}
               <div
                 ref={highlightRef}
-                className="absolute inset-0 px-4 py-2 bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg overflow-hidden whitespace-pre pointer-events-none select-none"
+                className="absolute inset-0 px-3 sm:px-4 py-2 bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg overflow-hidden whitespace-pre pointer-events-none select-none text-xs sm:text-sm"
                 aria-hidden="true"
               >
                 <RegexHighlighter pattern={pattern} isDark={isDark} />
@@ -297,24 +297,24 @@ export function RegexTool() {
                   }
                 }}
                 placeholder="输入正则表达式..."
-                className="w-full px-4 py-2 bg-transparent border border-gray-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-blue-500 dark:text-white text-transparent caret-gray-900 dark:caret-white"
+                className="w-full px-3 sm:px-4 py-2 bg-transparent border border-gray-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-blue-500 dark:text-white text-transparent caret-gray-900 dark:caret-white text-xs sm:text-sm"
                 style={{ position: 'relative', zIndex: 1 }}
                 spellCheck={false}
               />
             </div>
             
-            <span className="flex items-center px-3 bg-gray-100 dark:bg-slate-800 text-gray-500 rounded-lg font-mono">/</span>
+            <span className="flex items-center px-2 sm:px-3 bg-gray-100 dark:bg-slate-800 text-gray-500 rounded-lg font-mono text-xs sm:text-sm">/</span>
           </div>
           
           {error && (
-            <div className="mt-2 flex items-center gap-2 text-red-500 text-sm">
-              <AlertCircle className="w-4 h-4" />
+            <div className="mt-2 flex items-center gap-2 text-red-500 text-xs sm:text-sm">
+              <AlertCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               {error}
             </div>
           )}
           
           {/* 图例 */}
-          <div className="mt-3 flex flex-wrap gap-3 text-xs">
+          <div className="mt-3 flex flex-wrap gap-2 sm:gap-3 text-xs">
             <span className="text-gray-500">图例:</span>
             <span className="text-pink-600 dark:text-pink-400">^ $ \b</span>
             <span className="text-gray-400">|</span>
@@ -332,7 +332,7 @@ export function RegexTool() {
           </div>
         </div>
 
-        <div className="flex flex-wrap gap-4">
+        <div className="flex flex-wrap gap-3 sm:gap-4">
           {Object.entries({
             global: '全局匹配 (g)',
             ignoreCase: '忽略大小写 (i)',
@@ -343,32 +343,32 @@ export function RegexTool() {
                 type="checkbox"
                 checked={flags[key as keyof typeof flags]}
                 onChange={(e) => setFlags({ ...flags, [key]: e.target.checked })}
-                className="w-4 h-4 text-blue-500 rounded"
+                className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-blue-500 rounded"
               />
-              <span className="text-sm text-gray-700 dark:text-gray-300">{label}</span>
+              <span className="text-xs sm:text-sm text-gray-700 dark:text-gray-300">{label}</span>
             </label>
           ))}
         </div>
       </div>
 
       {/* 测试文本 */}
-      <div className="card space-y-4">
+      <div className="card p-4 sm:p-6 space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             测试文本
           </label>
           <textarea
             value={testText}
             onChange={(e) => setTestText(e.target.value)}
             placeholder="输入要测试的文本..."
-            className="w-full h-40 p-4 text-sm bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg resize-none focus:ring-2 focus:ring-blue-500 dark:text-white"
+            className="w-full h-32 sm:h-40 p-3 sm:p-4 text-xs sm:text-sm bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg resize-none focus:ring-2 focus:ring-blue-500 dark:text-white"
           />
         </div>
 
         {testText && pattern && matches && (
-          <div className="p-4 bg-gray-50 dark:bg-slate-900 rounded-lg">
-            <div className="text-sm text-gray-500 mb-2">匹配结果 ({matches.length}):</div>
-            <div className="font-mono text-sm text-gray-800 dark:text-gray-200">
+          <div className="p-3 sm:p-4 bg-gray-50 dark:bg-slate-900 rounded-lg">
+            <div className="text-xs sm:text-sm text-gray-500 mb-2">匹配结果 ({matches.length}):</div>
+            <div className="font-mono text-xs sm:text-sm text-gray-800 dark:text-gray-200">
               {getHighlightedText()}
             </div>
           </div>

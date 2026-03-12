@@ -54,7 +54,7 @@ export function Base64FileTool() {
 
   // 获取文件图标
   const getFileIcon = (type: string) => {
-    if (type.startsWith('image/')) return <ImageIcon className="w-6 h-6 text-purple-500" />;
+    if (type.startsWith('image/')) return <ImageIcon className="w-5 h-5 sm:w-6 sm:h-6 text-purple-500" />;
     if (type.startsWith('audio/')) return <Music className="w-6 h-6 text-amber-500" />;
     if (type.startsWith('video/')) return <Video className="w-6 h-6 text-rose-500" />;
     if (type.startsWith('text/')) return <FileText className="w-6 h-6 text-blue-500" />;
@@ -256,7 +256,7 @@ export function Base64FileTool() {
       </div>
 
       {/* Tab 切换 */}
-      <div className="flex gap-1 border-b border-surface-200 dark:border-surface-700 mb-5">
+      <div className="flex gap-1 border-b border-surface-200 dark:border-surface-700 mb-4 sm:mb-5">
         <button
           onClick={() => {
             setActiveTab('file-to-base64');
@@ -268,7 +268,7 @@ export function Base64FileTool() {
               : 'border-transparent text-surface-500 hover:text-surface-700 dark:hover:text-surface-300'
           }`}
         >
-          <Upload className="w-4 h-4" />
+          <Upload className="w-3 h-3 sm:w-3.5 sm:h-3.5 sm:w-4 sm:h-4" />
           文件转 Base64
         </button>
         <button
@@ -282,7 +282,7 @@ export function Base64FileTool() {
               : 'border-transparent text-surface-500 hover:text-surface-700 dark:hover:text-surface-300'
           }`}
         >
-          <Download className="w-4 h-4" />
+          <Download className="w-3 h-3 sm:w-3.5 sm:h-3.5 sm:w-4 sm:h-4" />
           Base64 转文件
         </button>
       </div>
@@ -298,7 +298,7 @@ export function Base64FileTool() {
               onDragOver={handleDrag}
               onDrop={handleDrop}
               onClick={() => fileInputRef.current?.click()}
-              className={`relative border-2 border-dashed rounded-2xl p-12 text-center cursor-pointer transition-all ${
+              className={`relative border-2 border-dashed rounded-2xl p-8 sm:p-12 text-center cursor-pointer transition-all ${
                 dragActive
                   ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20'
                   : 'border-surface-300 dark:border-surface-700 hover:border-surface-400 dark:hover:border-surface-600'
@@ -310,8 +310,8 @@ export function Base64FileTool() {
                 onChange={handleFileInput}
                 className="hidden"
               />
-              <div className="w-16 h-16 bg-surface-100 dark:bg-surface-800 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <Upload className="w-8 h-8 text-surface-400" />
+              <div className="w-12 h-12 sm:w-16 sm:h-16 bg-surface-100 dark:bg-surface-800 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <Upload className="w-6 h-6 sm:w-8 sm:h-8 text-surface-400" />
               </div>
               <h3 className="text-lg font-medium text-surface-900 dark:text-surface-100 mb-2">
                 点击或拖拽文件到此处
@@ -324,9 +324,9 @@ export function Base64FileTool() {
 
           {/* 文件信息 */}
           {fileInfo && (
-            <div className="card space-y-4">
+            <div className="card p-4 sm:p-6 space-y-4">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 sm:gap-3">
                   <div className="w-12 h-12 bg-surface-100 dark:bg-surface-800 rounded-xl flex items-center justify-center">
                     {getFileIcon(fileInfo.type)}
                   </div>
@@ -339,7 +339,7 @@ export function Base64FileTool() {
                 </div>
                 <button
                   onClick={clearFile}
-                  className="btn-ghost text-red-500 hover:text-red-600"
+                  className="btn-ghost-danger btn-icon"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
@@ -371,24 +371,24 @@ export function Base64FileTool() {
                   <div className="flex gap-2">
                     <button
                       onClick={handleCopyBase64}
-                      className="btn-secondary text-xs"
+                      className={`btn-tool ${copied ? 'btn-ghost-success' : 'btn-secondary'}`}
                     >
-                      {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                      {copied ? <Check className="w-3.5 h-3.5 flex-shrink-0" /> : <Copy className="w-3.5 h-3.5 flex-shrink-0" />}
                       {copied ? '已复制' : '复制'}
                     </button>
                     <button
                       onClick={downloadBase64AsText}
-                      className="btn-secondary text-xs"
+                      className="btn-secondary btn-tool"
                     >
-                      <Download className="w-3.5 h-3.5" />
-                      下载为文本
+                      <Download className="w-3.5 h-3.5 flex-shrink-0" />
+                      下载
                     </button>
                     {truncated && (
                       <button
                         onClick={() => setShowFullContent(!showFullContent)}
-                        className="btn-ghost text-xs"
+                        className="btn-ghost btn-tool"
                       >
-                        {showFullContent ? <Scissors className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
+                        {showFullContent ? <Scissors className="w-3.5 h-3.5 flex-shrink-0" /> : <Maximize2 className="w-3.5 h-3.5 flex-shrink-0" />}
                         {showFullContent ? '收起' : '展开'}
                       </button>
                     )}
@@ -397,7 +397,7 @@ export function Base64FileTool() {
                 <textarea
                   readOnly
                   value={showFullContent ? base64Content : base64Content.slice(0, MAX_DISPLAY_LENGTH)}
-                  className="w-full h-48 p-4 font-mono text-xs bg-surface-50 dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded-xl resize-none"
+                  className="w-full h-40 sm:h-48 p-4 font-mono text-xs bg-surface-50 dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded-xl resize-none"
                 />
                 {truncated && !showFullContent && (
                   <p className="text-xs text-surface-500">
@@ -411,7 +411,7 @@ export function Base64FileTool() {
                 <span className="text-sm text-surface-500 mr-2">快捷操作:</span>
                 <button
                   onClick={() => setActiveTab('base64-to-file')}
-                  className="text-sm text-primary-600 hover:text-primary-700"
+                  className="btn-primary btn-tool"
                 >
                   用此 Base64 解码
                 </button>
@@ -424,7 +424,7 @@ export function Base64FileTool() {
       {/* Base64 转文件 */}
       {activeTab === 'base64-to-file' && (
         <div className="space-y-5">
-          <div className="card space-y-4">
+          <div className="card p-4 sm:p-6 space-y-4">
             {/* Base64 输入 */}
             <div className="space-y-2">
               <label className="text-sm font-medium text-surface-700 dark:text-surface-300">
@@ -441,12 +441,12 @@ export function Base64FileTool() {
                   }
                 }}
                 placeholder="在此处粘贴 Base64 编码..."
-                className="w-full h-48 p-4 font-mono text-xs bg-surface-50 dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded-xl resize-none focus:ring-2 focus:ring-primary-500/50"
+                className="w-full h-40 sm:h-48 p-4 font-mono text-xs bg-surface-50 dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded-xl resize-none focus:ring-2 focus:ring-primary-500/50"
               />
             </div>
 
             {/* 输出设置 */}
-            <div className="grid md:grid-cols-2 gap-4">
+            <div className="grid md:grid-cols-2 gap-3 sm:gap-4">
               <div className="space-y-2">
                 <label className="text-sm font-medium text-surface-700 dark:text-surface-300">
                   输出文件名
@@ -483,26 +483,26 @@ export function Base64FileTool() {
             {/* 错误提示 */}
             {error && (
               <div className="flex items-center gap-2 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/30 rounded-xl text-sm text-red-600 dark:text-red-400">
-                <AlertCircle className="w-4 h-4" />
+                <AlertCircle className="w-3 h-3 sm:w-3.5 sm:h-3.5 sm:w-4 sm:h-4" />
                 {error}
               </div>
             )}
 
             {/* 操作按钮 */}
-            <div className="flex gap-3">
+            <div className="flex gap-2 sm:gap-3">
               <button
                 onClick={handleBase64ToFile}
                 disabled={!base64Content.trim() || !outputFileName}
-                className="btn-primary flex-1"
+                className="btn-primary btn-action flex-1"
               >
-                <Download className="w-4 h-4" />
+                <Download className="w-4 h-4 flex-shrink-0" />
                 解码并下载文件
               </button>
               <button
                 onClick={clearFile}
-                className="btn-ghost"
+                className="btn-ghost btn-tool"
               >
-                <RefreshCw className="w-4 h-4" />
+                <RefreshCw className="w-3.5 h-3.5 flex-shrink-0" />
                 清空
               </button>
             </div>

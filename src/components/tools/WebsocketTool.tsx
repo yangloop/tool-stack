@@ -292,7 +292,7 @@ export function WebsocketTool() {
       {/* 标题 */}
       <div className="tool-header">
         <div className="tool-icon">
-          <Wifi className="w-6 h-6" />
+          <Wifi className="w-3 h-3 sm:w-3.5 sm:h-3.5 sm:w-4 sm:h-4 sm:w-5 sm:h-5 sm:w-6 sm:h-6" />
         </div>
         <div className="flex-1">
           <h1 className="text-xl font-semibold text-surface-900 dark:text-surface-100">
@@ -305,13 +305,13 @@ export function WebsocketTool() {
       </div>
 
       {/* 连接区域 */}
-      <div className="card mb-5 space-y-4">
-        <div className="flex flex-wrap gap-3">
+      <div className="card p-2.5 sm:p-3 sm:p-4 sm:p-6 mb-4 sm:mb-5 space-y-4">
+        <div className="flex flex-wrap gap-2 sm:gap-2.5 sm:p-3">
           <div className="flex-1 min-w-[300px]">
             <label className="text-sm font-medium text-surface-700 dark:text-surface-300 mb-1.5 block">
               WebSocket URL
             </label>
-            <div className="flex gap-2">
+            <div className="flex gap-1.5 sm:gap-2">
               <input
                 type="text"
                 value={url}
@@ -323,21 +323,21 @@ export function WebsocketTool() {
               {connectionStatus === 'connected' ? (
                 <button
                   onClick={disconnect}
-                  className="btn-danger px-4"
+                  className="btn-danger btn-tool"
                 >
-                  <Square className="w-4 h-4" />
+                  <Square className="w-4 h-4 flex-shrink-0" />
                   断开
                 </button>
               ) : (
                 <button
                   onClick={connect}
                   disabled={!url || connectionStatus === 'connecting'}
-                  className="btn-primary px-4"
+                  className="btn-primary btn-tool"
                 >
                   {connectionStatus === 'connecting' ? (
                     <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                   ) : (
-                    <Play className="w-4 h-4" />
+                    <Play className="w-4 h-4 flex-shrink-0" />
                   )}
                   {connectionStatus === 'connecting' ? '连接中' : '连接'}
                 </button>
@@ -347,7 +347,7 @@ export function WebsocketTool() {
           
           {/* 状态指示器 */}
           <div className="flex items-end">
-            <div className={`px-4 py-2.5 rounded-xl border flex items-center gap-2 ${
+            <div className={`px-3 py-2 sm:px-4 sm:py-2.5 rounded-xl border flex items-center gap-2 ${
               connectionStatus === 'connected'
                 ? 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-400'
                 : connectionStatus === 'connecting'
@@ -358,22 +358,22 @@ export function WebsocketTool() {
             }`}>
               {connectionStatus === 'connected' ? (
                 <>
-                  <Wifi className="w-4 h-4" />
+                  <Wifi className="w-3 h-3 sm:w-3.5 sm:h-3.5 sm:w-4 sm:h-4" />
                   <span className="text-sm font-medium">已连接</span>
                 </>
               ) : connectionStatus === 'connecting' ? (
                 <>
-                  <div className="w-4 h-4 border-2 border-amber-500/30 border-t-amber-500 rounded-full animate-spin" />
+                  <div className="w-3 h-3 sm:w-3.5 sm:h-3.5 sm:w-4 sm:h-4 border-2 border-amber-500/30 border-t-amber-500 rounded-full animate-spin" />
                   <span className="text-sm font-medium">连接中</span>
                 </>
               ) : connectionStatus === 'error' ? (
                 <>
-                  <AlertCircle className="w-4 h-4" />
+                  <AlertCircle className="w-3 h-3 sm:w-3.5 sm:h-3.5 sm:w-4 sm:h-4" />
                   <span className="text-sm font-medium">错误</span>
                 </>
               ) : (
                 <>
-                  <WifiOff className="w-4 h-4" />
+                  <WifiOff className="w-3 h-3 sm:w-3.5 sm:h-3.5 sm:w-4 sm:h-4" />
                   <span className="text-sm font-medium">未连接</span>
                 </>
               )}
@@ -385,18 +385,18 @@ export function WebsocketTool() {
         <div className="border border-surface-200 dark:border-surface-700 rounded-xl overflow-hidden">
           <button
             onClick={() => setShowSettings(!showSettings)}
-            className="w-full px-4 py-3 flex items-center justify-between bg-surface-50 dark:bg-surface-900/50 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors"
+            className="w-full px-3 py-2 sm:px-4 sm:py-3 flex items-center justify-between bg-surface-50 dark:bg-surface-900/50 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors"
           >
-            <span className="text-sm font-medium text-surface-700 dark:text-surface-300 flex items-center gap-2">
-              <Settings className="w-4 h-4" />
+            <span className="text-sm font-medium text-surface-700 dark:text-surface-300 flex items-center gap-1.5 sm:gap-2">
+              <Settings className="w-3 h-3 sm:w-3.5 sm:h-3.5 sm:w-4 sm:h-4" />
               高级设置
             </span>
-            {showSettings ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+            {showSettings ? <ChevronUp className="w-3 h-3 sm:w-3.5 sm:h-3.5 sm:w-4 sm:h-4" /> : <ChevronDown className="w-3 h-3 sm:w-3.5 sm:h-3.5 sm:w-4 sm:h-4" />}
           </button>
           
           {showSettings && (
-            <div className="p-4 space-y-4 border-t border-surface-200 dark:border-surface-700">
-              <div className="grid md:grid-cols-2 gap-4">
+            <div className="p-2.5 sm:p-3 sm:p-4 space-y-4 border-t border-surface-200 dark:border-surface-700">
+              <div className="grid md:grid-cols-2 gap-2.5 sm:p-3 sm:gap-2.5 sm:p-3 sm:p-4">
                 {/* 自动重连 */}
                 <div className="space-y-3">
                   <label className="flex items-center gap-2 cursor-pointer">
@@ -404,7 +404,7 @@ export function WebsocketTool() {
                       type="checkbox"
                       checked={autoReconnect}
                       onChange={(e) => setAutoReconnect(e.target.checked)}
-                      className="w-4 h-4 rounded border-surface-300 text-primary-500 focus:ring-primary-500"
+                      className="w-3 h-3 sm:w-3.5 sm:h-3.5 sm:w-4 sm:h-4 rounded border-surface-300 text-primary-500 focus:ring-primary-500"
                     />
                     <span className="text-sm text-surface-700 dark:text-surface-300">自动重连</span>
                   </label>
@@ -431,13 +431,13 @@ export function WebsocketTool() {
                       type="checkbox"
                       checked={heartbeatEnabled}
                       onChange={(e) => setHeartbeatEnabled(e.target.checked)}
-                      className="w-4 h-4 rounded border-surface-300 text-primary-500 focus:ring-primary-500"
+                      className="w-3 h-3 sm:w-3.5 sm:h-3.5 sm:w-4 sm:h-4 rounded border-surface-300 text-primary-500 focus:ring-primary-500"
                     />
                     <span className="text-sm text-surface-700 dark:text-surface-300">心跳检测</span>
                   </label>
                   {heartbeatEnabled && (
                     <div className="space-y-2 pl-6">
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1.5 sm:gap-2">
                         <span className="text-sm text-surface-500">间隔</span>
                         <input
                           type="number"
@@ -449,7 +449,7 @@ export function WebsocketTool() {
                         />
                         <span className="text-sm text-surface-500">ms</span>
                       </div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1.5 sm:gap-2">
                         <span className="text-sm text-surface-500">消息</span>
                         <input
                           type="text"
@@ -468,7 +468,7 @@ export function WebsocketTool() {
       </div>
 
       {/* 统计信息 */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-5">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-2.5 sm:p-3 mb-5">
         {[
           { label: '连接时长', value: connectionTime, icon: Clock },
           { label: '发送消息', value: stats.messagesSent, icon: Send },
@@ -476,9 +476,9 @@ export function WebsocketTool() {
           { label: '发送数据', value: `${(stats.bytesSent / 1024).toFixed(2)} KB`, icon: Upload },
           { label: '接收数据', value: `${(stats.bytesReceived / 1024).toFixed(2)} KB`, icon: Download },
         ].map(({ label, value, icon: Icon }) => (
-          <div key={label} className="bg-surface-50 dark:bg-surface-900/50 p-3 rounded-xl border border-surface-200 dark:border-surface-700">
+          <div key={label} className="bg-surface-50 dark:bg-surface-900/50 p-2.5 sm:p-3 rounded-xl border border-surface-200 dark:border-surface-700">
             <div className="flex items-center gap-2 text-surface-500 mb-1">
-              <Icon className="w-3.5 h-3.5" />
+              <Icon className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
               <span className="text-xs">{label}</span>
             </div>
             <div className="text-lg font-semibold text-surface-900 dark:text-surface-100">{value}</div>
@@ -487,17 +487,17 @@ export function WebsocketTool() {
       </div>
 
       {/* 消息区域 */}
-      <div className="grid lg:grid-cols-3 gap-5">
+      <div className="grid lg:grid-cols-3 gap-2.5 sm:p-3 sm:p-4 sm:gap-5">
         {/* 发送消息 */}
         <div className="lg:col-span-1 space-y-4">
-          <div className="card space-y-4">
-            <h3 className="font-medium text-surface-900 dark:text-surface-100 flex items-center gap-2">
-              <Send className="w-4 h-4 text-primary-500" />
+          <div className="card p-2.5 sm:p-3 sm:p-4 sm:p-6 space-y-4">
+            <h3 className="font-medium text-surface-900 dark:text-surface-100 flex items-center gap-1.5 sm:gap-2">
+              <Send className="w-3 h-3 sm:w-3.5 sm:h-3.5 sm:w-4 sm:h-4 text-primary-500" />
               发送消息
             </h3>
             
             {/* 格式选择 */}
-            <div className="flex gap-2">
+            <div className="flex gap-1.5 sm:gap-2">
               <button
                 onClick={() => setMessageFormat('text')}
                 className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-1.5 ${
@@ -506,7 +506,7 @@ export function WebsocketTool() {
                     : 'bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-400 hover:bg-surface-200 dark:hover:bg-surface-700'
                 }`}
               >
-                <Type className="w-3.5 h-3.5" />
+                <Type className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                 文本
               </button>
               <button
@@ -517,7 +517,7 @@ export function WebsocketTool() {
                     : 'bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-400 hover:bg-surface-200 dark:hover:bg-surface-700'
                 }`}
               >
-                <Code className="w-3.5 h-3.5" />
+                <Code className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                 JSON
               </button>
             </div>
@@ -527,15 +527,15 @@ export function WebsocketTool() {
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
               placeholder={messageFormat === 'json' ? '{"type": "message"}' : '输入要发送的消息...'}
-              className="w-full h-48 p-3 text-sm font-mono bg-surface-50 dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded-xl resize-none focus:ring-2 focus:ring-primary-500/50"
+              className="w-full h-40 sm:h-48 p-2.5 sm:p-3 text-sm font-mono bg-surface-50 dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded-xl resize-none focus:ring-2 focus:ring-primary-500/50"
             />
             
             <button
               onClick={sendMessage}
               disabled={!inputMessage.trim() || connectionStatus !== 'connected'}
-              className="w-full btn-primary disabled:opacity-50"
+              className="w-full btn-primary"
             >
-              <Send className="w-4 h-4" />
+              <Send className="w-4 h-4 flex-shrink-0" />
               发送
             </button>
 
@@ -546,7 +546,7 @@ export function WebsocketTool() {
                 <textarea
                   value={jsonTemplate}
                   onChange={(e) => setJsonTemplate(e.target.value)}
-                  className="w-full h-24 p-2 text-xs font-mono bg-surface-50 dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded-lg resize-none"
+                  className="w-full h-20 sm:h-24 p-2 text-xs font-mono bg-surface-50 dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded-lg resize-none"
                 />
                 <button
                   onClick={() => setInputMessage(jsonTemplate)}
@@ -563,33 +563,33 @@ export function WebsocketTool() {
         <div className="lg:col-span-2">
           <div className="card h-full flex flex-col">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-medium text-surface-900 dark:text-surface-100 flex items-center gap-2">
-                <MessageSquare className="w-4 h-4 text-primary-500" />
+              <h3 className="font-medium text-surface-900 dark:text-surface-100 flex items-center gap-1.5 sm:gap-2">
+                <MessageSquare className="w-3 h-3 sm:w-3.5 sm:h-3.5 sm:w-4 sm:h-4 text-primary-500" />
                 消息记录
                 <span className="text-sm text-surface-500">({messages.length})</span>
               </h3>
-              <div className="flex gap-2">
+              <div className="flex gap-1.5 sm:gap-2">
                 <button
                   onClick={exportMessages}
                   disabled={messages.length === 0}
-                  className="btn-ghost text-xs disabled:opacity-50"
+                  className="btn-secondary btn-tool"
                 >
-                  <Download className="w-3.5 h-3.5" />
+                  <Download className="w-3.5 h-3.5 flex-shrink-0" />
                   导出
                 </button>
                 <button
                   onClick={clearMessages}
                   disabled={messages.length === 0}
-                  className="btn-ghost text-xs text-red-500 hover:text-red-600 disabled:opacity-50"
+                  className="btn-ghost-danger btn-tool"
                 >
-                  <Trash2 className="w-3.5 h-3.5" />
+                  <Trash2 className="w-3.5 h-3.5 flex-shrink-0" />
                   清空
                 </button>
               </div>
             </div>
 
             {/* 消息列表 */}
-            <div className="flex-1 min-h-[400px] max-h-[600px] overflow-y-auto bg-surface-50 dark:bg-surface-900/30 rounded-xl border border-surface-200 dark:border-surface-700 p-3 space-y-2">
+            <div className="flex-1 min-h-[300px] sm:min-h-[400px] max-h-[500px] sm:max-h-[600px] overflow-y-auto bg-surface-50 dark:bg-surface-900/30 rounded-xl border border-surface-200 dark:border-surface-700 p-2.5 sm:p-3 space-y-2">
               {messages.length === 0 ? (
                 <div className="h-full flex flex-col items-center justify-center text-surface-400">
                   <MessageSquare className="w-12 h-12 mb-3 opacity-30" />
@@ -600,7 +600,7 @@ export function WebsocketTool() {
                 messages.map((message) => (
                   <div
                     key={message.id}
-                    className={`p-3 rounded-xl text-sm ${
+                    className={`p-2.5 sm:p-3 rounded-xl text-sm ${
                       message.type === 'sent'
                         ? 'bg-primary-50 dark:bg-primary-900/20 ml-8'
                         : message.type === 'received'
@@ -612,21 +612,21 @@ export function WebsocketTool() {
                       <div className="flex items-center gap-1.5">
                         {message.type === 'sent' ? (
                           <>
-                            <span className="w-5 h-5 rounded-full bg-primary-500 flex items-center justify-center">
+                            <span className="w-3 h-3 sm:w-3.5 sm:h-3.5 sm:w-4 sm:h-4 sm:w-5 sm:h-5 rounded-full bg-primary-500 flex items-center justify-center">
                               <Send className="w-2.5 h-2.5 text-white" />
                             </span>
                             <span className="text-xs font-medium text-primary-600 dark:text-primary-400">发送</span>
                           </>
                         ) : message.type === 'received' ? (
                           <>
-                            <span className="w-5 h-5 rounded-full bg-surface-400 flex items-center justify-center">
+                            <span className="w-3 h-3 sm:w-3.5 sm:h-3.5 sm:w-4 sm:h-4 sm:w-5 sm:h-5 rounded-full bg-surface-400 flex items-center justify-center">
                               <MessageSquare className="w-2.5 h-2.5 text-white" />
                             </span>
                             <span className="text-xs font-medium text-surface-600 dark:text-surface-400">接收</span>
                           </>
                         ) : (
                           <>
-                            <AlertCircle className="w-4 h-4 text-amber-500" />
+                            <AlertCircle className="w-3 h-3 sm:w-3.5 sm:h-3.5 sm:w-4 sm:h-4 text-amber-500" />
                             <span className="text-xs font-medium text-amber-600 dark:text-amber-400">系统</span>
                           </>
                         )}
@@ -634,7 +634,7 @@ export function WebsocketTool() {
                           <span className="badge-primary text-[10px]">JSON</span>
                         )}
                       </div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1.5 sm:gap-2">
                         <span className="text-xs text-surface-400">{formatTime(message.timestamp)}</span>
                         {message.type !== 'system' && (
                           <button

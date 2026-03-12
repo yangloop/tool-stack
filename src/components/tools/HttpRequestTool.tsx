@@ -333,7 +333,7 @@ export function HttpRequestTool() {
       {/* 工具标题栏 */}
       <div className="tool-header">
         <div className="tool-icon">
-          <Globe className="w-6 h-6" />
+          <Globe className="w-3.5 h-3.5 sm:w-4 sm:h-4 sm:w-5 sm:h-5 sm:w-6 sm:h-6" />
         </div>
         <div className="flex-1">
           <h1 className="text-xl font-semibold text-surface-900 dark:text-surface-100">
@@ -347,8 +347,8 @@ export function HttpRequestTool() {
       </div>
 
       {/* URL 输入区域 */}
-      <div className="card mb-5">
-        <div className="flex gap-3">
+      <div className="card p-3 sm:p-4 sm:p-6 mb-4 sm:mb-4 sm:mb-5">
+        <div className="flex gap-2 sm:gap-3">
           <select
             value={method}
             onChange={(e) => setMethod(e.target.value as HttpMethod)}
@@ -368,9 +368,9 @@ export function HttpRequestTool() {
           {loading ? (
             <button
               onClick={handleCancelRequest}
-              className="btn-danger"
+              className="btn-danger btn-tool sm:btn-action"
             >
-              <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+              <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 animate-spin flex-shrink-0" fill="none" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
@@ -380,9 +380,9 @@ export function HttpRequestTool() {
             <button
               onClick={sendRequest}
               disabled={loading}
-              className="btn-primary"
+              className="btn-primary btn-tool sm:btn-action"
             >
-              <Send className="w-4 h-4" />
+              <Send className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" />
               发送
             </button>
           )}
@@ -399,41 +399,41 @@ export function HttpRequestTool() {
 
         {error && (
           <div className="mt-4 p-3 bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-800/30 rounded-xl text-red-600 dark:text-red-400 text-sm flex items-center gap-2">
-            <AlertCircle className="w-4 h-4 flex-shrink-0" />
+            <AlertCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" />
             {error}
           </div>
         )}
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 border-b border-surface-200 dark:border-surface-700 mb-5">
+      <div className="flex gap-0 sm:gap-1 border-b border-surface-200 dark:border-surface-700 mb-4 sm:mb-5 overflow-x-auto scrollbar-hide">
         <TabButton 
           active={activeTab === 'params'} 
           onClick={() => setActiveTab('params')}
-          icon={<Hash className="w-4 h-4" />}
+          icon={<Hash className="w-3.5 h-3.5 sm:w-4 sm:h-4" />}
           label="参数"
           count={params.filter(p => p.enabled && p.key).length}
         />
         <TabButton 
           active={activeTab === 'headers'} 
           onClick={() => setActiveTab('headers')}
-          icon={<Code className="w-4 h-4" />}
+          icon={<Code className="w-3.5 h-3.5 sm:w-4 sm:h-4" />}
           label="请求头"
           count={headers.filter(h => h.enabled && h.key).length}
         />
         <TabButton 
           active={activeTab === 'body'} 
           onClick={() => setActiveTab('body')}
-          icon={<Type className="w-4 h-4" />}
+          icon={<Type className="w-3.5 h-3.5 sm:w-4 sm:h-4" />}
           label="请求体"
           badge={bodyType !== 'none' ? bodyType : undefined}
         />
       </div>
 
       {/* Tab Content */}
-      <div className="mb-5">
+      <div className="mb-4 sm:mb-5">
         {activeTab === 'params' && (
-          <div className="card">
+          <div className="card p-3 sm:p-4 sm:p-6">
             <KeyValueEditor
               items={params}
               onChange={setParams}
@@ -445,7 +445,7 @@ export function HttpRequestTool() {
         )}
 
         {activeTab === 'headers' && (
-          <div className="card">
+          <div className="card p-3 sm:p-4 sm:p-6">
             <KeyValueEditor
               items={headers}
               onChange={setHeaders}
@@ -475,7 +475,7 @@ export function HttpRequestTool() {
       </div>
 
       {/* Code Generator */}
-      <div className="mb-4">
+      <div className="mb-3 sm:mb-4">
         <CodeGenerator
           method={method}
           url={fullUrl}
@@ -486,16 +486,16 @@ export function HttpRequestTool() {
 
       {/* Response */}
       {response && (
-        <div className="card overflow-hidden mb-5 p-0">
+        <div className="card p-0 overflow-hidden mb-4 sm:mb-4 sm:mb-5">
           {/* 响应头部 */}
           <div className="flex items-center justify-between px-5 py-4 border-b border-surface-200 dark:border-surface-700 bg-surface-50/50 dark:bg-surface-800/50">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 sm:gap-3">
               <span className={`text-2xl font-bold ${getStatusColor(response.status)}`}>
                 {response.status}
               </span>
               <span className="text-sm text-surface-600 dark:text-surface-400">{response.statusText}</span>
             </div>
-            <div className="flex items-center gap-4 text-xs text-surface-500">
+            <div className="flex items-center gap-3 sm:p-4 text-xs text-surface-500">
               <span className="flex items-center gap-1.5 px-2.5 py-1 bg-surface-100 dark:bg-surface-700 rounded-lg">
                 <Clock className="w-3.5 h-3.5" />
                 {response.time}ms
@@ -508,49 +508,39 @@ export function HttpRequestTool() {
 
           {/* 响应 Tabs */}
           <div className="flex border-b border-surface-200 dark:border-surface-700 px-5">
-            <button
+            <TabButton 
+              active={responseTab === 'body'} 
               onClick={() => setResponseTab('body')}
-              className={`px-4 py-3 text-sm font-medium border-b-2 transition-all ${
-                responseTab === 'body'
-                  ? 'border-primary-500 text-primary-600 dark:text-primary-400'
-                  : 'border-transparent text-surface-500 hover:text-surface-700 dark:hover:text-surface-300'
-              }`}
-            >
-              响应体
-            </button>
-            <button
+              label="响应体"
+            />
+            <TabButton 
+              active={responseTab === 'headers'} 
               onClick={() => setResponseTab('headers')}
-              className={`px-4 py-3 text-sm font-medium border-b-2 transition-all ${
-                responseTab === 'headers'
-                  ? 'border-primary-500 text-primary-600 dark:text-primary-400'
-                  : 'border-transparent text-surface-500 hover:text-surface-700 dark:hover:text-surface-300'
-              }`}
-            >
-              响应头
-            </button>
+              label="响应头"
+            />
           </div>
 
           {/* 响应内容 */}
-          <div className="p-5">
+          <div className="p-3 sm:p-4 sm:p-5">
             {responseTab === 'body' ? (
               <div className="space-y-3">
                 <div className="flex justify-end">
                   <button
                     onClick={() => copy(response.body)}
-                    className="btn-ghost text-xs"
+                    className={`btn-tool ${copied ? 'btn-ghost-success' : 'btn-ghost'}`}
                   >
-                    {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                    {copied ? <Check className="w-3.5 h-3.5 flex-shrink-0" /> : <Copy className="w-3.5 h-3.5 flex-shrink-0" />}
                     {copied ? '已复制' : '复制'}
                   </button>
                 </div>
-                <pre className="p-4 bg-surface-900 text-surface-100 rounded-xl overflow-auto max-h-96 text-sm font-mono">
+                <pre className="p-3 sm:p-4 bg-surface-900 text-surface-100 rounded-xl overflow-auto max-h-72 sm:h-96 text-sm font-mono">
                   {response.body}
                 </pre>
               </div>
             ) : (
               <div className="space-y-2 max-h-96 overflow-auto">
                 {Object.entries(response.headers).map(([key, value]) => (
-                  <div key={key} className="flex gap-4 text-sm py-2 border-b border-surface-100 dark:border-surface-700/50 last:border-0">
+                  <div key={key} className="flex gap-3 sm:p-4 text-sm py-2 border-b border-surface-100 dark:border-surface-700/50 last:border-0">
                     <span className="font-medium text-surface-700 dark:text-surface-300 min-w-[180px] flex-shrink-0">{key}:</span>
                     <span className="text-surface-600 dark:text-surface-400 break-all font-mono text-xs">{value}</span>
                   </div>
@@ -563,17 +553,17 @@ export function HttpRequestTool() {
 
       {/* History */}
       {history.length > 0 && (
-        <div className="card mb-5">
-          <div className="flex items-center justify-between mb-4">
+        <div className="card mb-4 sm:mb-5">
+          <div className="flex items-center justify-between mb-3 sm:mb-4">
             <div className="flex items-center gap-2">
-              <History className="w-5 h-5 text-surface-500" />
+              <History className="w-3.5 h-3.5 sm:w-4 sm:h-4 sm:w-5 sm:h-5 text-surface-500" />
               <h3 className="font-semibold text-surface-900 dark:text-surface-100">历史记录</h3>
             </div>
             <button
               onClick={clearHistory}
-              className="btn-danger text-xs"
+              className="btn-ghost-danger btn-tool"
             >
-              <Trash2 className="w-3.5 h-3.5" />
+              <Trash2 className="w-3.5 h-3.5 flex-shrink-0" />
               清空
             </button>
           </div>
@@ -593,7 +583,7 @@ export function HttpRequestTool() {
                   if (item.formData) setFormData(item.formData);
                   if (item.urlEncodedData) setUrlEncodedData(item.urlEncodedData);
                 }}
-                className="w-full flex items-center gap-3 p-3 hover:bg-surface-100 dark:hover:bg-surface-700/50 rounded-xl text-left transition-colors group"
+                className="w-full flex items-center gap-3 p-3 hover:bg-surface-100 dark:hover:bg-surface-700/50 rounded-xl text-left transition-all active:scale-[0.99] touch-manipulation"
               >
                 <MethodBadge method={item.method} />
                 <span className="flex-1 text-xs text-surface-600 dark:text-surface-400 truncate font-mono">
@@ -618,17 +608,20 @@ export function HttpRequestTool() {
 interface TabButtonProps {
   active: boolean;
   onClick: () => void;
-  icon: React.ReactNode;
+  icon?: React.ReactNode;
   label: string;
   count?: number;
   badge?: string;
 }
 
 function TabButton({ active, onClick, icon, label, count, badge }: TabButtonProps) {
+  // 移动端缩短过长的 badge
+  const shortenedBadge = badge ? shortenBadge(badge) : undefined;
+  
   return (
     <button
       onClick={onClick}
-      className={`px-4 py-3 text-sm font-medium border-b-2 transition-all flex items-center gap-2 -mb-px ${
+      className={`px-2 sm:px-3 py-2 sm:py-3 text-xs sm:text-sm font-medium border-b-2 transition-all flex items-center gap-1.5 sm:gap-2 -mb-px whitespace-nowrap ${
         active
           ? 'border-primary-500 text-primary-600 dark:text-primary-400'
           : 'border-transparent text-surface-500 hover:text-surface-700 dark:hover:text-surface-300'
@@ -637,17 +630,24 @@ function TabButton({ active, onClick, icon, label, count, badge }: TabButtonProp
       {icon}
       <span>{label}</span>
       {count !== undefined && count > 0 && (
-        <span className="ml-0.5 px-2 py-0.5 text-[10px] bg-surface-100 dark:bg-surface-700 text-surface-600 dark:text-surface-300 rounded-full">
+        <span className="ml-0.5 px-1.5 sm:px-2 py-0.5 text-[10px] bg-surface-100 dark:bg-surface-700 text-surface-600 dark:text-surface-300 rounded-full">
           {count}
         </span>
       )}
-      {badge && (
-        <span className="ml-0.5 px-2 py-0.5 text-[10px] bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 rounded-full">
+      {shortenedBadge && (
+        <span className="ml-0.5 px-1.5 sm:px-2 py-0.5 text-[10px] bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 rounded-full hidden sm:inline">
           {badge}
         </span>
       )}
     </button>
   );
+}
+
+// 缩短 badge 文字（移动端不显示过长内容）
+function shortenBadge(badge: string): string {
+  if (!badge) return '';
+  // 移动端只返回简单的标识，实际显示在 PC 端
+  return badge;
 }
 
 // 方法标签

@@ -226,9 +226,9 @@ export function CrontabTool() {
   return (
     <div className="max-w-5xl mx-auto space-y-6">
       {/* 标题 */}
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-          <Clock className="w-7 h-7 text-blue-500" />
+      <div className="mb-4 sm:mb-6">
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+          <Clock className="w-6 h-6 sm:w-7 sm:h-7 text-blue-500" />
           Crontab 表达式生成器
         </h1>
         <p className="text-gray-500 dark:text-gray-400 mt-1">
@@ -237,8 +237,8 @@ export function CrontabTool() {
       </div>
 
       {/* 表达式显示 */}
-      <div className="card bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-slate-800 dark:to-slate-900">
-        <div className="flex flex-wrap items-center justify-between gap-4">
+      <div className="card p-4 sm:p-6 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-slate-800 dark:to-slate-900">
+        <div className="flex flex-wrap items-center justify-between gap-3 sm:gap-4">
           <div className="flex-1">
             <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">
               Cron 表达式
@@ -254,7 +254,7 @@ export function CrontabTool() {
                 />
                 <button
                   onClick={handleExpressionSave}
-                  className="p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                  className="btn-primary btn-icon"
                 >
                   <Save className="w-5 h-5" />
                 </button>
@@ -276,9 +276,9 @@ export function CrontabTool() {
           </div>
           <button
             onClick={handleCopy}
-            className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 rounded-lg border border-blue-200 dark:border-blue-800 hover:bg-blue-50 dark:hover:bg-blue-900/30"
+            className={`btn-tool ${copied ? 'btn-ghost-success' : 'btn-secondary'}`}
           >
-            {copied ? <Check className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
+            {copied ? <Check className="w-4 h-4 flex-shrink-0" /> : <Copy className="w-4 h-4 flex-shrink-0" />}
             {copied ? '已复制' : '复制'}
           </button>
         </div>
@@ -293,12 +293,12 @@ export function CrontabTool() {
       </div>
 
       {/* 时间字段选择 */}
-      <div className="card">
+      <div className="card p-4 sm:p-6">
         <h3 className="font-medium text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-          <Calendar className="w-5 h-5 text-blue-500" />
+          <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-blue-500" />
           时间设置
         </h3>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-4">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
           {cronFields.map((field, index) => (
             <div key={field.name}>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -332,20 +332,20 @@ export function CrontabTool() {
       </div>
 
       {/* 常用预设 */}
-      <div className="card">
+      <div className="card p-4 sm:p-6">
         <h3 className="font-medium text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-          <RefreshCw className="w-5 h-5 text-green-500" />
+          <RefreshCw className="w-4 h-4 sm:w-5 sm:h-5 text-green-500" />
           常用预设
         </h3>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3">
           {presets.map((preset) => (
             <button
               key={preset.value}
               onClick={() => handlePresetClick(preset)}
               className={`p-3 text-left rounded-lg border transition-all ${
                 expression === preset.value
-                  ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800'
-                  : 'bg-gray-50 dark:bg-slate-800 border-gray-200 dark:border-slate-700 hover:border-blue-300'
+                  ? 'bg-primary-50 dark:bg-primary-900/20 border-primary-200 dark:border-primary-800'
+                  : 'bg-surface-50 dark:bg-surface-800 border-surface-200 dark:border-surface-700 hover:border-primary-300'
               }`}
             >
               <div className="font-medium text-gray-900 dark:text-white text-sm">
@@ -363,9 +363,9 @@ export function CrontabTool() {
       </div>
 
       {/* 说明 */}
-      <div className="card">
+      <div className="card p-4 sm:p-6">
         <h3 className="font-medium text-gray-900 dark:text-white mb-3 flex items-center gap-2">
-          <Info className="w-5 h-5 text-purple-500" />
+          <Info className="w-4 h-4 sm:w-5 sm:h-5 text-purple-500" />
           Cron 表达式格式说明
         </h3>
         <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-4 text-sm">
