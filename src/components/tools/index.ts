@@ -13,6 +13,7 @@ export { JwtTool } from './JwtTool';
 export { RsaTool } from './RsaTool';
 export { UaParserTool } from './UaParserTool';
 export { SqlTool } from './SqlTool';
+export { SqlAdvisorTool } from './SqlAdvisorTool';
 export { CrontabTool } from './CrontabTool';
 export { UrlParserTool } from './UrlParserTool';
 export { HttpRequestTool } from './HttpRequestTool';

@@ -68,7 +68,7 @@ export function Home({ onToolSelect }: HomeProps) {
             ToolStack <span className="text-primary-200">开发者工具箱</span>
           </h1>
           <p className="text-primary-100 text-base sm:text-lg max-w-2xl mb-6 sm:mb-8 leading-relaxed">
-            简洁高效的在线工具集合，助力开发效率提升。支持 JSON 格式化、Base64 编解码、二维码生成等 20+ 实用工具。
+            简洁高效的在线工具集合，助力开发效率提升。支持 JSON 格式化、SQL 智能分析与优化、Base64 编解码、二维码生成等 25+ 实用工具。
           </p>
           <div className="flex flex-col sm:flex-row flex-wrap gap-3">
             <button
@@ -80,8 +80,15 @@ export function Home({ onToolSelect }: HomeProps) {
               <ArrowRight className="w-4 h-4 hidden sm:inline" />
             </button>
             <button
-              onClick={() => handleToolClick('base64')}
+              onClick={() => handleToolClick('sql-advisor')}
               className="inline-flex items-center justify-center sm:justify-start gap-2 px-5 sm:px-6 py-3 bg-primary-400/30 text-white rounded-xl font-medium hover:bg-primary-400/40 transition-colors backdrop-blur touch-manipulation"
+            >
+              <Sparkles className="w-5 h-5" />
+              <span>SQL 分析优化</span>
+            </button>
+            <button
+              onClick={() => handleToolClick('base64')}
+              className="inline-flex items-center justify-center sm:justify-start gap-2 px-5 sm:px-6 py-3 bg-primary-400/20 text-white rounded-xl font-medium hover:bg-primary-400/30 transition-colors backdrop-blur touch-manipulation"
             >
               <Code className="w-5 h-5" />
               <span>Base64 编解码</span>
@@ -221,6 +228,17 @@ export function Home({ onToolSelect }: HomeProps) {
           <h2 className="font-semibold text-surface-900 dark:text-surface-100">最近更新</h2>
         </div>
         <div className="space-y-4">
+          <div className="flex items-start gap-4">
+            <div className="flex flex-col items-center">
+              <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
+              <div className="w-px h-full bg-surface-200 dark:bg-surface-700 mt-2"></div>
+            </div>
+            <div className="pb-4">
+              <span className="badge bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300 mb-1">FEATURE</span>
+              <p className="text-sm text-surface-700 dark:text-surface-300 mt-1"><strong>SQL 分析优化工具</strong>全面升级：支持语法错误检测、表名字段验证、数据类型检查、组合索引分析（最左前缀原则），兼容 MySQL、PostgreSQL、SQLite、MariaDB</p>
+              <p className="text-xs text-surface-400 mt-1">2026-03-12</p>
+            </div>
+          </div>
           <div className="flex items-start gap-4">
             <div className="flex flex-col items-center">
               <div className="w-3 h-3 bg-orange-500 rounded-full"></div>

@@ -1,6 +1,6 @@
 # ToolStack - IT 工具箱
 
-一个现代化的 IT 工具集合网站，专为开发者和系统管理员设计。包含 20+ 实用工具，界面简洁美观，支持深色模式。
+一个现代化的 IT 工具集合网站，专为开发者和系统管理员设计。包含 25+ 实用工具，涵盖 JSON/SQL 格式化与优化、编解码、加密安全、开发调试等多个领域，界面简洁美观，支持深色模式。
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![React](https://img.shields.io/badge/react-19-61DAFB.svg)
@@ -12,7 +12,7 @@
 - 🎨 **现代化 UI** - 采用玻璃态设计风格，支持浅色/深色模式
 - ⚡ **高性能** - 基于 React 19 + Vite 7，加载速度快
 - 📱 **响应式设计** - 完美适配桌面和移动设备
-- 🛠️ **丰富工具** - 20+ 款常用开发工具
+- 🛠️ **丰富工具** - 25+ 款常用开发工具
 - 💾 **本地优先** - 数据存储在本地，保护隐私
 - 🔌 **Web Worker** - RSA 密钥生成等耗时任务使用后台线程
 - 🎯 **专业组件** - 使用业界标准第三方库实现核心功能
@@ -28,6 +28,7 @@
 |------|------|----------|
 | JSON 工具 | 格式化、压缩、验证 JSON，支持树形查看 | [@uiw/react-json-view](https://github.com/uiwjs/react-json-view) |
 | SQL 格式化 | SQL 语句美化、压缩和语法高亮 | [sql-formatter](https://github.com/sql-formatter-org/sql-formatter) + [react-syntax-highlighter](https://github.com/react-syntax-highlighter/react-syntax-highlighter) |
+| SQL 分析优化 | 智能SQL分析：语法检查、表名字段验证、数据类型检查、索引优化建议（支持组合索引最左前缀）、性能优化 | [node-sql-parser](https://github.com/taozhi8833998/node-sql-parser) |
 
 ### 编解码工具
 | 工具 | 描述 |
@@ -105,9 +106,13 @@
 ### 安装步骤
 
 ```bash
-# 克隆项目
-git clone https://github.com/yourusername/toolstack.git
-cd toolstack/it-tools
+# 克隆项目（GitHub）
+git clone https://github.com/yangloop/tool-stack.git
+cd tool-stack/it-tools
+
+# 或克隆项目（Gitee）
+git clone https://gitee.com/yangloop/tool-stack.git
+cd tool-stack/it-tools
 
 # 安装依赖
 npm install
@@ -200,6 +205,7 @@ it-tools/
 - [react-colorful](https://github.com/omgovich/react-colorful) - 现代化颜色选择器
 - [@uiw/react-json-view](https://github.com/uiwjs/react-json-view) - JSON 查看器
 - [sql-formatter](https://github.com/sql-formatter-org/sql-formatter) - SQL 格式化
+- [node-sql-parser](https://github.com/taozhi8833998/node-sql-parser) - SQL 解析器（支持MySQL、PostgreSQL、SQLite、MariaDB）
 - [react-syntax-highlighter](https://github.com/react-syntax-highlighter/react-syntax-highlighter) - 语法高亮
 - [composerize](https://github.com/magicmark/composerize) - Docker 命令转换
 - [decomposerize](https://github.com/magicmark/composerize) - Docker Compose 转换

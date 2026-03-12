@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { GitCompare, Trash2, ArrowLeftRight, Copy, Check, FileText, Sparkles } from 'lucide-react';
+import * as Diff from 'diff';
 import { useClipboard } from '../../hooks/useLocalStorage';
 import { AdFooter } from '../ads';
 
@@ -11,63 +12,9 @@ interface DiffLine {
   rightContent: string;
 }
 
-// 字符级别的差异片段
-interface CharDiff {
-  type: 'equal' | 'insert' | 'delete';
-  text: string;
-}
-
-// 计算两个字符串的字符级别差异（简化版 LCS）
-function computeCharDiff(oldStr: string, newStr: string): CharDiff[] {
-  const m = oldStr.length;
-  const n = newStr.length;
-  
-  // 动态规划表
-  const dp: number[][] = Array(m + 1).fill(null).map(() => Array(n + 1).fill(0));
-  
-  // 填充 DP 表
-  for (let i = 1; i <= m; i++) {
-    for (let j = 1; j <= n; j++) {
-      if (oldStr[i - 1] === newStr[j - 1]) {
-        dp[i][j] = dp[i - 1][j - 1] + 1;
-      } else {
-        dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
-      }
-    }
-  }
-  
-  // 回溯找出差异
-  const result: CharDiff[] = [];
-  let i = m, j = n;
-  
-  while (i > 0 || j > 0) {
-    if (i > 0 && j > 0 && oldStr[i - 1] === newStr[j - 1]) {
-      // 相同字符
-      result.unshift({ type: 'equal', text: oldStr[i - 1] });
-      i--;
-      j--;
-    } else if (j > 0 && (i === 0 || dp[i][j - 1] >= dp[i - 1][j])) {
-      // 新增字符
-      result.unshift({ type: 'insert', text: newStr[j - 1] });
-      j--;
-    } else if (i > 0) {
-      // 删除字符
-      result.unshift({ type: 'delete', text: oldStr[i - 1] });
-      i--;
-    }
-  }
-  
-  // 合并连续的相同类型片段
-  const merged: CharDiff[] = [];
-  for (const diff of result) {
-    if (merged.length > 0 && merged[merged.length - 1].type === diff.type) {
-      merged[merged.length - 1].text += diff.text;
-    } else {
-      merged.push({ ...diff });
-    }
-  }
-  
-  return merged;
+// 使用 diff 库计算字符级别差异
+function computeCharDiff(oldStr: string, newStr: string): Diff.Change[] {
+  return Diff.diffChars(oldStr, newStr);
 }
 
 // 行内差异高亮组件
@@ -81,38 +28,38 @@ function InlineDiff({ oldStr, newStr, side }: { oldStr: string; newStr: string; 
   return (
     <span className="font-mono">
       {diffs.map((diff, index) => {
-        const key = `${diff.type}-${index}`;
+        const key = `${diff.added}-${diff.removed}-${index}`;
         
         // 左侧只显示删除和相同
         if (side === 'left') {
-          if (diff.type === 'insert') return null;
-          if (diff.type === 'delete') {
+          if (diff.added) return null;
+          if (diff.removed) {
             return (
               <mark 
                 key={key} 
                 className="bg-red-200 dark:bg-red-800/60 text-red-900 dark:text-red-100 px-0.5 rounded"
               >
-                {diff.text}
+                {diff.value}
               </mark>
             );
           }
-          return <span key={key}>{diff.text}</span>;
+          return <span key={key}>{diff.value}</span>;
         }
         
         // 右侧只显示新增和相同
         if (side === 'right') {
-          if (diff.type === 'delete') return null;
-          if (diff.type === 'insert') {
+          if (diff.removed) return null;
+          if (diff.added) {
             return (
               <mark 
                 key={key} 
                 className="bg-emerald-200 dark:bg-emerald-800/60 text-emerald-900 dark:text-emerald-100 px-0.5 rounded"
               >
-                {diff.text}
+                {diff.value}
               </mark>
             );
           }
-          return <span key={key}>{diff.text}</span>;
+          return <span key={key}>{diff.value}</span>;
         }
         
         return null;
@@ -128,95 +75,77 @@ export function TextDiffTool() {
   const [showEqualLines, setShowEqualLines] = useState(true);
   const [showInlineDiff, setShowInlineDiff] = useState(true);
 
-  // 简单的行级 diff 算法
+  // 使用 diff 库的 diffLines 算法进行行级对比
   const diffResult = useMemo((): DiffLine[] => {
-    const leftLines = leftText.split('\n');
-    const rightLines = rightText.split('\n');
+    const changes = Diff.diffLines(leftText, rightText);
     const result: DiffLine[] = [];
     
-    let leftIndex = 0;
-    let rightIndex = 0;
     let leftLineNum = 1;
     let rightLineNum = 1;
 
-    // 使用简化的 LCS (最长公共子序列) 算法
-    while (leftIndex < leftLines.length || rightIndex < rightLines.length) {
-      const leftLine = leftLines[leftIndex];
-      const rightLine = rightLines[rightIndex];
-
-      if (leftIndex >= leftLines.length) {
-        // 左侧已结束，右侧剩余为新增
-        result.push({
-          type: 'insert',
-          leftLineNum: null,
-          rightLineNum: rightLineNum++,
-          leftContent: '',
-          rightContent: rightLine,
-        });
-        rightIndex++;
-      } else if (rightIndex >= rightLines.length) {
-        // 右侧已结束，左侧剩余为删除
-        result.push({
-          type: 'delete',
-          leftLineNum: leftLineNum++,
-          rightLineNum: null,
-          leftContent: leftLine,
-          rightContent: '',
-        });
-        leftIndex++;
-      } else if (leftLine === rightLine) {
-        // 相同行
-        result.push({
-          type: 'equal',
-          leftLineNum: leftLineNum++,
-          rightLineNum: rightLineNum++,
-          leftContent: leftLine,
-          rightContent: rightLine,
-        });
-        leftIndex++;
-        rightIndex++;
-      } else {
-        // 行不同，检查是否是插入或删除
-        // 简化处理：如果下一行匹配，则当前行是插入/删除
-        const nextLeftMatch = rightLines.slice(rightIndex).includes(leftLine);
-        const nextRightMatch = leftLines.slice(leftIndex).includes(rightLine);
-
-        if (!nextLeftMatch && nextRightMatch) {
-          // 左侧当前行被删除
+    for (const change of changes) {
+      const lines = change.value.replace(/\n$/, '').split('\n');
+      // 如果原始文本以换行符结尾，最后一个空行会被 split 忽略，需要加回来
+      if (change.value.endsWith('\n') && change.value.length > 0) {
+        lines.push('');
+      }
+      
+      for (const line of lines) {
+        if (!change.added && !change.removed) {
+          // 相同行
           result.push({
-            type: 'delete',
+            type: 'equal',
             leftLineNum: leftLineNum++,
-            rightLineNum: null,
-            leftContent: leftLine,
-            rightContent: '',
+            rightLineNum: rightLineNum++,
+            leftContent: line,
+            rightContent: line,
           });
-          leftIndex++;
-        } else if (nextLeftMatch && !nextRightMatch) {
-          // 右侧当前行是新增
+        } else if (change.added) {
+          // 新增行
           result.push({
             type: 'insert',
             leftLineNum: null,
             rightLineNum: rightLineNum++,
             leftContent: '',
-            rightContent: rightLine,
+            rightContent: line,
           });
-          rightIndex++;
-        } else {
-          // 都不匹配，视为修改（删除旧行+新增新行）
+        } else if (change.removed) {
+          // 删除行
           result.push({
-            type: 'modify',
+            type: 'delete',
             leftLineNum: leftLineNum++,
-            rightLineNum: rightLineNum++,
-            leftContent: leftLine,
-            rightContent: rightLine,
+            rightLineNum: null,
+            leftContent: line,
+            rightContent: '',
           });
-          leftIndex++;
-          rightIndex++;
         }
       }
     }
 
-    return result;
+    // 处理修改行的配对（简化处理：连续的删除和插入视为修改）
+    const optimizedResult: DiffLine[] = [];
+    let i = 0;
+    while (i < result.length) {
+      const current = result[i];
+      const next = result[i + 1];
+      
+      // 如果当前是删除，下一个是插入，则合并为修改
+      if (current.type === 'delete' && next && next.type === 'insert') {
+        optimizedResult.push({
+          type: 'modify',
+          leftLineNum: current.leftLineNum,
+          rightLineNum: next.rightLineNum,
+          leftContent: current.leftContent,
+          rightContent: next.rightContent,
+        });
+        i += 2;
+      } else {
+        optimizedResult.push(current);
+        i++;
+      }
+    }
+
+    return optimizedResult;
   }, [leftText, rightText]);
 
   // 统计信息
@@ -285,7 +214,7 @@ const version = "2.0";`);
             文本对比
           </h1>
           <p className="text-xs sm:text-sm text-surface-500 mt-0.5">
-            比较两段文本的差异，支持行内字符级高亮
+            使用 diff 库比较两段文本的差异，支持行内字符级高亮
           </p>
         </div>
         <button
@@ -461,7 +390,7 @@ const version = "2.0";`);
                     </td>
                     {/* 左侧内容 */}
                     <td className="w-1/2 px-2 sm:px-4 py-1.5 font-mono text-[10px] sm:text-xs border-r border-surface-200 dark:border-surface-700">
-                      {line.leftContent && (
+                      {line.leftContent !== '' && (
                         <span className={`
                           ${line.type === 'delete' ? 'text-red-700 dark:text-red-400' : 'text-surface-700 dark:text-surface-300'}
                         `}>
@@ -481,7 +410,7 @@ const version = "2.0";`);
                     </td>
                     {/* 右侧内容 */}
                     <td className="w-1/2 px-2 sm:px-4 py-1.5 font-mono text-[10px] sm:text-xs">
-                      {line.rightContent && (
+                      {line.rightContent !== '' && (
                         <span className={`
                           ${line.type === 'insert' ? 'text-primary-700 dark:text-primary-400' : 'text-surface-700 dark:text-surface-300'}
                         `}>

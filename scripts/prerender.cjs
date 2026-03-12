@@ -6,7 +6,7 @@
 const fs = require('fs');
 const path = require('path');
 
-// 工具详细配置
+// 工具详细配置 - SEO优化：包含详细的功能描述和关键词
 const toolsConfig = {
   'json': {
     name: 'JSON工具',
@@ -18,6 +18,12 @@ const toolsConfig = {
     name: 'SQL格式化',
     description: 'SQL语句美化、压缩和语法高亮工具。支持多种SQL方言，自动格式化复杂查询语句。',
     keywords: 'SQL格式化,SQL美化,SQL压缩,SQL语法高亮,MySQL格式化,PostgreSQL格式化',
+    category: '格式化工具'
+  },
+  'sql-advisor': {
+    name: 'SQL分析优化工具',
+    description: '智能SQL分析优化工具：检测SQL/DDL语法错误、验证表名字段匹配、检查数据类型兼容性、分析索引使用情况（支持组合索引最左前缀原则）、提供SQL性能优化建议。支持MySQL、PostgreSQL、SQLite、MariaDB等多种数据库。',
+    keywords: 'SQL分析,SQL优化,SQL语法检查,SQL性能优化,SQL索引优化,组合索引检查,数据类型检查,表名验证,字段验证,MySQL优化,PostgreSQL优化,SQL查询优化,SQL调优工具,DDL检查,索引最左前缀',
     category: '格式化工具'
   },
   'base64': {
@@ -259,14 +265,14 @@ const homeJsonLd = {
 
 let homeHtml = indexHtml
   .replace(/<title>.*?<\/title>/, `<title>ToolStack - 开发者工具箱</title>`)
-  .replace(/<meta name="description" content=".*?"/, `<meta name="description" content="ToolStack 是一个现代化的开发者工具集合，包含 20+ 实用工具：JSON格式化、SQL美化、Base64编解码、哈希计算、RSA加密、二维码生成等。界面简洁，支持深色模式。"`)
-  .replace(/<meta name="keywords" content=".*?"/, `<meta name="keywords" content="开发者工具,在线工具,JSON格式化,SQL格式化,Base64编解码,哈希计算,MD5,SHA,RSA加密,二维码生成,UUID生成,时间戳转换,正则表达式测试,Crontab生成器"`)
+  .replace(/<meta name="description" content=".*?"/, `<meta name="description" content="ToolStack 是一个现代化的开发者工具集合，包含 25+ 实用工具：JSON格式化、SQL格式化与智能优化分析、Base64编解码、哈希计算、RSA加密、二维码生成等。SQL分析工具支持语法检查、索引优化、数据类型验证、组合索引分析。界面简洁，支持深色模式。"`)
+  .replace(/<meta name="keywords" content=".*?"/, `<meta name="keywords" content="开发者工具,在线工具,JSON格式化,SQL格式化,SQL分析,SQL优化,SQL语法检查,索引优化,组合索引检查,Base64编解码,哈希计算,MD5,SHA,RSA加密,二维码生成,UUID生成,时间戳转换,正则表达式测试,Crontab生成器"`)
   .replace(/<link rel="canonical" href=".*?"/, `<link rel="canonical" href="${domain}/"`)
   .replace(/<meta property="og:title" content=".*?"/, `<meta property="og:title" content="ToolStack - 开发者工具箱"`)
-  .replace(/<meta property="og:description" content=".*?"/, `<meta property="og:description" content="ToolStack 是一个现代化的开发者工具集合，包含 20+ 实用工具。界面简洁，支持深色模式。"`)
+  .replace(/<meta property="og:description" content=".*?"/, `<meta property="og:description" content="ToolStack 是一个现代化的开发者工具集合，包含 25+ 实用工具：JSON格式化、SQL格式化与智能优化分析、Base64编解码、哈希计算等。界面简洁，支持深色模式。"`)
   .replace(/<meta property="og:url" content=".*?"/, `<meta property="og:url" content="${domain}/"`)
   .replace(/<meta name="twitter:title" content=".*?"/, `<meta name="twitter:title" content="ToolStack - 开发者工具箱"`)
-  .replace(/<meta name="twitter:description" content=".*?"/, `<meta name="twitter:description" content="ToolStack 是一个现代化的开发者工具集合，包含 20+ 实用工具。"`)
+  .replace(/<meta name="twitter:description" content=".*?"/, `<meta name="twitter:description" content="ToolStack 是一个现代化的开发者工具集合，包含 25+ 实用工具：JSON格式化、SQL格式化与智能优化分析、Base64编解码等。"`)
   .replace(/<!-- JSONLD_PLACEHOLDER -->.*?<!-- \/JSONLD_PLACEHOLDER -->/s, JSON.stringify(homeJsonLd, null, 2));
 
 fs.writeFileSync(path.join(distDir, 'index.html'), homeHtml);
@@ -305,7 +311,7 @@ fs.writeFileSync(path.join(distDir, 'robots.txt'), robots);
 console.log(`✓ Generated: robots.txt`);
 
 console.log(`\n✅ SEO优化完成！共生成 ${Object.keys(toolsConfig).length * 2 + 1} 个页面`);
-console.log(`   - 25 个工具页面（HTML + index）`);
+console.log(`   - ${Object.keys(toolsConfig).length} 个工具页面（HTML + index）`);
 console.log(`   - 1 个首页`);
 console.log(`   - 1 个 Sitemap`);
 console.log(`   - 1 个 Robots.txt`);
