@@ -110,7 +110,7 @@ export function DockerConvertTool() {
         </div>
         <div className="flex-1">
           <h1 className="text-xl font-semibold text-surface-900 dark:text-surface-100">
-            Docker 命令转换器
+            Docker 转换
           </h1>
           <p className="text-sm text-surface-500 mt-0.5">
             使用 composerize / decomposerize 库实现 docker run 与 docker-compose 互转

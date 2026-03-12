@@ -229,7 +229,7 @@ export function CrontabTool() {
       <div className="mb-4 sm:mb-6">
         <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
           <Clock className="w-6 h-6 sm:w-7 sm:h-7 text-blue-500" />
-          Crontab 表达式生成器
+          Crontab 生成
         </h1>
         <p className="text-gray-500 dark:text-gray-400 mt-1">
           可视化生成和解析 Unix/Linux 定时任务表达式

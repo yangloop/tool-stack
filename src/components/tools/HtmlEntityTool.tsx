@@ -47,7 +47,7 @@ export function HtmlEntityTool() {
   return (
     <div className="max-w-4xl mx-auto">
       <div className="mb-4 sm:mb-6">
-        <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">HTML 实体编解码</h1>
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">HTML 实体</h1>
         <p className="text-gray-500 dark:text-gray-400 mt-1 text-xs sm:text-sm">
           HTML 实体编码和解码工具
         </p>

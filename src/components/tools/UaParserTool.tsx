@@ -252,7 +252,7 @@ export function UaParserTool() {
       <div className="mb-4 sm:mb-6">
         <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-1.5 sm:gap-2">
           <Terminal className="w-6 h-6 sm:w-7 sm:h-7 text-blue-500" />
-          User Agent 分析器
+          UA 解析
         </h1>
         <p className="text-gray-500 dark:text-gray-400 mt-1">
           解析浏览器 User Agent 字符串，获取设备、浏览器、操作系统信息

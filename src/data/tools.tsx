@@ -41,7 +41,7 @@ export const tools: Tool[] = [
   },
   {
     id: 'sql',
-    name: 'SQL格式化',
+    name: 'SQL 格式化',
     description: 'SQL语句美化、压缩和语法高亮',
     icon: 'Database',
     category: 'format',
@@ -51,7 +51,7 @@ export const tools: Tool[] = [
   },
   {
     id: 'sql-advisor',
-    name: 'SQL优化建议',
+    name: 'SQL 优化建议',
     description: '分析SQL DDL和SQL语句，提供性能优化建议',
     icon: 'Sparkles',
     category: 'format',
@@ -63,7 +63,7 @@ export const tools: Tool[] = [
   // 编解码工具
   {
     id: 'base64',
-    name: 'Base64编解码',
+    name: 'Base64 编解码',
     description: 'Base64编码和解码工具',
     icon: 'Code',
     category: 'encode',
@@ -81,7 +81,7 @@ export const tools: Tool[] = [
   },
   {
     id: 'url',
-    name: 'URL编解码',
+    name: 'URL 编解码',
     description: 'URL编码和解码工具',
     icon: 'Link',
     category: 'encode',
@@ -89,7 +89,7 @@ export const tools: Tool[] = [
   },
   {
     id: 'url-parser',
-    name: 'URL分析器',
+    name: 'URL 解析',
     description: '解析URL结构，提取协议、主机、路径、查询参数等信息',
     icon: 'Globe',
     category: 'encode',
@@ -98,7 +98,7 @@ export const tools: Tool[] = [
   },
   {
     id: 'html',
-    name: 'HTML实体',
+    name: 'HTML 实体',
     description: 'HTML实体编码和解码',
     icon: 'FileCode',
     category: 'encode',
@@ -106,7 +106,7 @@ export const tools: Tool[] = [
   },
   {
     id: 'jwt',
-    name: 'JWT解码',
+    name: 'JWT 解码',
     description: 'JWT令牌解析和验证',
     icon: 'Key',
     category: 'encode',
@@ -115,7 +115,7 @@ export const tools: Tool[] = [
   },
   {
     id: 'rsa',
-    name: 'RSA密钥生成',
+    name: 'RSA 密钥生成',
     description: '生成RSA公钥私钥对，支持加解密测试',
     icon: 'Key',
     category: 'hash',
@@ -147,7 +147,7 @@ export const tools: Tool[] = [
   },
   {
     id: 'uuid',
-    name: 'UUID生成',
+    name: 'UUID 生成',
     description: '生成UUID/GUID',
     icon: 'Fingerprint',
     category: 'dev',
@@ -155,7 +155,7 @@ export const tools: Tool[] = [
   },
   {
     id: 'regex',
-    name: '正则测试',
+    name: '正则表达式测试',
     description: '正则表达式在线测试',
     icon: 'Search',
     category: 'dev',
@@ -163,7 +163,7 @@ export const tools: Tool[] = [
   },
   {
     id: 'ua-parser',
-    name: 'UA 分析器',
+    name: 'UA 解析',
     description: '解析浏览器 User Agent 获取设备和系统信息',
     icon: 'Terminal',
     category: 'dev',
@@ -172,7 +172,7 @@ export const tools: Tool[] = [
   },
   {
     id: 'crontab',
-    name: 'Crontab生成器',
+    name: 'Crontab 生成',
     description: '可视化生成和解析定时任务 Cron 表达式',
     icon: 'Clock',
     category: 'dev',
@@ -182,7 +182,7 @@ export const tools: Tool[] = [
   },
   {
     id: 'http-request',
-    name: 'HTTP请求',
+    name: 'HTTP 请求',
     description: '在线API测试工具，支持各种HTTP方法和请求头',
     icon: 'Send',
     category: 'dev',
@@ -192,7 +192,7 @@ export const tools: Tool[] = [
   },
   {
     id: 'docker-convert',
-    name: 'Docker 转换器',
+    name: 'Docker 转换',
     description: 'docker run 命令与 docker-compose.yml 配置相互转换',
     icon: 'Container',
     category: 'dev',
@@ -221,7 +221,7 @@ export const tools: Tool[] = [
   },
   {
     id: 'otp',
-    name: 'OTP 生成器',
+    name: 'OTP 生成',
     description: '生成 TOTP 双因素认证验证码，支持 Google Authenticator',
     icon: 'Shield',
     category: 'security',
@@ -230,7 +230,7 @@ export const tools: Tool[] = [
   },
   {
     id: 'chmod',
-    name: 'Chmod 计算器',
+    name: 'Chmod 计算',
     description: 'Linux 文件权限计算，数字权限与符号权限互转',
     icon: 'FileLock',
     category: 'dev',
@@ -259,7 +259,7 @@ export const tools: Tool[] = [
   },
   {
     id: 'password',
-    name: '密码生成器',
+    name: '密码生成',
     description: '生成安全随机密码',
     icon: 'Lock',
     category: 'util',

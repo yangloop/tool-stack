@@ -208,7 +208,7 @@ export function UrlParserTool() {
       <div className="mb-4 sm:mb-6">
         <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
           <Link className="w-5 h-5 sm:w-7 sm:h-7 text-blue-500" />
-          URL 分析器
+          URL 解析
         </h1>
         <p className="text-gray-500 dark:text-gray-400 mt-1 text-xs sm:text-sm">
           解析 URL 结构，提取协议、主机、路径、查询参数等信息

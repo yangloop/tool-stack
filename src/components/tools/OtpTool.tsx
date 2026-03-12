@@ -215,7 +215,7 @@ export function OtpTool() {
         </div>
         <div className="flex-1">
           <h1 className="text-xl font-semibold text-surface-900 dark:text-surface-100">
-            OTP 代码生成器
+            OTP 生成
           </h1>
           <p className="text-sm text-surface-500 mt-0.5">
             生成 TOTP 双因素认证验证码，支持 Google Authenticator

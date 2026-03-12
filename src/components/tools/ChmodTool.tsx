@@ -209,7 +209,7 @@ export function ChmodTool() {
         </div>
         <div className="flex-1">
           <h1 className="text-xl font-semibold text-surface-900 dark:text-surface-100">
-            Chmod 计算器
+            Chmod 计算
           </h1>
           <p className="text-sm text-surface-500 mt-0.5">
             Linux 文件权限计算，数字权限与符号权限互转

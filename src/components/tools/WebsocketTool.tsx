@@ -296,7 +296,7 @@ export function WebsocketTool() {
         </div>
         <div className="flex-1">
           <h1 className="text-xl font-semibold text-surface-900 dark:text-surface-100">
-            WebSocket 测试工具
+            WebSocket 测试
           </h1>
           <p className="text-sm text-surface-500 mt-0.5">
             在线 WebSocket 客户端，测试和调试 WebSocket 连接

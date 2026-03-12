@@ -171,7 +171,7 @@ export function RsaTool() {
         </div>
         <div className="flex-1">
           <h1 className="text-xl font-semibold text-surface-900 dark:text-surface-100">
-            RSA 密钥对生成器
+            RSA 密钥生成
           </h1>
           <p className="text-sm text-surface-500 mt-0.5">
             生成 RSA 公钥和私钥，支持加密/解密测试

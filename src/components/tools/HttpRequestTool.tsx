@@ -337,7 +337,7 @@ export function HttpRequestTool() {
         </div>
         <div className="flex-1">
           <h1 className="text-xl font-semibold text-surface-900 dark:text-surface-100">
-            HTTP 快捷请求
+            HTTP 请求
           </h1>
           <p className="text-sm text-surface-500 mt-0.5">
             支持多种请求体格式的 API 测试工具

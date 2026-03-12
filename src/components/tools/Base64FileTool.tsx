@@ -247,7 +247,7 @@ export function Base64FileTool() {
         </div>
         <div className="flex-1">
           <h1 className="text-xl font-semibold text-surface-900 dark:text-surface-100">
-            Base64 文件转换器
+            Base64 文件转换
           </h1>
           <p className="text-sm text-surface-500 mt-0.5">
             文件与 Base64 编码之间相互转换，支持图片预览和下载

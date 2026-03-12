@@ -41,7 +41,7 @@ export function UuidTool() {
       <div className="mb-4 sm:mb-6">
         <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
           <Fingerprint className="w-5 h-5 sm:w-6 sm:h-6 text-blue-500" />
-          UUID 生成器
+          UUID 生成
         </h1>
         <p className="text-gray-500 dark:text-gray-400 mt-1">
           生成标准 UUID v4 唯一标识符

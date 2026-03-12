@@ -63,7 +63,7 @@ export function PasswordTool() {
       <div className="mb-4 sm:mb-6">
         <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
           <Lock className="w-5 h-5 sm:w-6 sm:h-6 text-blue-500" />
-          密码生成器
+          密码生成
         </h1>
         <p className="text-gray-500 dark:text-gray-400 mt-1">
           生成安全随机密码

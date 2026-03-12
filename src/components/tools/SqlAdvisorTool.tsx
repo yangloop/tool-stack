@@ -1903,7 +1903,7 @@ LIMIT 10;`;
           <div>
             <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
               <Sparkles className="w-6 h-6 sm:w-7 sm:h-7 text-purple-500" />
-              SQL分析优化工具
+              SQL 优化建议
             </h1>
             <p className="text-gray-500 dark:text-gray-400 mt-1 text-xs sm:text-sm">
               智能分析SQL语法、检查DDL一致性、优化索引使用
