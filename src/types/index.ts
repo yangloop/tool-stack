@@ -1,6 +1,9 @@
 // 工具分类
 type ToolCategory = 'format' | 'encode' | 'hash' | 'security' | 'dev' | 'util';
 
+// 工具组件类型 - 支持同步和懒加载组件
+export type ToolComponent = React.ComponentType | React.LazyExoticComponent<React.ComponentType>;
+
 // 工具定义
 export interface Tool {
   id: string;
@@ -8,7 +11,7 @@ export interface Tool {
   description: string;
   icon: string;
   category: ToolCategory;
-  component: React.ComponentType;
+  component: ToolComponent;
   hot?: boolean;
   new?: boolean;
 }
