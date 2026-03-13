@@ -108,11 +108,11 @@
 ```bash
 # 克隆项目（GitHub）
 git clone https://github.com/yangloop/tool-stack.git
-cd tool-stack/it-tools
+cd tool-stack
 
 # 或克隆项目（Gitee）
 git clone https://gitee.com/yangloop/tool-stack.git
-cd tool-stack/it-tools
+cd tool-stack
 
 # 安装依赖
 npm install
@@ -130,7 +130,7 @@ npm run preview
 ## 📁 项目结构
 
 ```
-it-tools/
+/
 ├── src/
 │   ├── components/
 │   │   ├── tools/          # 工具组件
