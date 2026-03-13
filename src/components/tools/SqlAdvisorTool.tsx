@@ -457,6 +457,7 @@ OFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY;`
             placeholder={`-- 在此粘贴 CREATE TABLE 语句...\n-- 支持 ${DATABASE_CONFIGS[dbType].name} 语法`}
             height={showDDLOnly ? '500px' : '250px'}
             padding={12}
+            variant="embedded"
           />
           {schemas.length > 0 && (
             <div className="mt-2 flex flex-wrap gap-1">
@@ -498,6 +499,7 @@ OFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY;`
               placeholder={`-- 在此粘贴要分析的 SQL 语句...\n-- 支持 SELECT/INSERT/UPDATE/DELETE`}
               height="250px"
               padding={12}
+              variant="embedded"
             />
           </div>
         )}

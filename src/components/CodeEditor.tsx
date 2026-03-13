@@ -157,6 +157,7 @@ export function CodeEditor({
     <div className={`code-editor-wrapper ${wrapperClassName}`}>
       <div className={containerClasses}>
         <CodeMirror
+          key={isDark ? 'dark' : 'light'}  // 强制重新创建编辑器以应用主题变化
           value={value}
           height={heightStyle}
           placeholder={placeholder}

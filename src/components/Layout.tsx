@@ -18,7 +18,7 @@ interface LayoutProps {
 }
 
 export function Layout({ children, activeToolId }: LayoutProps) {
-  const [isDark, setIsDark] = useState(false);
+  const [isDark, setIsDark] = useLocalStorage('theme-dark', false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -29,9 +29,17 @@ export function Layout({ children, activeToolId }: LayoutProps) {
   const sidebarRef = useRef<HTMLElement>(null);
   const touchStartX = useRef<number>(0);
 
+  // 同步暗黑模式状态到 document.documentElement
+  useEffect(() => {
+    if (isDark) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [isDark]);
+
   const toggleTheme = () => {
     setIsDark(!isDark);
-    document.documentElement.classList.toggle('dark');
   };
 
   const toggleFullscreen = () => {
