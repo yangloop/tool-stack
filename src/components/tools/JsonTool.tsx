@@ -3,9 +3,7 @@ import {
   Copy, Check, Download, Upload, Trash2, 
   Minimize2, FileJson, Braces, Type, Hash, List, AlertCircle
 } from 'lucide-react';
-import JsonView from '@uiw/react-json-view';
-import { lightTheme } from '@uiw/react-json-view/light';
-import { darkTheme } from '@uiw/react-json-view/dark';
+import ReactJson from 'react-json-view';
 import { downloadFile, readFile } from '../../utils/helpers';
 import { useClipboard } from '../../hooks/useLocalStorage';
 import { AdInArticle, AdFooter } from '../ads';
@@ -90,17 +88,45 @@ function CompressedView({ data, isDark }: { data: object; isDark: boolean }) {
   );
 }
 
+// 自定义 slate 主题 - 匹配项目 dark 主题
+const slateTheme = {
+  base00: '#0f172a', // 背景 slate-900
+  base01: '#1e293b', // 对象/数组背景 slate-800
+  base02: '#334155', // 边框/分隔线 slate-700
+  base03: '#64748b', // 次要文字 slate-500
+  base04: '#94a3b8', // 括号等 slate-400
+  base05: '#e2e8f0', // 主要文字 slate-200
+  base06: '#f1f5f9', // 高亮 slate-100
+  base07: '#ffffff', // 最亮文字
+  base08: '#38bdf8', // key颜色 (sky-400) - 蓝色系
+  base09: '#a5f3fc', // 字符串 (cyan-200) - 青色系
+  base0A: '#fde047', // 数字 (yellow-300) - 黄色系
+  base0B: '#4ade80', // 布尔值 true (green-400) - 绿色系
+  base0C: '#94a3b8', // null (slate-400) - 灰色
+  base0D: '#60a5fa', // 折叠图标 (blue-400)
+  base0E: '#c084fc', // 数组索引 (purple-400)
+  base0F: '#f472b6', // 特殊字符 (pink-400)
+};
+
 // 格式化视图组件
 function FormattedView({ data, isDark }: { data: object; isDark: boolean }) {
   return (
     <div className="p-2 sm:p-4" style={{ minWidth: 0 }}>
       <div style={{ maxWidth: '100%' }}>
-        <JsonView
-          value={data}
-          style={isDark ? darkTheme : lightTheme}
+        <ReactJson
+          src={data}
+          theme={isDark ? slateTheme : 'rjv-default'}
           displayDataTypes={false}
-          enableClipboard={false}
+          enableClipboard={true}
           collapsed={false}
+          style={{ 
+            background: 'transparent',
+            fontSize: '13px',
+            fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace'
+          }}
+          iconStyle="triangle"
+          indentWidth={2}
+          collapseStringsAfterLength={80}
         />
       </div>
     </div>
@@ -250,7 +276,7 @@ export function JsonTool() {
             className="btn-primary btn-tool"
           >
             <FileJson className="w-3.5 h-3.5 flex-shrink-0" />
-            <span>格式</span>
+            <span>格式化</span>
           </button>
           <button 
             onClick={handleCompress} 

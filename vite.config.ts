@@ -32,7 +32,7 @@ export default defineConfig({
           // UI 图标
           'vendor-icons': ['lucide-react'],
           // JSON 查看器（较大，单独打包）
-          'vendor-json': ['@uiw/react-json-view', '@uiw/react-json-view/light', '@uiw/react-json-view/dark'],
+          'vendor-json': ['react-json-view'],
           // SQL 格式化器（单独打包）
           'vendor-sql-formatter': ['sql-formatter'],
           // 语法高亮（非常大，单独打包）

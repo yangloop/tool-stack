@@ -55,7 +55,7 @@ export function SqlAdvisorTool() {
   const { copied, copy } = useClipboard();
 
   // 使用 SQL Advisor Hook
-  const { results, schemas, isAnalyzing, analyze, error } = useSqlAdvisor();
+  const { results, schemas, isAnalyzing, analyze, error, hasAnalyzed } = useSqlAdvisor();
 
   // 按类别分组的结果
   const filteredResults = (() => {
@@ -445,7 +445,7 @@ LIMIT 10;`;
       )}
 
       {/* 空状态 */}
-      {filteredResults.length === 0 && sqlInput && !isAnalyzing && (
+      {filteredResults.length === 0 && sqlInput && !isAnalyzing && hasAnalyzed && (
         <div className="card p-8 text-center">
           <CheckCircle className="w-12 h-12 text-green-500 mx-auto mb-3" />
           <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-1">
@@ -464,3 +464,6 @@ LIMIT 10;`;
     </div>
   );
 }
+
+// 默认导出，用于 React.lazy 懒加载
+export default SqlAdvisorTool;

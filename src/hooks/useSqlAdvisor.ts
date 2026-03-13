@@ -45,6 +45,7 @@ interface UseSqlAdvisorReturn {
   isAnalyzing: boolean;
   analyze: (sqlInput: string, ddlInput: string, dbType: DatabaseType) => void;
   error: string | null;
+  hasAnalyzed: boolean;
 }
 
 export function useSqlAdvisor(): UseSqlAdvisorReturn {
@@ -52,6 +53,7 @@ export function useSqlAdvisor(): UseSqlAdvisorReturn {
   const [schemas, setSchemas] = useState<TableSchema[]>([]);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [hasAnalyzed, setHasAnalyzed] = useState(false);
   const workerRef = useRef<Worker | null>(null);
   const pendingIdRef = useRef<number>(0);
 
@@ -100,8 +102,11 @@ export function useSqlAdvisor(): UseSqlAdvisorReturn {
       setResults([]);
       setSchemas([]);
       setIsAnalyzing(false);
+      setHasAnalyzed(false);
       return;
     }
+
+    setHasAnalyzed(true);
 
     setIsAnalyzing(true);
     setError(null);
@@ -122,6 +127,7 @@ export function useSqlAdvisor(): UseSqlAdvisorReturn {
     schemas,
     isAnalyzing,
     analyze,
-    error
+    error,
+    hasAnalyzed
   };
 }

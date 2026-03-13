@@ -64,9 +64,12 @@ export function WebsocketTool() {
     bytesReceived: 0,
   });
 
-  // 自动滚动到底部
+  // 自动滚动到底部（仅在消息列表容器内滚动，不影响页面）
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    const container = messagesEndRef.current?.parentElement;
+    if (container) {
+      container.scrollTop = container.scrollHeight;
+    }
   }, [messages]);
 
   // 清理定时器

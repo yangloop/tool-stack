@@ -77,13 +77,13 @@ export function RsaTool() {
   // Web Worker
   const { generateKeys: generateKeysWithWorker, isGenerating, progress } = useRsaWorker();
 
-  // 页面加载时自动生成默认密钥（使用较小的 512 位密钥快速生成）
+  // 页面加载时自动生成默认密钥
   useEffect(() => {
-    generateKeysWithWorker(512, ({ publicKey: pub, privateKey: pri }) => {
+    generateKeysWithWorker(keySize, ({ publicKey: pub, privateKey: pri }) => {
       setPublicKey(pub);
       setPrivateKey(pri);
     });
-  }, [generateKeysWithWorker]);
+  }, [generateKeysWithWorker, keySize]);
 
   // 生成密钥对
   const handleGenerateKeys = () => {
