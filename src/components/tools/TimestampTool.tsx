@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Copy, Check, Clock, RefreshCw } from 'lucide-react';
 import { useClipboard } from '../../hooks/useLocalStorage';
 import { AdFooter } from '../ads';
+import { ToolInfoAuto } from './ToolInfoSection';
 
 export function TimestampTool() {
   const [timestamp, setTimestamp] = useState(Math.floor(Date.now() / 1000).toString());
@@ -181,6 +182,9 @@ export function TimestampTool() {
           )}
         </div>
       </div>
+
+      {/* 功能说明 */}
+      <ToolInfoAuto toolId="timestamp" />
 
       {/* 底部广告 */}
       <AdFooter />

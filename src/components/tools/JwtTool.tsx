@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Copy, Check, Key, Sparkles, Shield } from 'lucide-react';
+import { Copy, Check, Key, Sparkles } from 'lucide-react';
 import { useClipboard } from '../../hooks/useLocalStorage';
 import { AdFooter } from '../ads';
+import { CodeEditor } from '../CodeEditor';
+import { ToolInfoAuto } from './ToolInfoSection';
 
 interface JwtPayload {
   header: object;
@@ -109,32 +111,16 @@ export function JwtTool() {
             </span>
           </div>
         </div>
-        <textarea
-          id="jwt-input"
-          name="jwt-input"
+        <CodeEditor
           value={input}
-          onChange={(e) => setInput(e.target.value)}
+          onChange={setInput}
+          language="text"
+          height={112}
           placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
-          className="w-full h-24 sm:h-28 p-3 sm:p-4 font-mono text-xs sm:text-sm bg-surface-50 dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded-xl resize-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 transition-all"
-          spellCheck={false}
+          variant="embedded"
         />
         
-        {/* JWT 结构说明 */}
-        {!input && (
-          <div className="mt-4 p-3 sm:p-4 bg-surface-50 dark:bg-surface-900/30 rounded-xl">
-            <div className="flex items-center gap-2 mb-2">
-              <Shield className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-surface-400" />
-              <span className="text-xs font-medium text-surface-500">JWT 结构</span>
-            </div>
-            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 text-xs font-mono">
-              <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 rounded">Header</span>
-              <span className="text-surface-400">.</span>
-              <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400 rounded">Payload</span>
-              <span className="text-surface-400">.</span>
-              <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 rounded">Signature</span>
-            </div>
-          </div>
-        )}
+
       </div>
 
       {/* 解析结果 */}
@@ -232,6 +218,8 @@ export function JwtTool() {
           )}
         </div>
       )}
+
+      <ToolInfoAuto toolId="jwt" />
 
       {/* 底部广告 */}
       <AdFooter />

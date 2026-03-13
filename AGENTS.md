@@ -82,3 +82,101 @@ npm run build
 ```
 
 构建后会自动执行 `scripts/prerender.cjs` 生成所有SEO页面。
+
+---
+
+## CodeEditor 组件
+
+### 概述
+
+`CodeEditor` 是一个基于 CodeMirror 6 的代码编辑器组件，适配项目整体 UI 风格，支持暗黑和浅色模式。
+
+### 文件位置
+
+- 组件源码: `src/components/CodeEditor.tsx`
+- 主题配置: `src/styles/codemirror-theme.ts`
+- 全局样式: `src/style.css` (搜索 `CodeEditor 组件全局样式`)
+
+### 使用方法
+
+```tsx
+import { CodeEditor } from '../components/CodeEditor';
+
+// 基础用法
+<CodeEditor
+  value={input}
+  onChange={setInput}
+  language="json"
+  placeholder="在此粘贴 JSON 数据..."
+  height="400px"
+/>
+
+// 嵌入卡片中使用（推荐）
+<CodeEditor
+  value={input}
+  onChange={setInput}
+  language="sql"
+  placeholder="在此粘贴 SQL 语句..."
+  height="400px"
+  variant="embedded"  // 与卡片融合，无边框
+/>
+
+// 完整配置
+<CodeEditor
+  value={input}
+  onChange={setInput}
+  language="json"           // 支持: sql, json, xml, html, yaml, shell, text
+  placeholder="提示文本"
+  height="400px"           // 或数字: 400
+  variant="embedded"       // default | embedded | minimal
+  showLineNumbers={false}  // 是否显示行号
+  readOnly={false}
+  fontSize="13px"
+  padding={12}            // 内边距（像素）
+  className="custom-class"
+  wrapperClassName="wrapper-class"
+/>
+```
+
+### 变体说明
+
+| 变体 | 说明 | 使用场景 |
+|------|------|----------|
+| `default` | 独立使用，带边框和阴影，hover 时有阴影增强 | 独立编辑器区域 |
+| `embedded` | 无边框和阴影，与父容器融合 | 嵌入在 `.card` 中使用 |
+| `minimal` | 极简风格，仅圆角 | 紧凑布局 |
+
+### 主题系统
+
+组件自动监听 `document.documentElement` 的 `dark` 类，动态切换主题：
+
+- **浅色模式**: 使用 `surface-50` 背景，`surface-800` 文字
+- **深色模式**: 使用 `surface-900` 背景，`surface-200` 文字
+
+### 全局样式覆盖
+
+如需修改编辑器样式，在 `src/style.css` 中添加：
+
+```css
+/* 选中文本颜色 */
+.code-editor-content .cm-selectionBackground {
+  background-color: #bae6fd !important;
+}
+
+/* 当前行高亮 */
+.code-editor-content .cm-activeLine {
+  background-color: #f1f5f9 !important;
+}
+
+/* 光标颜色 */
+.code-editor-content .cm-cursor {
+  border-left-color: #0ea5e9;
+}
+```
+
+### 注意事项
+
+1. 在 `.card` 中使用推荐 `variant="embedded"` 以保持视觉一致性
+2. 所有工具调用 CodeEditor 时，样式会自动应用全局样式配置
+3. 字体使用项目统一字体 `'JetBrains Mono', 'Fira Code', monospace`
+4. 移动端自动优化字体大小防止 iOS 缩放

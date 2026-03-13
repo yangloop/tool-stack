@@ -17,10 +17,12 @@ import {
 } from 'lucide-react';
 import { useClipboard } from '../../hooks/useLocalStorage';
 import { AdFooter } from '../ads';
+import { ToolInfoAuto } from './ToolInfoSection';
 import { 
   useDockerConverter, 
   type DockerRunOptions 
 } from './docker-convert';
+import { CodeEditor } from '../CodeEditor';
 
 export function DockerConvertTool() {
   const [activeTab, setActiveTab] = useState<'run-to-compose' | 'compose-to-run' | 'form-to-docker'>('run-to-compose');
@@ -153,13 +155,13 @@ export function DockerConvertTool() {
               </button>
             </div>
             
-            <textarea
-              id="docker-run-input"
-              name="docker-run-input"
+            <CodeEditor
               value={dockerRunCommand}
-              onChange={(e) => setDockerRunCommand(e.target.value)}
+              onChange={setDockerRunCommand}
+              language="shell"
               placeholder="docker run -d --name myapp -p 8080:80 nginx"
-              className="w-full h-40 sm:h-48 p-3 sm:p-4 font-mono text-sm bg-surface-50 dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded-xl resize-none focus:ring-2 focus:ring-primary-500/50"
+              height={192}
+              variant="embedded"
             />
 
             {error && (
@@ -209,13 +211,14 @@ export function DockerConvertTool() {
               </div>
             </div>
             
-            <textarea
-              id="docker-compose-output"
-              name="docker-compose-output"
-              readOnly
+            <CodeEditor
               value={composeYaml}
+              onChange={() => {}}
+              language="yaml"
               placeholder="点击转换按钮生成 docker-compose.yml..."
-              className="w-full h-72 sm:h-96 p-3 sm:p-4 font-mono text-sm bg-surface-50 dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded-xl resize-none"
+              height={384}
+              readOnly
+              variant="embedded"
             />
           </div>
         </div>
@@ -234,13 +237,13 @@ export function DockerConvertTool() {
               </button>
             </div>
             
-            <textarea
-              id="docker-compose-input"
-              name="docker-compose-input"
+            <CodeEditor
               value={composeInput}
-              onChange={(e) => setComposeInput(e.target.value)}
-              placeholder="version: &quot;3.8&quot;&#10;services:&#10;  web:&#10;    image: nginx&#10;    ports:&#10;      - 8080:80"
-              className="w-full h-96 p-3 sm:p-4 font-mono text-sm bg-surface-50 dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded-xl resize-none focus:ring-2 focus:ring-primary-500/50"
+              onChange={setComposeInput}
+              language="yaml"
+              placeholder={'version: "3.8"\nservices:\n  web:\n    image: nginx\n    ports:\n      - 8080:80'}
+              height={384}
+              variant="embedded"
             />
 
             {error && (
@@ -276,13 +279,14 @@ export function DockerConvertTool() {
               </button>
             </div>
             
-            <textarea
-              id="docker-run-output"
-              name="docker-run-output"
-              readOnly
+            <CodeEditor
               value={dockerRunCommand}
+              onChange={() => {}}
+              language="shell"
               placeholder="点击转换按钮生成 docker run 命令..."
-              className="w-full h-40 sm:h-48 p-3 sm:p-4 font-mono text-sm bg-surface-50 dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded-xl resize-none"
+              height={192}
+              readOnly
+              variant="embedded"
             />
 
             {options.image && renderParsedInfo(options)}
@@ -310,6 +314,9 @@ export function DockerConvertTool() {
           }}
         />
       )}
+
+      {/* 功能说明 */}
+      <ToolInfoAuto toolId="docker-convert" />
 
       <AdFooter />
     </div>
@@ -440,13 +447,13 @@ function FormConfigTab({
             <ArrowRightLeft className="w-3 h-3 sm:w-3.5 sm:h-3.5 sm:w-4 sm:h-4" />
             反向解析（粘贴命令自动填充表单）
           </h4>
-          <textarea
-            id="docker-parse-input"
-            name="docker-parse-input"
+          <CodeEditor
             value={parseInput}
-            onChange={(e) => setParseInput(e.target.value)}
+            onChange={setParseInput}
+            language="shell"
             placeholder="粘贴 docker run 命令或 docker-compose 配置..."
-            className="w-full h-20 sm:h-24 p-3 font-mono text-xs bg-white dark:bg-surface-800 border border-surface-200 dark:border-surface-700 rounded-xl resize-none"
+            height={96}
+            variant="embedded"
           />
           {parseError && (
             <div className="text-xs text-red-500">{parseError}</div>
@@ -720,13 +727,14 @@ function OutputPanel({
           </button>
         </div>
       </div>
-      <textarea
-        id="docker-output"
-        name="docker-output"
-        readOnly
+      <CodeEditor
         value={value}
+        onChange={() => {}}
+        language={title.includes('Compose') ? 'yaml' : 'shell'}
         placeholder="点击生成按钮..."
-        className="w-full h-40 sm:h-48 p-3 sm:p-4 font-mono text-sm bg-surface-50 dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded-xl resize-none"
+        height={192}
+        readOnly
+        variant="embedded"
       />
     </div>
   );

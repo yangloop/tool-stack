@@ -33,7 +33,7 @@ const DockerConvertTool = lazy(() => import('../components/tools/DockerConvertTo
 const XmlJsonTool = lazy(() => import('../components/tools/XmlJsonTool').then(m => ({ default: m.XmlJsonTool })));
 
 export const tools: Tool[] = [
-  // 格式化工具
+  // ==================== 格式化工具 ====================
   {
     id: 'json',
     name: 'JSON工具',
@@ -72,14 +72,23 @@ export const tools: Tool[] = [
     component: XmlJsonTool,
     new: true,
   },
-  
-  // 编解码工具
+  {
+    id: 'text-diff',
+    name: '文本对比',
+    description: '比较两段文本的差异，高亮显示增删改',
+    icon: 'GitCompare',
+    category: 'format',
+    component: TextDiffTool,
+    new: true,
+  },
+
+  // ==================== 编解码工具 ====================
   {
     id: 'base64',
     name: 'Base64 编解码',
     description: 'Base64编码和解码工具',
     icon: 'Code',
-    category: 'encode',
+    category: 'codec',
     component: Base64Tool,
     hot: true,
   },
@@ -88,7 +97,7 @@ export const tools: Tool[] = [
     name: 'Base64 文件转换',
     description: '文件与 Base64 编码相互转换，支持图片预览和下载',
     icon: 'FileCode',
-    category: 'encode',
+    category: 'codec',
     component: Base64FileTool,
     new: true,
   },
@@ -97,7 +106,7 @@ export const tools: Tool[] = [
     name: 'URL 编解码',
     description: 'URL编码和解码工具',
     icon: 'Link',
-    category: 'encode',
+    category: 'codec',
     component: UrlTool,
   },
   {
@@ -105,7 +114,7 @@ export const tools: Tool[] = [
     name: 'URL 解析',
     description: '解析URL结构，提取协议、主机、路径、查询参数等信息',
     icon: 'Globe',
-    category: 'encode',
+    category: 'codec',
     component: UrlParserTool,
     new: true,
   },
@@ -114,7 +123,7 @@ export const tools: Tool[] = [
     name: 'HTML 实体',
     description: 'HTML实体编码和解码',
     icon: 'FileCode',
-    category: 'encode',
+    category: 'codec',
     component: HtmlEntityTool,
   },
   {
@@ -122,33 +131,50 @@ export const tools: Tool[] = [
     name: 'JWT 解码',
     description: 'JWT令牌解析和验证',
     icon: 'Key',
-    category: 'encode',
+    category: 'codec',
     component: JwtTool,
     new: true,
+  },
+
+  // ==================== 安全加密 ====================
+  {
+    id: 'hash',
+    name: '哈希计算',
+    description: 'MD5、SHA系列哈希计算',
+    icon: 'Hash',
+    category: 'security',
+    component: HashTool,
+    hot: true,
   },
   {
     id: 'rsa',
     name: 'RSA 密钥生成',
     description: '生成RSA公钥私钥对，支持加解密测试',
     icon: 'Key',
-    category: 'hash',
+    category: 'security',
     component: RsaTool,
     hot: true,
     new: true,
   },
-  
-  // 哈希工具
   {
-    id: 'hash',
-    name: '哈希计算',
-    description: 'MD5、SHA系列哈希计算',
-    icon: 'Hash',
-    category: 'hash',
-    component: HashTool,
-    hot: true,
+    id: 'otp',
+    name: 'OTP 生成',
+    description: '生成 TOTP 双因素认证验证码，支持 Google Authenticator',
+    icon: 'Shield',
+    category: 'security',
+    component: OtpTool,
+    new: true,
   },
-  
-  // 开发工具
+  {
+    id: 'password',
+    name: '密码生成',
+    description: '生成安全随机密码',
+    icon: 'Lock',
+    category: 'security',
+    component: PasswordTool,
+  },
+
+  // ==================== 开发调试 ====================
   {
     id: 'timestamp',
     name: '时间戳转换',
@@ -214,15 +240,6 @@ export const tools: Tool[] = [
     new: true,
   },
   {
-    id: 'text-diff',
-    name: '文本对比',
-    description: '比较两段文本的差异，高亮显示增删改',
-    icon: 'GitCompare',
-    category: 'dev',
-    component: TextDiffTool,
-    new: true,
-  },
-  {
     id: 'text-template',
     name: '文本模板替换',
     description: '使用变量模板批量生成文本，支持自定义分隔符',
@@ -230,15 +247,6 @@ export const tools: Tool[] = [
     category: 'dev',
     component: TextTemplateTool,
     hot: true,
-    new: true,
-  },
-  {
-    id: 'otp',
-    name: 'OTP 生成',
-    description: '生成 TOTP 双因素认证验证码，支持 Google Authenticator',
-    icon: 'Shield',
-    category: 'security',
-    component: OtpTool,
     new: true,
   },
   {
@@ -260,8 +268,8 @@ export const tools: Tool[] = [
     hot: true,
     new: true,
   },
-  
-  // 实用工具
+
+  // ==================== 实用工具 ====================
   {
     id: 'qrcode',
     name: '二维码生成',
@@ -269,14 +277,6 @@ export const tools: Tool[] = [
     icon: 'QrCode',
     category: 'util',
     component: QrCodeTool,
-  },
-  {
-    id: 'password',
-    name: '密码生成',
-    description: '生成安全随机密码',
-    icon: 'Lock',
-    category: 'util',
-    component: PasswordTool,
   },
   {
     id: 'color',
@@ -290,9 +290,8 @@ export const tools: Tool[] = [
 
 export const categories = [
   { id: 'format', name: '格式化', icon: 'AlignLeft' },
-  { id: 'encode', name: '编解码', icon: 'Code' },
-  { id: 'hash', name: '哈希', icon: 'Hash' },
-  { id: 'security', name: '安全', icon: 'Shield' },
-  { id: 'dev', name: '开发', icon: 'Terminal' },
-  { id: 'util', name: '实用', icon: 'Wrench' },
+  { id: 'codec', name: '编解码', icon: 'Code' },
+  { id: 'security', name: '安全加密', icon: 'Shield' },
+  { id: 'dev', name: '开发调试', icon: 'Terminal' },
+  { id: 'util', name: '实用工具', icon: 'Wrench' },
 ] as const;

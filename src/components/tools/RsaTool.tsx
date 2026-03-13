@@ -4,6 +4,8 @@ import { JSEncrypt } from 'jsencrypt';
 import { useClipboard } from '../../hooks/useLocalStorage';
 import { downloadFile } from '../../utils/helpers';
 import { AdFooter } from '../ads';
+import { ToolInfoAuto } from './ToolInfoSection';
+import { CodeEditor } from '../CodeEditor';
 
 // 使用 Web Worker 生成 RSA 密钥，避免阻塞 UI
 interface WorkerResult {
@@ -240,13 +242,13 @@ export function RsaTool() {
                   <span className="w-2 h-2 bg-surface-400 rounded-full" />
                   原文
                 </label>
-                <textarea
-                  id="rsa-plaintext"
-                  name="rsa-plaintext"
+                <CodeEditor
                   value={testText}
-                  onChange={(e) => setTestText(e.target.value)}
+                  onChange={setTestText}
+                  language="text"
+                  height={128}
                   placeholder="输入要加密的文本..."
-                  className="w-full h-28 sm:h-32 sm:h-36 p-4 text-sm bg-surface-50 dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded-xl resize-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 transition-all"
+                  variant="embedded"
                 />
                 <button
                   onClick={handleEncrypt}
@@ -264,13 +266,14 @@ export function RsaTool() {
                   <span className="w-2 h-2 bg-primary-500 rounded-full" />
                   密文 (Base64)
                 </label>
-                <textarea
-                  id="rsa-ciphertext"
-                  name="rsa-ciphertext"
+                <CodeEditor
                   value={encryptedText}
+                  onChange={() => {}}
+                  language="text"
+                  height={128}
                   readOnly
                   placeholder="点击「加密」按钮生成密文..."
-                  className="w-full h-36 p-4 text-sm font-mono bg-surface-50 dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded-xl resize-none"
+                  variant="embedded"
                 />
                 <button
                   onClick={() => copyEnc(encryptedText)}
@@ -288,17 +291,14 @@ export function RsaTool() {
                   <span className="w-2 h-2 bg-emerald-500 rounded-full" />
                   解密结果
                 </label>
-                <textarea
-                  id="rsa-decrypted"
-                  name="rsa-decrypted"
+                <CodeEditor
                   value={decryptedText}
+                  onChange={() => {}}
+                  language="text"
+                  height={128}
                   readOnly
                   placeholder="点击「解密」按钮查看结果..."
-                  className={`w-full h-36 p-4 text-sm bg-surface-50 dark:bg-surface-900/50 border rounded-xl resize-none ${
-                    decryptedText && decryptedText === testText 
-                      ? 'border-emerald-500 focus:border-emerald-500' 
-                      : 'border-surface-200 dark:border-surface-700'
-                  }`}
+                  variant="embedded"
                 />
                 <button
                   onClick={handleDecrypt}
@@ -441,12 +441,13 @@ export function RsaTool() {
                     </button>
                   </div>
                 </div>
-                <textarea
-                  id="rsa-publickey"
-                  name="rsa-publickey"
+                <CodeEditor
                   value={publicKey}
+                  onChange={() => {}}
+                  language="text"
+                  height={192}
                   readOnly
-                  className="w-full h-40 sm:h-48 p-4 font-mono text-xs bg-surface-50 dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded-xl resize-none"
+                  variant="embedded"
                 />
                 <p className="text-xs text-surface-500">
                   公钥可以公开分享，用于加密数据或验证签名
@@ -477,12 +478,13 @@ export function RsaTool() {
                     </button>
                   </div>
                 </div>
-                <textarea
-                  id="rsa-privatekey"
-                  name="rsa-privatekey"
+                <CodeEditor
                   value={privateKey}
+                  onChange={() => {}}
+                  language="text"
+                  height={192}
                   readOnly
-                  className="w-full h-40 sm:h-48 p-4 font-mono text-xs bg-surface-50 dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded-xl resize-none"
+                  variant="embedded"
                 />
                 <p className="text-xs text-red-500">
                   <strong>警告:</strong> 私钥必须保密保存，泄露会导致安全风险！
@@ -501,24 +503,24 @@ export function RsaTool() {
               <div className="grid lg:grid-cols-2 gap-3 sm:gap-4">
                 <div>
                   <label className="text-sm font-medium text-surface-700 dark:text-surface-300 mb-2 block">自定义公钥</label>
-                  <textarea
-                    id="rsa-custom-publickey"
-                    name="rsa-custom-publickey"
+                  <CodeEditor
                     value={publicKey}
-                    onChange={(e) => setPublicKey(e.target.value)}
+                    onChange={setPublicKey}
+                    language="text"
+                    height={128}
                     placeholder="-----BEGIN PUBLIC KEY-----..."
-                    className="w-full h-32 p-4 font-mono text-xs bg-surface-50 dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded-xl resize-none focus:ring-2 focus:ring-primary-500/50"
+                    variant="embedded"
                   />
                 </div>
                 <div>
                   <label className="text-sm font-medium text-surface-700 dark:text-surface-300 mb-2 block">自定义私钥</label>
-                  <textarea
-                    id="rsa-custom-privatekey"
-                    name="rsa-custom-privatekey"
+                  <CodeEditor
                     value={privateKey}
-                    onChange={(e) => setPrivateKey(e.target.value)}
+                    onChange={setPrivateKey}
+                    language="text"
+                    height={128}
                     placeholder="-----BEGIN RSA PRIVATE KEY-----..."
-                    className="w-full h-32 p-4 font-mono text-xs bg-surface-50 dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded-xl resize-none focus:ring-2 focus:ring-primary-500/50"
+                    variant="embedded"
                   />
                 </div>
               </div>
@@ -526,6 +528,9 @@ export function RsaTool() {
           )}
         </div>
       )}
+
+      {/* 功能说明 */}
+      <ToolInfoAuto toolId="rsa" />
 
       {/* 底部广告 */}
       <AdFooter />

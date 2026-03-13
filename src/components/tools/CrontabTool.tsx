@@ -5,6 +5,7 @@ import {
 } from 'lucide-react';
 import { useClipboard } from '../../hooks/useLocalStorage';
 import { AdFooter } from '../ads';
+import { ToolInfoAuto } from './ToolInfoSection';
 
 // Cron 字段定义
 interface CronField {
@@ -362,45 +363,8 @@ export function CrontabTool() {
         </div>
       </div>
 
-      {/* 说明 */}
-      <div className="card p-4 sm:p-6">
-        <h3 className="font-medium text-gray-900 dark:text-white mb-3 flex items-center gap-2">
-          <Info className="w-4 h-4 sm:w-5 sm:h-5 text-purple-500" />
-          Cron 表达式格式说明
-        </h3>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-4 text-sm">
-          <div className="p-3 bg-gray-50 dark:bg-slate-800 rounded-lg">
-            <div className="font-medium text-gray-900 dark:text-white mb-1">分钟</div>
-            <div className="text-gray-500">0-59</div>
-          </div>
-          <div className="p-3 bg-gray-50 dark:bg-slate-800 rounded-lg">
-            <div className="font-medium text-gray-900 dark:text-white mb-1">小时</div>
-            <div className="text-gray-500">0-23</div>
-          </div>
-          <div className="p-3 bg-gray-50 dark:bg-slate-800 rounded-lg">
-            <div className="font-medium text-gray-900 dark:text-white mb-1">日期</div>
-            <div className="text-gray-500">1-31</div>
-          </div>
-          <div className="p-3 bg-gray-50 dark:bg-slate-800 rounded-lg">
-            <div className="font-medium text-gray-900 dark:text-white mb-1">月份</div>
-            <div className="text-gray-500">1-12</div>
-          </div>
-          <div className="p-3 bg-gray-50 dark:bg-slate-800 rounded-lg">
-            <div className="font-medium text-gray-900 dark:text-white mb-1">星期</div>
-            <div className="text-gray-500">0-7 (0和7都是周日)</div>
-          </div>
-        </div>
-
-        <div className="mt-4 p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg text-sm text-yellow-800 dark:text-yellow-400">
-          <p className="font-medium mb-2">特殊字符说明：</p>
-          <ul className="space-y-1 list-disc list-inside">
-            <li><code className="bg-yellow-100 dark:bg-yellow-900/40 px-1 rounded">*</code> - 任意值</li>
-            <li><code className="bg-yellow-100 dark:bg-yellow-900/40 px-1 rounded">,</code> - 列表分隔符 (如: 1,3,5)</li>
-            <li><code className="bg-yellow-100 dark:bg-yellow-900/40 px-1 rounded">-</code> - 范围 (如: 1-5)</li>
-            <li><code className="bg-yellow-100 dark:bg-yellow-900/40 px-1 rounded">*/n</code> - 每隔 n (如: */5 表示每5分钟)</li>
-          </ul>
-        </div>
-      </div>
+      {/* 功能说明 */}
+      <ToolInfoAuto toolId="crontab" />
 
       {/* 底部广告 */}
       <AdFooter />

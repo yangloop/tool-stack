@@ -1,7 +1,8 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { Shield, Plus, Trash2, Copy, Check, QrCode, Clock, Download, Upload } from 'lucide-react';
+import { Shield, Plus, Trash2, Copy, Check, QrCode, Download, Upload } from 'lucide-react';
 import { useClipboard, useLocalStorage } from '../../hooks/useLocalStorage';
 import { AdFooter } from '../ads';
+import { ToolInfoAuto } from './ToolInfoSection';
 import * as OTPAuth from 'otpauth';
 import QRCode from 'qrcode';
 
@@ -424,19 +425,8 @@ export function OtpTool() {
         </div>
       )}
 
-      {/* 底部说明 */}
-      <div className="mt-4 sm:mt-6 p-4 bg-surface-50 dark:bg-surface-800/50 rounded-xl text-sm text-surface-500">
-        <h4 className="font-medium text-surface-700 dark:text-surface-300 mb-2 flex items-center gap-1.5 sm:gap-2">
-          <Clock className="w-4 h-4" />
-          使用说明
-        </h4>
-        <ul className="space-y-1 text-xs list-disc list-inside">
-          <li>OTP 验证码每 30 秒自动更新一次</li>
-          <li>请妥善保管您的密钥，泄露可能导致账户安全风险</li>
-          <li>建议定期导出备份您的账户信息</li>
-          <li>支持 Google Authenticator、Microsoft Authenticator 等标准 TOTP 应用</li>
-        </ul>
-      </div>
+      {/* 功能说明 */}
+      <ToolInfoAuto toolId="otp" />
 
       {/* 底部广告 */}
       <AdFooter />

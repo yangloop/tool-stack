@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { Search, AlertCircle } from 'lucide-react';
 import { AdFooter } from '../ads';
+import { ToolInfoAuto } from './ToolInfoSection';
+import { CodeEditor } from '../CodeEditor';
 
 const commonPatterns = [
   { name: '邮箱', pattern: '^[\\w.-]+@[\\w.-]+\\.\\w+$' },
@@ -313,23 +315,7 @@ export function RegexTool() {
             </div>
           )}
           
-          {/* 图例 */}
-          <div className="mt-3 flex flex-wrap gap-2 sm:gap-3 text-xs">
-            <span className="text-gray-500">图例:</span>
-            <span className="text-pink-600 dark:text-pink-400">^ $ \b</span>
-            <span className="text-gray-400">|</span>
-            <span className="text-orange-600 dark:text-orange-400">* + ? {}</span>
-            <span className="text-gray-400">|</span>
-            <span className="text-blue-600 dark:text-blue-400">[...]</span>
-            <span className="text-gray-400">|</span>
-            <span className="text-violet-600 dark:text-violet-400">(...)</span>
-            <span className="text-gray-400">|</span>
-            <span className="text-green-600 dark:text-green-400">\n</span>
-            <span className="text-gray-400">|</span>
-            <span className="text-amber-600 dark:text-amber-400">.</span>
-            <span className="text-gray-400">|</span>
-            <span className="text-red-600 dark:text-red-400">|</span>
-          </div>
+
         </div>
 
         <div className="flex flex-wrap gap-3 sm:gap-4">
@@ -357,13 +343,13 @@ export function RegexTool() {
           <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             测试文本
           </label>
-          <textarea
-            id="regex-test"
-            name="regex-test"
+          <CodeEditor
             value={testText}
-            onChange={(e) => setTestText(e.target.value)}
+            onChange={setTestText}
+            language="text"
+            height={240}
             placeholder="输入要测试的文本..."
-            className="w-full h-32 sm:h-40 p-3 sm:p-4 text-xs sm:text-sm bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg resize-none focus:ring-2 focus:ring-blue-500 dark:text-white"
+            variant="embedded"
           />
         </div>
 
@@ -376,6 +362,9 @@ export function RegexTool() {
           </div>
         )}
       </div>
+
+      {/* 功能说明 */}
+      <ToolInfoAuto toolId="regex" />
 
       {/* 底部广告 */}
       <AdFooter />

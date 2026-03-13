@@ -18,6 +18,8 @@ import {
 } from 'lucide-react';
 import { useClipboard } from '../../hooks/useLocalStorage';
 import { AdFooter } from '../ads';
+import { CodeEditor } from '../CodeEditor';
+import { ToolInfoAuto } from './ToolInfoSection';
 
 interface FileInfo {
   name: string;
@@ -394,12 +396,13 @@ export function Base64FileTool() {
                     )}
                   </div>
                 </div>
-                <textarea
-                  id="base64file-output"
-                  name="base64file-output"
-                  readOnly
+                <CodeEditor
                   value={showFullContent ? base64Content : base64Content.slice(0, MAX_DISPLAY_LENGTH)}
-                  className="w-full h-40 sm:h-48 p-4 font-mono text-xs bg-surface-50 dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded-xl resize-none"
+                  onChange={() => {}}
+                  language="text"
+                  height={192}
+                  readOnly
+                  variant="embedded"
                 />
                 {truncated && !showFullContent && (
                   <p className="text-xs text-surface-500">
@@ -432,20 +435,20 @@ export function Base64FileTool() {
               <label className="text-sm font-medium text-surface-700 dark:text-surface-300">
                 Base64 编码内容
               </label>
-              <textarea
-                id="base64file-input"
-                name="base64file-input"
+              <CodeEditor
                 value={base64Content}
-                onChange={(e) => {
-                  setBase64Content(e.target.value);
+                onChange={(value) => {
+                  setBase64Content(value);
                   // 尝试自动检测文件类型
-                  const detected = detectFileType(e.target.value.trim());
+                  const detected = detectFileType(value.trim());
                   if (detected !== 'application/octet-stream') {
                     setOutputFileType(detected);
                   }
                 }}
+                language="text"
+                height={192}
                 placeholder="在此处粘贴 Base64 编码..."
-                className="w-full h-40 sm:h-48 p-4 font-mono text-xs bg-surface-50 dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded-xl resize-none focus:ring-2 focus:ring-primary-500/50"
+                variant="embedded"
               />
             </div>
 
@@ -523,6 +526,8 @@ export function Base64FileTool() {
           </div>
         </div>
       )}
+
+      <ToolInfoAuto toolId="base64-file" />
 
       <AdFooter />
     </div>

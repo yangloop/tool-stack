@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { Copy, Check, ArrowRightLeft } from 'lucide-react';
 import { useClipboard } from '../../hooks/useLocalStorage';
 import { AdFooter } from '../ads';
+import { CodeEditor } from '../CodeEditor';
+import { ToolInfoAuto } from './ToolInfoSection';
 
 const htmlEntities: Record<string, string> = {
   '&': '&amp;',
@@ -80,13 +82,13 @@ export function HtmlEntityTool() {
             <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               {mode === 'encode' ? '原文' : 'HTML 实体'}
             </label>
-            <textarea
-              id="htmlentity-input"
-              name="htmlentity-input"
+            <CodeEditor
               value={input}
-              onChange={(e) => setInput(e.target.value)}
+              onChange={setInput}
+              language="html"
+              height={224}
               placeholder={mode === 'encode' ? '输入 HTML 内容...' : '输入 HTML 实体...'}
-              className="w-full h-32 sm:h-40 p-3 sm:p-4 font-mono text-xs sm:text-sm bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg resize-none focus:ring-2 focus:ring-blue-500 dark:text-white"
+              variant="embedded"
             />
           </div>
 
@@ -105,17 +107,20 @@ export function HtmlEntityTool() {
                 </button>
               )}
             </div>
-            <textarea
-              id="htmlentity-output"
-              name="htmlentity-output"
+            <CodeEditor
               value={output}
+              onChange={() => {}}
+              language="html"
+              height={224}
               readOnly
               placeholder="结果..."
-              className="w-full h-32 sm:h-40 p-3 sm:p-4 font-mono text-xs sm:text-sm bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg resize-none dark:text-white"
+              variant="embedded"
             />
           </div>
         </div>
       </div>
+
+      <ToolInfoAuto toolId="html" />
 
       {/* 底部广告 */}
       <AdFooter />

@@ -1,8 +1,10 @@
 import { useState, useMemo } from 'react';
+import { CodeEditor } from '../CodeEditor';
 import { GitCompare, Trash2, ArrowLeftRight, Copy, Check, FileText, Sparkles } from 'lucide-react';
 import * as Diff from 'diff';
 import { useClipboard } from '../../hooks/useLocalStorage';
 import { AdFooter } from '../ads';
+import { ToolInfoAuto } from './ToolInfoSection';
 
 interface DiffLine {
   type: 'equal' | 'insert' | 'delete' | 'modify';
@@ -235,14 +237,13 @@ const version = "2.0";`);
             <span className="text-xs sm:text-sm font-medium text-surface-700 dark:text-surface-300">原文本</span>
             <span className="text-xs text-surface-400">{leftText.length} 字符</span>
           </div>
-          <textarea
-            id="diff-original"
-            name="diff-original"
+          <CodeEditor
             value={leftText}
-            onChange={(e) => setLeftText(e.target.value)}
+            onChange={setLeftText}
+            language="text"
+            height={240}
             placeholder="在此粘贴原始文本..."
-            className="w-full h-36 sm:h-48 p-3 sm:p-4 font-mono text-xs sm:text-sm bg-surface-50 dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded-xl resize-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 transition-all"
-            spellCheck={false}
+            variant="embedded"
           />
         </div>
 
@@ -252,14 +253,13 @@ const version = "2.0";`);
             <span className="text-xs sm:text-sm font-medium text-surface-700 dark:text-surface-300">对比文本</span>
             <span className="text-xs text-surface-400">{rightText.length} 字符</span>
           </div>
-          <textarea
-            id="diff-modified"
-            name="diff-modified"
+          <CodeEditor
             value={rightText}
-            onChange={(e) => setRightText(e.target.value)}
+            onChange={setRightText}
+            language="text"
+            height={240}
             placeholder="在此粘贴对比文本..."
-            className="w-full h-36 sm:h-48 p-3 sm:p-4 font-mono text-xs sm:text-sm bg-surface-50 dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded-xl resize-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 transition-all"
-            spellCheck={false}
+            variant="embedded"
           />
         </div>
       </div>
@@ -358,20 +358,7 @@ const version = "2.0";`);
             </span>
           </div>
 
-          {/* 图例说明 */}
-          {showInlineDiff && (
-            <div className="flex flex-wrap items-center gap-3 sm:gap-4 px-3 sm:px-5 py-2 border-b border-surface-200 dark:border-surface-700 bg-surface-50/30 dark:bg-surface-800/30 text-xs">
-              <span className="text-surface-500">图例:</span>
-              <span className="flex items-center gap-1">
-                <span className="w-2.5 h-2.5 sm:w-3 sm:h-3 bg-red-200 dark:bg-red-800/60 rounded" />
-                <span className="text-surface-600 dark:text-surface-400">删除</span>
-              </span>
-              <span className="flex items-center gap-1">
-                <span className="w-2.5 h-2.5 sm:w-3 sm:h-3 bg-emerald-200 dark:bg-emerald-800/60 rounded" />
-                <span className="text-surface-600 dark:text-surface-400">新增</span>
-              </span>
-            </div>
-          )}
+
 
           {/* 对比表格 */}
           <div className="overflow-auto max-h-[400px] sm:max-h-[600px]">
@@ -445,6 +432,8 @@ const version = "2.0";`);
           )}
         </div>
       )}
+
+      <ToolInfoAuto toolId="text-diff" />
 
       {/* 底部广告 */}
       <AdFooter />

@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { useClipboard } from '../../hooks/useLocalStorage';
 import { AdFooter } from '../ads';
+import { ToolInfoAuto } from './ToolInfoSection';
 
 interface ParsedURL {
   href: string;
@@ -327,33 +328,7 @@ export function UrlParserTool() {
               </div>
             </div>
 
-            {/* 图例 */}
-            <div className="mt-3 flex flex-wrap gap-2 sm:gap-3 text-xs">
-              <span className="flex items-center gap-1">
-                <span className="w-2.5 h-2.5 sm:w-3 sm:h-3 bg-purple-100 dark:bg-purple-900/30 rounded"></span>
-                协议
-              </span>
-              <span className="flex items-center gap-1">
-                <span className="w-2.5 h-2.5 sm:w-3 sm:h-3 bg-orange-100 dark:bg-orange-900/30 rounded"></span>
-                认证
-              </span>
-              <span className="flex items-center gap-1">
-                <span className="w-2.5 h-2.5 sm:w-3 sm:h-3 bg-blue-100 dark:bg-blue-900/30 rounded"></span>
-                主机
-              </span>
-              <span className="flex items-center gap-1">
-                <span className="w-2.5 h-2.5 sm:w-3 sm:h-3 bg-green-100 dark:bg-green-900/30 rounded"></span>
-                端口
-              </span>
-              <span className="flex items-center gap-1">
-                <span className="w-2.5 h-2.5 sm:w-3 sm:h-3 bg-yellow-100 dark:bg-yellow-900/30 rounded"></span>
-                路径
-              </span>
-              <span className="flex items-center gap-1">
-                <span className="w-2.5 h-2.5 sm:w-3 sm:h-3 bg-pink-100 dark:bg-pink-900/30 rounded"></span>
-                查询参数
-              </span>
-            </div>
+
           </div>
 
           {/* 详细信息 */}
@@ -483,6 +458,8 @@ export function UrlParserTool() {
           </div>
         </>
       )}
+
+      <ToolInfoAuto toolId="url-parser" />
 
       {/* 底部广告 */}
       <AdFooter />

@@ -3,6 +3,7 @@ import { Copy, Check, RefreshCw, Lock, Settings2 } from 'lucide-react';
 import { useClipboard } from '../../hooks/useLocalStorage';
 import { randomString } from '../../utils/helpers';
 import { AdFooter } from '../ads';
+import { ToolInfoAuto } from './ToolInfoSection';
 
 export function PasswordTool() {
   const [password, setPassword] = useState('');
@@ -175,6 +176,9 @@ export function PasswordTool() {
           生成密码
         </button>
       </div>
+
+      {/* 功能说明 */}
+      <ToolInfoAuto toolId="password" />
 
       {/* 底部广告 */}
       <AdFooter />

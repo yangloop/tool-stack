@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Import, AlertCircle, Check, Terminal } from 'lucide-react';
+import { CodeEditor } from '../../CodeEditor';
 
 interface CurlParseResult {
   method: string;
@@ -186,14 +187,12 @@ export function CurlImporter({ onImport }: CurlImporterProps) {
             粘贴 cURL 命令，系统将自动解析 URL、方法、请求头和请求体
           </p>
           
-          <textarea
-            id="curl-import"
-            name="curl-import"
+          <CodeEditor
             value={curlCommand}
-            onChange={(e) => setCurlCommand(e.target.value)}
+            onChange={setCurlCommand}
+            language="shell"
+            height={160}
             placeholder={`curl --location --request POST 'https://api.example.com/data' \\\n  --header 'Content-Type: application/json' \\\n  --data-raw '{"key": "value"}'`}
-            className="w-full h-40 p-3 font-mono text-xs bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg resize-none dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            spellCheck={false}
           />
           
           {error && (

@@ -3,6 +3,8 @@ import { Copy, Check, ArrowRightLeft } from 'lucide-react';
 import { Base64 } from 'js-base64';
 import { useClipboard } from '../../hooks/useLocalStorage';
 import { AdFooter } from '../ads';
+import { CodeEditor } from '../CodeEditor';
+import { ToolInfoAuto } from './ToolInfoSection';
 
 export function Base64Tool() {
   const [input, setInput] = useState('');
@@ -67,14 +69,13 @@ export function Base64Tool() {
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               {mode === 'encode' ? '原文' : 'Base64'}
             </label>
-            <textarea
-              id="base64-input"
-              name="base64-input"
+            <CodeEditor
               value={input}
-              onChange={(e) => setInput(e.target.value)}
+              onChange={setInput}
+              language="text"
+              height={224}
               placeholder={mode === 'encode' ? '输入要编码的文本...' : '输入要解码的 Base64...'}
-              className="w-full h-32 sm:h-40 p-3 sm:p-4 font-mono text-xs sm:text-sm bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg resize-none focus:ring-2 focus:ring-blue-500 dark:text-white"
-              enterKeyHint="done"
+              variant="embedded"
             />
           </div>
 
@@ -93,21 +94,20 @@ export function Base64Tool() {
                 </button>
               )}
             </div>
-            <textarea
-              id="base64-output"
-              name="base64-output"
+            <CodeEditor
               value={output}
+              onChange={() => {}}
+              language="text"
+              height={224}
               readOnly
               placeholder="结果..."
-              className={`w-full h-32 sm:h-40 p-3 sm:p-4 font-mono text-xs sm:text-sm border rounded-lg resize-none dark:text-white ${
-                output === '转换失败：无效的输入'
-                  ? 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-600'
-                  : 'bg-gray-50 dark:bg-slate-900 border-gray-200 dark:border-slate-700'
-              }`}
+              variant="embedded"
             />
           </div>
         </div>
       </div>
+
+      <ToolInfoAuto toolId="base64" />
 
       {/* 底部广告 */}
       <AdFooter />

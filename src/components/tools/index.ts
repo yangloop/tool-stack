@@ -27,3 +27,14 @@ export { DockerConvertTool } from './DockerConvertTool';
 export { XmlJsonTool } from './XmlJsonTool';
 export * from './docker-convert';
 export { KeyValueEditor, BodyEditor } from './http-request';
+// 工具信息组件 - 统一的图例和功能说明
+export {
+  ToolInfoSection,
+  ToolDescription,
+  ToolDescriptionItem,
+  ToolLegend,
+  ColorLegend,
+  ToolInfo,
+  ToolInfoAuto,
+} from './ToolInfoSection';
+export { getToolInfoData, hasToolInfoData } from '../../data/toolInfoData';

@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { Copy, Check, ArrowRightLeft } from 'lucide-react';
 import { useClipboard } from '../../hooks/useLocalStorage';
 import { AdFooter } from '../ads';
+import { CodeEditor } from '../CodeEditor';
+import { ToolInfoAuto } from './ToolInfoSection';
 
 export function UrlTool() {
   const [input, setInput] = useState('');
@@ -64,13 +66,13 @@ export function UrlTool() {
             <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               {mode === 'encode' ? '原文' : '编码后的 URL'}
             </label>
-            <textarea
-              id="url-input"
-              name="url-input"
+            <CodeEditor
               value={input}
-              onChange={(e) => setInput(e.target.value)}
+              onChange={setInput}
+              language="text"
+              height={224}
               placeholder={mode === 'encode' ? '输入要编码的文本...' : '输入要解码的 URL...'}
-              className="w-full h-32 sm:h-40 p-3 sm:p-4 font-mono text-xs sm:text-sm bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg resize-none focus:ring-2 focus:ring-blue-500 dark:text-white"
+              variant="embedded"
             />
           </div>
 
@@ -89,21 +91,20 @@ export function UrlTool() {
                 </button>
               )}
             </div>
-            <textarea
-              id="url-output"
-              name="url-output"
+            <CodeEditor
               value={output}
+              onChange={() => {}}
+              language="text"
+              height={224}
               readOnly
               placeholder="结果..."
-              className={`w-full h-32 sm:h-40 p-3 sm:p-4 font-mono text-xs sm:text-sm border rounded-lg resize-none dark:text-white ${
-                output === '转换失败：无效的 URL 编码'
-                  ? 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-600'
-                  : 'bg-gray-50 dark:bg-slate-900 border-gray-200 dark:border-slate-700'
-              }`}
+              variant="embedded"
             />
           </div>
         </div>
       </div>
+
+      <ToolInfoAuto toolId="url" />
 
       {/* 底部广告 */}
       <AdFooter />

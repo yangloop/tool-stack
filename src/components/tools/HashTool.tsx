@@ -4,6 +4,8 @@ import CryptoJS from 'crypto-js';
 import { useClipboard } from '../../hooks/useLocalStorage';
 import { readFile } from '../../utils/helpers';
 import { AdFooter } from '../ads';
+import { ToolInfoAuto } from './ToolInfoSection';
+import { CodeEditor } from '../CodeEditor';
 
 const algorithms = [
   { id: 'MD5', name: 'MD5', bit: 128 },
@@ -97,13 +99,13 @@ export function HashTool() {
           <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             输入文本
           </label>
-          <textarea
-            id="hash-input"
-            name="hash-input"
+          <CodeEditor
             value={input}
-            onChange={(e) => setInput(e.target.value)}
+            onChange={setInput}
+            language="text"
+            height={224}
             placeholder="输入要计算哈希的文本..."
-            className="w-full h-24 sm:h-32 p-3 sm:p-4 font-mono text-xs sm:text-sm bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg resize-none focus:ring-2 focus:ring-blue-500 dark:text-white"
+            variant="embedded"
           />
         </div>
 
@@ -171,6 +173,9 @@ export function HashTool() {
           ))}
         </div>
       )}
+
+      {/* 功能说明 */}
+      <ToolInfoAuto toolId="hash" />
 
       {/* 底部广告 */}
       <AdFooter />

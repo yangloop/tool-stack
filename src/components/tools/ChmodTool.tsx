@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect } from 'react';
 import { FileLock, Copy, Check, Terminal, RefreshCw, Shield, Users, User, Lock } from 'lucide-react';
 import { useClipboard } from '../../hooks/useLocalStorage';
 import { AdFooter } from '../ads';
+import { ToolInfoAuto } from './ToolInfoSection';
 
 interface PermissionState {
   owner: { read: boolean; write: boolean; execute: boolean };
@@ -533,24 +534,10 @@ export function ChmodTool() {
             </div>
           </div>
 
-          {/* 权限说明 */}
-          <div className="card p-3 sm:p-6 space-y-3">
-            <h3 className="font-medium text-surface-900 dark:text-surface-100">权限说明</h3>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 text-sm">
-              <div className="flex items-start gap-1.5 sm:gap-2">
-                <span className="w-6 h-6 rounded bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-xs font-bold">r</span>
-                <span className="text-surface-600 dark:text-surface-400">读取文件内容 / 列出目录</span>
-              </div>
-              <div className="flex items-start gap-1.5 sm:gap-2">
-                <span className="w-6 h-6 rounded bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 flex items-center justify-center text-xs font-bold">w</span>
-                <span className="text-surface-600 dark:text-surface-400">修改文件 / 创建删除文件</span>
-              </div>
-              <div className="flex items-start gap-1.5 sm:gap-2">
-                <span className="w-6 h-6 rounded bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center text-xs font-bold">x</span>
-                <span className="text-surface-600 dark:text-surface-400">执行文件 / 进入目录</span>
-              </div>
-            </div>
-          </div>
+
+
+          {/* 功能说明 */}
+          <ToolInfoAuto toolId="chmod" />
         </div>
       )}
 

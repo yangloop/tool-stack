@@ -11,6 +11,7 @@ import {
   type HttpResponse 
 } from './http-request';
 import { AdFooter } from '../ads';
+import { ToolInfoAuto } from './ToolInfoSection';
 
 const httpMethods = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD', 'OPTIONS'] as const;
 type HttpMethod = typeof httpMethods[number];
@@ -597,6 +598,11 @@ export function HttpRequestTool() {
           </div>
         </div>
       )}
+
+
+
+      {/* 功能说明 */}
+      <ToolInfoAuto toolId="http-request" />
 
       {/* 底部广告 */}
       <AdFooter />

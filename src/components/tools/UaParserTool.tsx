@@ -6,6 +6,8 @@ import {
 } from 'lucide-react';
 import { useClipboard } from '../../hooks/useLocalStorage';
 import { AdFooter } from '../ads';
+import { ToolInfoAuto } from './ToolInfoSection';
+import { CodeEditor } from '../CodeEditor';
 
 // UA 解析结果类型
 interface UAParseResult {
@@ -283,13 +285,13 @@ export function UaParserTool() {
             </button>
           </div>
         </div>
-        <textarea
-          id="ua-input"
-          name="ua-input"
+        <CodeEditor
           value={ua}
-          onChange={(e) => setUa(e.target.value)}
+          onChange={setUa}
+          language="text"
+          height={96}
           placeholder="输入 User Agent 字符串..."
-          className="w-full h-20 sm:h-24 p-3 font-mono text-xs bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg resize-none dark:text-white"
+          variant="embedded"
         />
       </div>
 
@@ -395,6 +397,12 @@ export function UaParserTool() {
           </span>
         </p>
       </div>
+
+      {/* 功能说明 */}
+      <ToolInfoAuto toolId="ua-parser" />
+
+      {/* 底部广告 */}
+      <AdFooter />
     </div>
   );
 }

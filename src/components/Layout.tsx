@@ -22,7 +22,7 @@ export function Layout({ children, activeToolId }: LayoutProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [expandedCategories, setExpandedCategories] = useLocalStorage<string[]>('sidebar-expanded-cats', ['format', 'encode', 'hash', 'security', 'dev', 'util']);
+  const [expandedCategories, setExpandedCategories] = useLocalStorage<string[]>('sidebar-expanded-cats', ['format', 'codec', 'security', 'dev', 'util']);
   const [isScrolled, setIsScrolled] = useState(false);
   
   const navigate = useNavigate();

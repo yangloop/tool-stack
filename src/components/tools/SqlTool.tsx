@@ -13,6 +13,7 @@ import type { CSSProperties } from 'react';
 import { downloadFile, readFile } from '../../utils/helpers';
 import { useClipboard } from '../../hooks/useLocalStorage';
 import { AdInArticle, AdFooter } from '../ads';
+import { ToolInfoAuto } from './ToolInfoSection';
 import { customLightTheme, customDarkTheme } from '../../styles/prism-theme';
 import { CodeEditor } from '../CodeEditor';
 
@@ -199,7 +200,7 @@ export function SqlTool() {
       <div className="grid lg:grid-cols-2 gap-3 sm:gap-4">
         {/* 输入区域 */}
         <div className="card p-4 sm:p-6 flex flex-col">
-          <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center justify-between mb-3 min-h-[36px]">
             <div className="flex flex-wrap items-center gap-2">
               <span className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">输入 SQL</span>
               {input && <SqlStats sql={input} />}
@@ -210,20 +211,26 @@ export function SqlTool() {
             onChange={setInput}
             language="sql"
             placeholder="在此粘贴 SQL 语句...\n\n例如:\nSELECT * FROM users WHERE id = 1;"
-            height="min-h-[300px] sm:min-h-[400px]"
+            height="400px"
+            variant="embedded"
           />
         </div>
 
         {/* 输出区域 */}
         <div className="card p-4 sm:p-6 flex flex-col">
-          <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center justify-between mb-3 min-h-[36px]">
             <div className="flex flex-wrap items-center gap-2">
               <span className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">输出</span>
               {output && (
+                <span className="text-xs text-gray-400">
+                  {output.length.toLocaleString()} 字符
+                </span>
+              )}
+            </div>
+            {/* 按钮组：与输入区域占位元素对应 */}
+            <div className="flex items-center gap-2">
+              {output && (
                 <>
-                  <span className="text-xs text-gray-400">
-                    {output.length.toLocaleString()} 字符
-                  </span>
                   <div className="btn-group">
                     <button
                       onClick={() => setViewMode('formatted')}
@@ -238,23 +245,21 @@ export function SqlTool() {
                       压缩
                     </button>
                   </div>
+                  <button 
+                    onClick={handleCopy} 
+                    className={`btn-tool ${copied ? 'btn-ghost-success' : 'btn-ghost'}`}
+                  >
+                    {copied ? <Check className="w-3.5 h-3.5 flex-shrink-0" /> : <Copy className="w-3.5 h-3.5 flex-shrink-0" />}
+                    {copied ? '已复制' : '复制'}
+                  </button>
                 </>
               )}
             </div>
-            {output && (
-              <button 
-                onClick={handleCopy} 
-                className={`btn-tool ${copied ? 'btn-ghost-success' : 'btn-ghost'}`}
-              >
-                {copied ? <Check className="w-3.5 h-3.5 flex-shrink-0" /> : <Copy className="w-3.5 h-3.5 flex-shrink-0" />}
-                {copied ? '已复制' : '复制'}
-              </button>
-            )}
           </div>
           
           <div 
             ref={outputRef}
-            className="flex-1 min-h-[300px] sm:min-h-[400px] bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg overflow-auto"
+            className="h-[400px] bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg overflow-auto"
           >
             {output ? (
               <SyntaxHighlighter
@@ -279,19 +284,9 @@ export function SqlTool() {
         </div>
       </div>
 
-      {/* 图例 */}
-      <div className="mt-4 card p-4 sm:p-6">
-        <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs">
-          <span className="text-gray-500">语法高亮图例:</span>
-          <span className={isDark ? 'text-blue-400 font-semibold' : 'text-blue-600 font-semibold'}>关键字 (SELECT)</span>
-          <span className={isDark ? 'text-purple-400' : 'text-purple-600'}>函数 (COUNT)</span>
-          <span className={isDark ? 'text-green-400' : 'text-green-600'}>字符串 ('text')</span>
-          <span className={isDark ? 'text-orange-400' : 'text-orange-600'}>数字 (123)</span>
-          <span className={isDark ? 'text-gray-500' : 'text-gray-400'}>-- 注释</span>
-        </div>
-      </div>
-
       <AdInArticle />
+
+      <ToolInfoAuto toolId="sql" />
 
       {/* 底部广告 */}
       <AdFooter />

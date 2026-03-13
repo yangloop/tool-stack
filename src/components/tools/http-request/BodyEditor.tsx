@@ -151,7 +151,8 @@ export function BodyEditor({
               onChange={onJsonBodyChange}
               language="json"
               placeholder={'{"key": "value"}'}
-              height="h-56"
+              height={224}
+              variant="embedded"
             />
           </div>
         );
@@ -173,7 +174,8 @@ export function BodyEditor({
               onChange={onXmlBodyChange}
               language="xml"
               placeholder={'<?xml version="1.0"?>\n<root>\n</root>'}
-              height="h-56"
+              height={224}
+              variant="embedded"
             />
           </div>
         );
@@ -185,7 +187,8 @@ export function BodyEditor({
             onChange={onRawBodyChange}
             language="text"
             placeholder="输入原始文本..."
-            height="h-56"
+            height={224}
+            variant="embedded"
           />
         );
 

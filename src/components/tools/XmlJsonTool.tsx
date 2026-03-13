@@ -6,15 +6,10 @@ import {
 import { XMLParser, XMLBuilder, XMLValidator } from 'fast-xml-parser';
 import { useClipboard } from '../../hooks/useLocalStorage';
 import { AdInArticle, AdFooter } from '../ads';
+import { ToolInfoAuto } from './ToolInfoSection';
 import { downloadFile, readFile } from '../../utils/helpers';
 import ReactJson from 'react-json-view';
-import { PrismLight as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { oneLight, oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import markup from 'react-syntax-highlighter/dist/esm/languages/prism/markup';
 import { CodeEditor } from '../CodeEditor';
-
-// 注册 XML 语言
-SyntaxHighlighter.registerLanguage('xml', markup);
 
 type ConversionMode = 'xml-to-json' | 'json-to-xml';
 
@@ -61,34 +56,6 @@ function formatXml(xml: string): string {
   });
   
   return formatted.trim();
-}
-
-// XML 语法高亮展示组件
-function XmlHighlightView({ xml, isDark }: { xml: string; isDark: boolean }) {
-  // 移除 XML 声明进行高亮
-  const contentWithoutDecl = xml.replace(/^<\?xml[^?]*\?>\n?/, '');
-  
-  return (
-    <SyntaxHighlighter
-      language="xml"
-      style={isDark ? oneDark : oneLight}
-      customStyle={{
-        margin: 0,
-        padding: '1rem',
-        fontSize: '13px',
-        fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
-        background: 'transparent',
-        minHeight: '100%',
-      }}
-      codeTagProps={{
-        style: {
-          fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
-        }
-      }}
-    >
-      {contentWithoutDecl || ' '}
-    </SyntaxHighlighter>
-  );
 }
 
 export function XmlJsonTool() {
@@ -309,60 +276,6 @@ export function XmlJsonTool() {
     return null;
   })();
 
-  // 判断输出区域的背景色和内容
-  const renderOutput = () => {
-    if (!output) {
-      return (
-        <div className="h-full flex items-center justify-center text-gray-400 text-sm">
-          转换结果将显示在这里
-        </div>
-      );
-    }
-
-    // XML → JSON 模式：使用 ReactJson 展示
-    if (mode === 'xml-to-json') {
-      if (viewMode === 'formatted' && parsedJsonData) {
-        return (
-          <div className="p-2 sm:p-4">
-            <ReactJson
-              src={parsedJsonData}
-              theme={isDark ? slateTheme : 'rjv-default'}
-              displayDataTypes={false}
-              enableClipboard={true}
-              collapsed={false}
-              style={{
-                background: 'transparent',
-                fontSize: '13px',
-                fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace'
-              }}
-              iconStyle="triangle"
-              indentWidth={2}
-              collapseStringsAfterLength={80}
-            />
-          </div>
-        );
-      }
-      // 压缩模式
-      return (
-        <pre className="w-full h-full p-3 sm:p-4 font-mono text-xs sm:text-sm text-gray-800 dark:text-gray-200 whitespace-pre-wrap break-all overflow-auto bg-white dark:bg-slate-900">
-          {output}
-        </pre>
-      );
-    }
-
-    // JSON → XML 模式：使用 SyntaxHighlighter 展示
-    if (viewMode === 'formatted') {
-      return <XmlHighlightView xml={output} isDark={isDark} />;
-    }
-    
-    // 压缩模式
-    return (
-      <pre className="w-full h-full p-3 sm:p-4 font-mono text-xs sm:text-sm text-gray-800 dark:text-gray-200 whitespace-pre-wrap break-all overflow-auto bg-white dark:bg-slate-900">
-        {output}
-      </pre>
-    );
-  };
-
   return (
     <div className="max-w-7xl mx-auto">
       {/* 标题 */}
@@ -467,7 +380,7 @@ export function XmlJsonTool() {
       <div className="grid lg:grid-cols-2 gap-3 sm:gap-4">
         {/* 输入区域 */}
         <div className="card p-4 sm:p-6 min-w-0">
-          <div className="flex items-center justify-between mb-2 sm:mb-3">
+          <div className="flex items-center justify-between mb-2 sm:mb-3 min-h-[36px]">
             <div className="flex items-center gap-2">
               <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
                 {mode === 'xml-to-json' ? 'XML 输入' : 'JSON 输入'}
@@ -478,19 +391,27 @@ export function XmlJsonTool() {
                 </span>
               )}
             </div>
+            {/* 占位元素，保持与输出区域按钮高度一致 */}
+            <div className="invisible">
+              <button className="btn-tool btn-ghost">
+                <Copy className="w-3.5 h-3.5 flex-shrink-0" />
+                复制
+              </button>
+            </div>
           </div>
           <CodeEditor
             value={input}
             onChange={setInput}
             language={mode === 'xml-to-json' ? 'xml' : 'json'}
             placeholder={mode === 'xml-to-json' ? '在此粘贴 XML 数据...' : '在此粘贴 JSON 数据...'}
-            height="250px sm:h-[400px]"
+            height="400px"
+            variant="embedded"
           />
         </div>
 
         {/* 输出区域 */}
-        <div className="card p-4 sm:p-6 min-w-0">
-          <div className="flex items-center justify-between mb-2 sm:mb-3">
+        <div className="card p-4 sm:p-6 min-w-0 overflow-hidden">
+          <div className="flex items-center justify-between mb-2 sm:mb-3 min-h-[36px]">
             <div className="flex items-center gap-2">
               <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
                 {mode === 'xml-to-json' ? 'JSON 输出' : 'XML 输出'}
@@ -512,42 +433,47 @@ export function XmlJsonTool() {
             )}
           </div>
           
-          <div className={`h-[250px] sm:h-[400px] border border-gray-200 dark:border-slate-700 rounded-lg overflow-auto ${
-            mode === 'json-to-xml' && viewMode === 'formatted' && output
-              ? 'bg-[#fafafa] dark:bg-[#282c34]' 
-              : 'bg-white dark:bg-slate-900'
-          }`}>
-            {renderOutput()}
-          </div>
+          {mode === 'xml-to-json' && viewMode === 'formatted' && parsedJsonData ? (
+            // XML → JSON 格式化视图使用 ReactJson
+            <div className="h-[400px] border border-gray-200 dark:border-slate-700 rounded-lg overflow-auto bg-[#fafafa] dark:bg-[#282c34] min-w-0">
+              <div className="p-2 sm:p-4 min-w-0" style={{ maxWidth: '100%' }}>
+                <ReactJson
+                  src={parsedJsonData}
+                  theme={isDark ? slateTheme : 'rjv-default'}
+                  displayDataTypes={false}
+                  enableClipboard={true}
+                  collapsed={false}
+                  style={{
+                    background: 'transparent',
+                    fontSize: '13px',
+                    fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
+                    maxWidth: '100%',
+                    overflow: 'hidden',
+                  }}
+                  iconStyle="triangle"
+                  indentWidth={2}
+                  collapseStringsAfterLength={80}
+                />
+              </div>
+            </div>
+          ) : (
+            // 其他情况使用 CodeEditor
+            <CodeEditor
+              value={output}
+              onChange={() => {}}
+              language={mode === 'xml-to-json' ? 'json' : 'xml'}
+              placeholder="转换结果将显示在这里"
+              height="400px"
+              variant="embedded"
+              readOnly={true}
+            />
+          )}
         </div>
       </div>
 
       <AdInArticle />
 
-      {/* 说明卡片 */}
-      <div className="mt-6 card p-4 sm:p-6">
-        <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">转换说明</h3>
-        <div className="grid sm:grid-cols-2 gap-4 text-xs text-gray-500 dark:text-gray-400">
-          <div>
-            <h4 className="font-medium text-gray-600 dark:text-gray-300 mb-1">XML → JSON</h4>
-            <ul className="space-y-1 list-disc list-inside">
-              <li>XML 属性会转换为带 @_ 前缀的属性</li>
-              <li>文本内容存储在 #text 字段中</li>
-              <li>自动检测数字和布尔值</li>
-              <li>支持嵌套结构</li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="font-medium text-gray-600 dark:text-gray-300 mb-1">JSON → XML</h4>
-            <ul className="space-y-1 list-disc list-inside">
-              <li>带 @_ 前缀的键会被识别为属性</li>
-              <li>#text 字段表示文本内容</li>
-              <li>自动添加 XML 声明</li>
-              <li>支持数组转换为重复标签</li>
-            </ul>
-          </div>
-        </div>
-      </div>
+      <ToolInfoAuto toolId="xml-json" />
 
       <AdFooter />
     </div>

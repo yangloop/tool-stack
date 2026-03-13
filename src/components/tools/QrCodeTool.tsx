@@ -2,7 +2,9 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { Download, QrCode, Image as ImageIcon, RefreshCw, AlertTriangle, Upload, X } from 'lucide-react';
 import QRCodeLib from 'qrcode';
 import { AdFooter } from '../ads';
+import { ToolInfoAuto } from './ToolInfoSection';
 import { ColorPicker } from '../common';
+import { CodeEditor } from '../CodeEditor';
 
 // 预设颜色
 const presetColors = [
@@ -188,13 +190,13 @@ export function QrCodeTool() {
             <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               内容
             </label>
-            <textarea
-              id="qrcode-content"
-              name="qrcode-content"
+            <CodeEditor
               value={text}
-              onChange={(e) => setText(e.target.value)}
+              onChange={setText}
+              language="text"
+              height={112}
               placeholder="输入文本、URL 或任何内容..."
-              className="w-full h-24 sm:h-28 p-2 sm:p-3 text-xs sm:text-sm bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg resize-none focus:ring-2 focus:ring-blue-500 dark:text-white"
+              variant="embedded"
             />
           </div>
 
@@ -416,6 +418,8 @@ export function QrCodeTool() {
           )}
         </div>
       </div>
+
+      <ToolInfoAuto toolId="qrcode" />
 
       {/* 底部广告 */}
       <AdFooter />

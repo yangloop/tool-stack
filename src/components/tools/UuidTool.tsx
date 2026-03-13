@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import { Copy, Check, RefreshCw, Fingerprint, Settings2 } from 'lucide-react';
 import { useClipboard } from '../../hooks/useLocalStorage';
 import { AdFooter } from '../ads';
+import { ToolInfoAuto } from './ToolInfoSection';
 
 export function UuidTool() {
   const [uuids, setUuids] = useState<string[]>([]);
@@ -121,6 +122,9 @@ export function UuidTool() {
           </div>
         </div>
       )}
+
+      {/* 功能说明 */}
+      <ToolInfoAuto toolId="uuid" />
 
       {/* 底部广告 */}
       <AdFooter />

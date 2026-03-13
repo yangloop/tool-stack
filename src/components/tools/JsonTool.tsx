@@ -8,6 +8,7 @@ import { downloadFile, readFile } from '../../utils/helpers';
 import { useClipboard } from '../../hooks/useLocalStorage';
 import { AdInArticle, AdFooter } from '../ads';
 import { CodeEditor } from '../CodeEditor';
+import { ToolInfoAuto } from './ToolInfoSection';
 
 // JSON 统计信息
 function JsonStats({ json }: { json: string }) {
@@ -123,7 +124,8 @@ function JsonInputHighlight({ value, onChange, placeholder }: JsonInputHighlight
       onChange={onChange}
       language="json"
       placeholder={placeholder}
-      height="h-[250px] sm:h-[400px]"
+      height="400px"
+      variant="embedded"
     />
   );
 }
@@ -361,7 +363,7 @@ export function JsonTool() {
       <div className="grid lg:grid-cols-2 gap-3 sm:gap-4">
         {/* 输入区域 - 带语法高亮 */}
         <div className="card p-4 sm:p-6 min-w-0">
-          <div className="flex items-center justify-between mb-2 sm:mb-3">
+          <div className="flex items-center justify-between mb-2 sm:mb-3 min-h-[36px]">
             <div className="flex items-center gap-2">
               <span className="text-sm font-medium text-gray-700 dark:text-gray-300">输入</span>
               {input && (
@@ -369,6 +371,17 @@ export function JsonTool() {
                   {input.length.toLocaleString()} 字符
                 </span>
               )}
+            </div>
+            {/* 占位元素，保持与输出区域按钮高度一致 */}
+            <div className="invisible flex gap-2">
+              <div className="flex bg-gray-100 dark:bg-slate-800 rounded p-0.5">
+                <button className="btn-group-item">格式化</button>
+                <button className="btn-group-item">压缩</button>
+              </div>
+              <button className="btn-tool btn-ghost">
+                <Copy className="w-3.5 h-3.5" />
+                复制
+              </button>
             </div>
           </div>
           <JsonInputHighlight 
@@ -380,7 +393,7 @@ export function JsonTool() {
 
         {/* 输出区域 */}
         <div className="card p-4 sm:p-6 min-w-0">
-          <div className="flex items-center justify-between mb-2 sm:mb-3">
+          <div className="flex items-center justify-between mb-2 sm:mb-3 min-h-[36px]">
             <div className="flex items-center gap-2">
               <span className="text-sm font-medium text-gray-700 dark:text-gray-300">输出</span>
               {output && (
@@ -416,7 +429,7 @@ export function JsonTool() {
             )}
           </div>
           
-          <div className="h-[250px] sm:h-[400px] bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg overflow-auto">
+          <div className="h-[400px] bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg overflow-auto">
             {parsedData ? (
               viewMode === 'formatted' ? (
                 <FormattedView data={parsedData as object} isDark={isDark} />
@@ -443,6 +456,8 @@ export function JsonTool() {
       )}
 
       <AdInArticle />
+
+      <ToolInfoAuto toolId="json" />
 
       {/* 底部广告 */}
       <AdFooter />

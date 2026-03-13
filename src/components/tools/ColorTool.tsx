@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Copy, Check, Palette } from 'lucide-react';
 import { useClipboard } from '../../hooks/useLocalStorage';
 import { AdFooter } from '../ads';
+import { ToolInfoAuto } from './ToolInfoSection';
 import { ColorPicker, ColorSwatch } from '../common';
 
 // 预设颜色
@@ -218,6 +219,8 @@ export function ColorTool() {
           </div>
         </div>
       </div>
+
+      <ToolInfoAuto toolId="color" />
 
       {/* 底部广告 */}
       <AdFooter />

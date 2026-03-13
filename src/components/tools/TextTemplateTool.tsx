@@ -16,6 +16,8 @@ import {
 } from 'lucide-react';
 import { useClipboard } from '../../hooks/useLocalStorage';
 import { AdFooter } from '../ads';
+import { ToolInfoAuto } from './ToolInfoSection';
+import { CodeEditor } from '../CodeEditor';
 
 interface VariableDef {
   name: string;
@@ -387,12 +389,13 @@ export function TextTemplateTool() {
                 <label className="text-xs sm:text-sm font-medium text-surface-700 dark:text-surface-300 mb-1.5 block">
                   从 CSV 导入数据
                 </label>
-                <textarea
-                  id="template-csv"
-                  name="template-csv"
-                  placeholder="name,age,city&#10;张三,25,北京&#10;李四,30,上海"
-                  onChange={(e) => importFromCsv(e.target.value)}
-                  className="w-full h-20 input text-xs"
+                <CodeEditor
+                  value=""
+                  onChange={importFromCsv}
+                  language="text"
+                  height={80}
+                  placeholder="name,age,city\n张三,25,北京\n李四,30,上海"
+                  variant="embedded"
                 />
               </div>
             </div>
@@ -442,13 +445,13 @@ export function TextTemplateTool() {
                 </button>
               </div>
             </div>
-            <textarea
-              id="template-editor"
-              name="template-editor"
+            <CodeEditor
               value={template}
-              onChange={(e) => setTemplate(e.target.value)}
+              onChange={setTemplate}
+              language="text"
+              height={320}
               placeholder="输入模板，使用变量如 {{name}}..."
-              className="w-full h-32 sm:h-40 lg:h-48 p-3 sm:p-4 font-mono text-xs sm:text-sm bg-surface-50 dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded-xl resize-none focus:ring-2 focus:ring-primary-500/50"
+              variant="embedded"
             />
             
             {/* 检测到的变量 */}
@@ -597,12 +600,13 @@ export function TextTemplateTool() {
               </div>
             </div>
             
-            <textarea
-              id="template-result"
-              name="template-result"
-              readOnly
+            <CodeEditor
               value={activeTab === 'single' ? defaultResult : batchResult}
-              className="w-full h-40 sm:h-48 lg:h-64 p-3 sm:p-4 font-mono text-xs sm:text-sm bg-surface-50 dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded-xl resize-none"
+              onChange={() => {}}
+              language="text"
+              height={256}
+              readOnly
+              variant="embedded"
             />
 
             {/* 统计 */}
@@ -615,22 +619,8 @@ export function TextTemplateTool() {
         </div>
       </div>
 
-      {/* 使用说明 */}
-      <div className="card p-4 sm:p-6 mt-4 sm:mt-5 space-y-3">
-        <h3 className="font-medium text-surface-900 dark:text-surface-100 text-sm sm:text-base">使用说明</h3>
-        <div className="grid sm:grid-cols-2 gap-3 sm:gap-4 text-xs sm:text-sm text-surface-600 dark:text-surface-400">
-          <div className="space-y-1.5 sm:space-y-2">
-            <p>1. 编写模板 - 使用变量占位符，如 name</p>
-            <p>2. 定义变量 - 设置变量名和默认值</p>
-            <p>3. 选择分隔符 - 支持双大括号、Dollar符号、百分号等多种格式</p>
-          </div>
-          <div className="space-y-1.5 sm:space-y-2">
-            <p>4. 批量处理 - 在数据表格中填入多行数据</p>
-            <p>5. 生成结果 - 一键复制或导出为文本文件</p>
-            <p>6. CSV 导入 - 支持从 CSV 格式快速导入数据</p>
-          </div>
-        </div>
-      </div>
+      {/* 功能说明 */}
+      <ToolInfoAuto toolId="text-template" />
 
       <AdFooter />
     </div>

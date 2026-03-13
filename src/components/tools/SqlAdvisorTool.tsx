@@ -11,6 +11,7 @@ import { useClipboard } from '../../hooks/useLocalStorage';
 import { useSqlAdvisor } from '../../hooks/useSqlAdvisor';
 import { AdInArticle, AdFooter } from '../ads';
 import { CodeEditor } from '../CodeEditor';
+import { ToolInfoAuto } from './ToolInfoSection';
 
 // 支持的数据库类型
 type DatabaseType = 'mysql' | 'postgresql' | 'sqlite' | 'sqlserver';
@@ -627,6 +628,9 @@ OFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY;`
       )}
 
       <AdInArticle />
+
+      <ToolInfoAuto toolId="sql-advisor" />
+
       <AdFooter />
     </div>
   );

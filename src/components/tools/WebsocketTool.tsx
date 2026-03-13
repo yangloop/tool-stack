@@ -20,6 +20,8 @@ import {
 } from 'lucide-react';
 import { useClipboard } from '../../hooks/useLocalStorage';
 import { AdFooter } from '../ads';
+import { ToolInfoAuto } from './ToolInfoSection';
+import { CodeEditor } from '../CodeEditor';
 
 interface Message {
   id: string;
@@ -526,13 +528,13 @@ export function WebsocketTool() {
             </div>
 
             {/* 输入框 */}
-            <textarea
-              id="ws-message"
-              name="ws-message"
+            <CodeEditor
               value={inputMessage}
-              onChange={(e) => setInputMessage(e.target.value)}
+              onChange={setInputMessage}
+              language={messageFormat === 'json' ? 'json' : 'text'}
+              height={192}
               placeholder={messageFormat === 'json' ? '{"type": "message"}' : '输入要发送的消息...'}
-              className="w-full h-40 sm:h-48 p-2.5 sm:p-3 text-sm font-mono bg-surface-50 dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded-xl resize-none focus:ring-2 focus:ring-primary-500/50"
+              variant="embedded"
             />
             
             <button
@@ -548,12 +550,12 @@ export function WebsocketTool() {
             {messageFormat === 'json' && (
               <div className="pt-3 border-t border-surface-200 dark:border-surface-700">
                 <label className="text-xs text-surface-500 mb-1.5 block">JSON 模板</label>
-                <textarea
-                  id="ws-json-template"
-                  name="ws-json-template"
+                <CodeEditor
                   value={jsonTemplate}
-                  onChange={(e) => setJsonTemplate(e.target.value)}
-                  className="w-full h-20 sm:h-24 p-2 text-xs font-mono bg-surface-50 dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded-lg resize-none"
+                  onChange={setJsonTemplate}
+                  language="json"
+                  height={96}
+                  variant="embedded"
                 />
                 <button
                   onClick={() => setInputMessage(jsonTemplate)}
@@ -666,6 +668,11 @@ export function WebsocketTool() {
           </div>
         </div>
       </div>
+
+
+
+      {/* 功能说明 */}
+      <ToolInfoAuto toolId="websocket" />
 
       <AdFooter />
     </div>
