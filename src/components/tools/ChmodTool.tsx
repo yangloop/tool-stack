@@ -223,12 +223,14 @@ export function ChmodTool() {
         <div className="grid md:grid-cols-3 gap-3 sm:gap-3 sm:p-4">
           {/* 数字权限 */}
           <div className="bg-surface-50 dark:bg-surface-900/50 p-3 sm:p-4 rounded-xl border border-surface-200 dark:border-surface-700">
-            <label className="text-sm font-medium text-surface-600 dark:text-surface-400 mb-2 block">
+            <label htmlFor="chmod-numeric" className="text-sm font-medium text-surface-600 dark:text-surface-400 mb-2 block">
               数字权限 (Numeric)
             </label>
             <div className="flex items-center gap-1.5 sm:gap-2">
               <input
                 type="text"
+                id="chmod-numeric"
+                name="chmod-numeric"
                 value={numericInput}
                 onChange={(e) => handleNumericInput(e.target.value)}
                 className="flex-1 text-2xl font-mono font-bold text-surface-900 dark:text-surface-100 bg-transparent border-none outline-none"
@@ -246,9 +248,9 @@ export function ChmodTool() {
 
           {/* 符号权限 */}
           <div className="bg-surface-50 dark:bg-surface-900/50 p-3 sm:p-4 rounded-xl border border-surface-200 dark:border-surface-700">
-            <label className="text-sm font-medium text-surface-600 dark:text-surface-400 mb-2 block">
+            <div className="text-sm font-medium text-surface-600 dark:text-surface-400 mb-2 block">
               符号权限 (Symbolic)
-            </label>
+            </div>
             <div className="flex items-center gap-1.5 sm:gap-2">
               <span className="flex-1 text-2xl font-mono font-bold text-surface-900 dark:text-surface-100">
                 {symbolic}
@@ -264,10 +266,10 @@ export function ChmodTool() {
 
           {/* Chmod 命令 */}
           <div className="bg-surface-50 dark:bg-surface-900/50 p-3 sm:p-4 rounded-xl border border-surface-200 dark:border-surface-700">
-            <label className="text-sm font-medium text-surface-600 dark:text-surface-400 mb-2 block flex items-center gap-1">
+            <div className="text-sm font-medium text-surface-600 dark:text-surface-400 mb-2 block flex items-center gap-1">
               <Terminal className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
               命令
-            </label>
+            </div>
             <div className="flex items-center gap-1.5 sm:gap-2">
               <code className="flex-1 text-sm font-mono text-surface-900 dark:text-surface-100 truncate">
                 {chmodCommand}
@@ -376,6 +378,8 @@ export function ChmodTool() {
                       <label className="inline-flex items-center justify-center cursor-pointer group" title={getPermissionDescription(perm)}>
                         <input
                           type="checkbox"
+                          id={`chmod-owner-${perm}`}
+                          name={`chmod-owner-${perm}`}
                           checked={permissions.owner[perm]}
                           onChange={(e) => updatePermission('owner', perm, e.target.checked)}
                           className="sr-only peer"
@@ -419,6 +423,8 @@ export function ChmodTool() {
                       <label className="inline-flex items-center justify-center cursor-pointer group" title={getPermissionDescription(perm)}>
                         <input
                           type="checkbox"
+                          id={`chmod-group-${perm}`}
+                          name={`chmod-group-${perm}`}
                           checked={permissions.group[perm]}
                           onChange={(e) => updatePermission('group', perm, e.target.checked)}
                           className="sr-only peer"
@@ -462,6 +468,8 @@ export function ChmodTool() {
                       <label className="inline-flex items-center justify-center cursor-pointer group" title={getPermissionDescription(perm)}>
                         <input
                           type="checkbox"
+                          id={`chmod-others-${perm}`}
+                          name={`chmod-others-${perm}`}
                           checked={permissions.others[perm]}
                           onChange={(e) => updatePermission('others', perm, e.target.checked)}
                           className="sr-only peer"
@@ -512,6 +520,8 @@ export function ChmodTool() {
                 >
                   <input
                     type="checkbox"
+                    id={`chmod-special-${key}`}
+                    name={`chmod-special-${key}`}
                     checked={permissions.special[key as keyof typeof permissions.special]}
                     onChange={(e) => updatePermission('special', key, e.target.checked)}
                     className="sr-only"

@@ -62,6 +62,8 @@ export function KeyValueEditor<T extends KeyValueItem>({
               {showEnabled && (
                 <input
                   type="checkbox"
+                  id={`kv-enabled-${index}`}
+                  name={`kv-enabled-${index}`}
                   checked={item.enabled}
                   onChange={(e) => updateItem(index, 'enabled', e.target.checked as T[keyof T])}
                   className="w-3.5 h-3.5 rounded border-gray-300 text-blue-500 focus:ring-blue-500"
@@ -69,6 +71,8 @@ export function KeyValueEditor<T extends KeyValueItem>({
               )}
               <input
                 type="text"
+                id={`kv-key-${index}`}
+                name={`kv-key-${index}`}
                 value={item.key}
                 onChange={(e) => updateItem(index, 'key', e.target.value as T[keyof T])}
                 placeholder={keyPlaceholder}
@@ -79,6 +83,8 @@ export function KeyValueEditor<T extends KeyValueItem>({
               ) : (
                 <input
                   type="text"
+                  id={`kv-value-${index}`}
+                  name={`kv-value-${index}`}
                   value={item.value}
                   onChange={(e) => updateItem(index, 'value', e.target.value as T[keyof T])}
                   placeholder={valuePlaceholder}

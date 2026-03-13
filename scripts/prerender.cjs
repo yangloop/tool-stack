@@ -270,15 +270,15 @@ const homeJsonLd = {
 };
 
 let homeHtml = indexHtml
-  .replace(/<title>.*?<\/title>/, `<title>ToolStack - 开发者工具箱</title>`)
-  .replace(/<meta name="description" content=".*?"/, `<meta name="description" content="ToolStack 是一个现代化的开发者工具集合，包含 25+ 实用工具：JSON格式化、SQL格式化与智能优化分析、Base64编解码、哈希计算、RSA加密、二维码生成等。支持语法高亮输入框，SQL分析工具支持语法检查、索引优化。界面简洁，支持深色模式。"`)
-  .replace(/<meta name="keywords" content=".*?"/, `<meta name="keywords" content="开发者工具,在线工具,JSON格式化,SQL格式化,SQL分析,SQL优化,SQL语法检查,索引优化,组合索引检查,语法高亮,代码编辑器,Base64编解码,哈希计算,MD5,SHA,RSA加密,二维码生成"`)
+  .replace(/<title>.*?<\/title>/, `<title>ToolStack - 开发者在线工具箱 | JSON格式化 SQL优化 Base64编解码等25+工具</title>`)
+  .replace(/<meta name="description" content=".*?"/, `<meta name="description" content="ToolStack 是现代化开发者工具集合，包含25+实用工具：JSON/SQL格式化、Base64编解码、哈希计算、RSA加密、二维码生成等。界面简洁，支持深色模式，免费在线使用。"`)
+  .replace(/<meta name="keywords" content=".*?"/, `<meta name="keywords" content="开发者工具,在线工具,JSON格式化,SQL格式化,Base64编解码,哈希计算,RSA加密,二维码生成"`)
   .replace(/<link rel="canonical" href=".*?"/, `<link rel="canonical" href="${domain}/"`)
-  .replace(/<meta property="og:title" content=".*?"/, `<meta property="og:title" content="ToolStack - 开发者工具箱"`)
-  .replace(/<meta property="og:description" content=".*?"/, `<meta property="og:description" content="ToolStack 是一个现代化的开发者工具集合，包含 25+ 实用工具：JSON格式化、SQL格式化与智能优化分析、Base64编解码、哈希计算等。界面简洁，支持深色模式。"`)
+  .replace(/<meta property="og:title" content=".*?"/, `<meta property="og:title" content="ToolStack - 开发者在线工具箱 | JSON/SQL格式化 Base64编解码等"`)
+  .replace(/<meta property="og:description" content=".*?"/, `<meta property="og:description" content="ToolStack 是现代化开发者工具集合，包含25+实用工具：JSON/SQL格式化、Base64编解码、哈希计算等。界面简洁，支持深色模式。"`)
   .replace(/<meta property="og:url" content=".*?"/, `<meta property="og:url" content="${domain}/"`)
-  .replace(/<meta name="twitter:title" content=".*?"/, `<meta name="twitter:title" content="ToolStack - 开发者工具箱"`)
-  .replace(/<meta name="twitter:description" content=".*?"/, `<meta name="twitter:description" content="ToolStack 是一个现代化的开发者工具集合，包含 25+ 实用工具：JSON格式化、SQL格式化与智能优化分析、Base64编解码等。"`)
+  .replace(/<meta name="twitter:title" content=".*?"/, `<meta name="twitter:title" content="ToolStack - 开发者在线工具箱 | 25+实用工具集合"`)
+  .replace(/<meta name="twitter:description" content=".*?"/, `<meta name="twitter:description" content="ToolStack 是现代化开发者工具集合，包含25+实用工具：JSON/SQL格式化、Base64编解码等。界面简洁，支持深色模式。"`)
   .replace(/<!-- JSONLD_PLACEHOLDER -->.*?<!-- \/JSONLD_PLACEHOLDER -->/s, JSON.stringify(homeJsonLd, null, 2));
 
 fs.writeFileSync(path.join(distDir, 'index.html'), homeHtml);

@@ -56,6 +56,8 @@ export function UuidTool() {
             <span className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">生成数量</span>
             <input
               type="number"
+              id="uuid-count"
+              name="uuid-count"
               min={1}
               max={100}
               value={count}
@@ -67,6 +69,8 @@ export function UuidTool() {
           <div className="flex items-center gap-2">
             <span className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">格式</span>
             <select
+              id="uuid-format"
+              name="uuid-format"
               value={format}
               onChange={(e) => setFormat(e.target.value as typeof format)}
               className="px-2 sm:px-3 py-1.5 bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg text-xs sm:text-sm dark:text-white"

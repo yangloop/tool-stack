@@ -241,13 +241,15 @@ export function CrontabTool() {
       <div className="card p-4 sm:p-6 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-slate-800 dark:to-slate-900">
         <div className="flex flex-wrap items-center justify-between gap-3 sm:gap-4">
           <div className="flex-1">
-            <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">
+            <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">
               Cron 表达式
-            </label>
+            </div>
             {isEditing ? (
               <div className="flex items-center gap-2">
                 <input
                   type="text"
+                  id="cron-expression"
+                  name="cron-expression"
                   value={editValue}
                   onChange={(e) => setEditValue(e.target.value)}
                   className="flex-1 px-3 py-2 font-mono text-lg bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg dark:text-white"
@@ -302,13 +304,15 @@ export function CrontabTool() {
         <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
           {cronFields.map((field, index) => (
             <div key={field.name}>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label htmlFor={`cron-field-${index}`} className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 {field.name}
                 <span className="text-xs text-gray-400 ml-1">
                   ({field.min}-{field.max})
                 </span>
               </label>
               <select
+                id={`cron-field-${index}`}
+                name={`cron-field-${index}`}
                 value={values[index]}
                 onChange={(e) => handleValueChange(index, e.target.value)}
                 className="w-full px-3 py-2 bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg text-sm dark:text-white"
@@ -322,6 +326,8 @@ export function CrontabTool() {
               </select>
               <input
                 type="text"
+                id={`cron-value-${index}`}
+                name={`cron-value-${index}`}
                 value={values[index]}
                 onChange={(e) => handleValueChange(index, e.target.value)}
                 placeholder="自定义"

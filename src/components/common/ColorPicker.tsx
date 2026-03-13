@@ -4,6 +4,7 @@ import { Copy, Check } from 'lucide-react';
 import { useClipboard } from '../../hooks/useLocalStorage';
 
 interface ColorPickerProps {
+  id?: string;
   label?: string;
   color: string;
   onChange: (color: string) => void;
@@ -12,6 +13,7 @@ interface ColorPickerProps {
 }
 
 export function ColorPicker({ 
+  id,
   label, 
   color, 
   onChange, 
@@ -37,9 +39,9 @@ export function ColorPicker({
   return (
     <div className="w-full">
       {label && (
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+        <div className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
           {label}
-        </label>
+        </div>
       )}
       
       <div className="flex items-center gap-2">
@@ -88,6 +90,8 @@ export function ColorPicker({
         {/* HEX 输入框 */}
         <div className="flex-1 relative">
           <HexColorInput
+            id={id ? `${id}-hex` : undefined}
+            name={id ? `${id}-hex` : undefined}
             color={color}
             onChange={onChange}
             prefixed

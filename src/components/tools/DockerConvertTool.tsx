@@ -193,6 +193,8 @@ export function DockerConvertTool() {
               <div className="flex gap-1.5 sm:gap-2">
                 <input
                   type="text"
+                  id="docker-service-name"
+                  name="docker-service-name"
                   value={serviceName}
                   onChange={(e) => setServiceName(e.target.value)}
                   placeholder="服务名"
@@ -474,6 +476,8 @@ function FormConfigTab({
           <div className="grid grid-cols-2 gap-2 sm:gap-3">
             <input
               type="text"
+              id="docker-image"
+              name="docker-image"
               value={options.image}
               onChange={(e) => updateOption('image', e.target.value)}
               placeholder="镜像名 (必填)"
@@ -481,6 +485,8 @@ function FormConfigTab({
             />
             <input
               type="text"
+              id="docker-container-name"
+              name="docker-container-name"
               value={options.name || ''}
               onChange={(e) => updateOption('name', e.target.value)}
               placeholder="容器名"
@@ -489,6 +495,8 @@ function FormConfigTab({
           </div>
           <input
             type="text"
+            id="docker-command"
+            name="docker-command"
             value={options.command || ''}
             onChange={(e) => updateOption('command', e.target.value)}
             placeholder="启动命令"
@@ -508,6 +516,8 @@ function FormConfigTab({
             <label key={key} className="flex items-center gap-2 cursor-pointer">
               <input
                 type="checkbox"
+                id={`docker-option-${key}`}
+                name={`docker-option-${key}`}
                 checked={options[key as keyof DockerRunOptions] as boolean}
                 onChange={(e) => updateOption(key as keyof DockerRunOptions, e.target.checked)}
                 className="w-3 h-3 sm:w-3.5 sm:h-3.5 sm:w-4 sm:h-4 rounded border-surface-300 text-primary-500"
@@ -527,6 +537,8 @@ function FormConfigTab({
             <div className="flex gap-1.5 sm:gap-2">
               <input
                 type="text"
+                id={`docker-port-host-${idx}`}
+                name={`docker-port-host-${idx}`}
                 value={port.host}
                 onChange={(e) => updateArrayItem('ports', idx, { ...port, host: e.target.value })}
                 placeholder="主机端口"
@@ -535,6 +547,8 @@ function FormConfigTab({
               <span className="self-center text-surface-400">:</span>
               <input
                 type="text"
+                id={`docker-port-container-${idx}`}
+                name={`docker-port-container-${idx}`}
                 value={port.container}
                 onChange={(e) => updateArrayItem('ports', idx, { ...port, container: e.target.value })}
                 placeholder="容器端口"
@@ -554,6 +568,8 @@ function FormConfigTab({
             <div className="flex gap-1.5 sm:gap-2">
               <input
                 type="text"
+                id={`docker-vol-host-${idx}`}
+                name={`docker-vol-host-${idx}`}
                 value={vol.host}
                 onChange={(e) => updateArrayItem('volumes', idx, { ...vol, host: e.target.value })}
                 placeholder="主机路径"
@@ -562,12 +578,16 @@ function FormConfigTab({
               <span className="self-center text-surface-400">:</span>
               <input
                 type="text"
+                id={`docker-vol-container-${idx}`}
+                name={`docker-vol-container-${idx}`}
                 value={vol.container}
                 onChange={(e) => updateArrayItem('volumes', idx, { ...vol, container: e.target.value })}
                 placeholder="容器路径"
                 className="flex-1 input py-1.5 text-sm"
               />
               <select
+                id={`docker-vol-mode-${idx}`}
+                name={`docker-vol-mode-${idx}`}
                 value={vol.mode}
                 onChange={(e) => updateArrayItem('volumes', idx, { ...vol, mode: e.target.value })}
                 className="select py-1.5 text-sm w-20"
@@ -589,6 +609,8 @@ function FormConfigTab({
             <div className="flex gap-1.5 sm:gap-2">
               <input
                 type="text"
+                id={`docker-env-key-${idx}`}
+                name={`docker-env-key-${idx}`}
                 value={env.key}
                 onChange={(e) => updateArrayItem('environment', idx, { ...env, key: e.target.value })}
                 placeholder="KEY"
@@ -597,6 +619,8 @@ function FormConfigTab({
               <span className="self-center text-surface-400">=</span>
               <input
                 type="text"
+                id={`docker-env-value-${idx}`}
+                name={`docker-env-value-${idx}`}
                 value={env.value}
                 onChange={(e) => updateArrayItem('environment', idx, { ...env, value: e.target.value })}
                 placeholder="value"
@@ -621,6 +645,8 @@ function FormConfigTab({
               <input
                 key={key}
                 type="text"
+                id={`docker-other-${key}`}
+                name={`docker-other-${key}`}
                 value={(options[key as keyof DockerRunOptions] as string) || ''}
                 onChange={(e) => updateOption(key as keyof DockerRunOptions, e.target.value)}
                 placeholder={placeholder}

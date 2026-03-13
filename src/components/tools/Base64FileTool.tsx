@@ -309,6 +309,8 @@ export function Base64FileTool() {
               <input
                 ref={fileInputRef}
                 type="file"
+                id="base64-file-input"
+                name="base64-file-input"
                 onChange={handleFileInput}
                 className="hidden"
               />
@@ -455,11 +457,13 @@ export function Base64FileTool() {
             {/* 输出设置 */}
             <div className="grid md:grid-cols-2 gap-3 sm:gap-4">
               <div className="space-y-2">
-                <label className="text-sm font-medium text-surface-700 dark:text-surface-300">
+                <label htmlFor="base64-output-filename" className="text-sm font-medium text-surface-700 dark:text-surface-300">
                   输出文件名
                 </label>
                 <input
                   type="text"
+                  id="base64-output-filename"
+                  name="base64-output-filename"
                   value={outputFileName}
                   onChange={(e) => setOutputFileName(e.target.value)}
                   placeholder="例如: file.pdf"
@@ -467,10 +471,12 @@ export function Base64FileTool() {
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium text-surface-700 dark:text-surface-300">
+                <label htmlFor="base64-output-type" className="text-sm font-medium text-surface-700 dark:text-surface-300">
                   MIME 类型
                 </label>
                 <select
+                  id="base64-output-type"
+                  name="base64-output-type"
                   value={outputFileType}
                   onChange={(e) => setOutputFileType(e.target.value)}
                   className="w-full select"

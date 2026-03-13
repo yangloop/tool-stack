@@ -289,6 +289,8 @@ const version = "2.0";`);
           <label className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-surface-600 dark:text-surface-400 cursor-pointer">
             <input
               type="checkbox"
+              id="show-inline-diff"
+              name="show-inline-diff"
               checked={showInlineDiff}
               onChange={(e) => setShowInlineDiff(e.target.checked)}
               className="w-3.5 h-3.5 sm:w-4 sm:h-4 rounded border-surface-300 text-primary-500 focus:ring-primary-500"
@@ -299,6 +301,8 @@ const version = "2.0";`);
           <label className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-surface-600 dark:text-surface-400 cursor-pointer">
             <input
               type="checkbox"
+              id="show-equal-lines"
+              name="show-equal-lines"
               checked={showEqualLines}
               onChange={(e) => setShowEqualLines(e.target.checked)}
               className="w-3.5 h-3.5 sm:w-4 sm:h-4 rounded border-surface-300 text-primary-500 focus:ring-primary-500"

@@ -251,9 +251,9 @@ export function RegexTool() {
 
       {/* 常用模式 */}
       <div className="card p-4 sm:p-6 mb-4">
-        <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+        <div className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
           常用模式
-        </label>
+        </div>
         <div className="flex flex-wrap gap-2">
           {commonPatterns.map(({ name, pattern: p }) => (
             <button
@@ -270,7 +270,7 @@ export function RegexTool() {
       {/* 正则输入 */}
       <div className="card p-4 sm:p-6 mb-4 space-y-4">
         <div>
-          <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <label htmlFor="regex-pattern" className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             正则表达式
           </label>
           <div className="flex flex-wrap sm:flex-nowrap gap-2">
@@ -291,6 +291,8 @@ export function RegexTool() {
               <input
                 ref={inputRef}
                 type="text"
+                id="regex-pattern"
+                name="regex-pattern"
                 value={pattern}
                 onChange={(e) => setPattern(e.target.value)}
                 onScroll={() => {
@@ -327,6 +329,8 @@ export function RegexTool() {
             <label key={key} className="flex items-center gap-2 cursor-pointer">
               <input
                 type="checkbox"
+                id={`regex-flag-${key}`}
+                name={`regex-flag-${key}`}
                 checked={flags[key as keyof typeof flags]}
                 onChange={(e) => setFlags({ ...flags, [key]: e.target.checked })}
                 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-blue-500 rounded"
@@ -340,9 +344,9 @@ export function RegexTool() {
       {/* 测试文本 */}
       <div className="card p-4 sm:p-6 space-y-4">
         <div>
-          <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <div className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             测试文本
-          </label>
+          </div>
           <CodeEditor
             value={testText}
             onChange={setTestText}

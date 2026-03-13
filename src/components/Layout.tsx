@@ -192,6 +192,8 @@ export function Layout({ children, activeToolId }: LayoutProps) {
                   </div>
                   <input
                     type="text"
+                    id="tool-search"
+                    name="tool-search"
                     placeholder="搜索工具..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
@@ -316,6 +318,8 @@ export function Layout({ children, activeToolId }: LayoutProps) {
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-400 group-focus-within:text-primary-500 transition-colors" />
                   <input
                     type="text"
+                    id="mobile-tool-search"
+                    name="mobile-tool-search"
                     placeholder="搜索工具..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}

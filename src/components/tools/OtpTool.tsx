@@ -252,11 +252,13 @@ export function OtpTool() {
           <h3 className="font-medium text-surface-900 dark:text-surface-100">添加新账户</h3>
           <div className="grid md:grid-cols-2 gap-3 sm:gap-4">
             <div>
-              <label className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1.5">
+              <label htmlFor="otp-account-name" className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1.5">
                 账户名称 <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
+                id="otp-account-name"
+                name="otp-account-name"
                 value={newAccount.name}
                 onChange={(e) => setNewAccount({ ...newAccount, name: e.target.value })}
                 placeholder="如：username@gmail.com"
@@ -264,11 +266,13 @@ export function OtpTool() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1.5">
+              <label htmlFor="otp-issuer" className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1.5">
                 发行者
               </label>
               <input
                 type="text"
+                id="otp-issuer"
+                name="otp-issuer"
                 value={newAccount.issuer}
                 onChange={(e) => setNewAccount({ ...newAccount, issuer: e.target.value })}
                 placeholder="如：Google、GitHub"
@@ -276,11 +280,13 @@ export function OtpTool() {
               />
             </div>
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1.5">
+              <label htmlFor="otp-secret" className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1.5">
                 密钥 (Base32) <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
+                id="otp-secret"
+                name="otp-secret"
                 value={newAccount.secret}
                 onChange={(e) => setNewAccount({ ...newAccount, secret: e.target.value })}
                 placeholder="JBSWY3DPEHPK3PXP"
@@ -289,8 +295,10 @@ export function OtpTool() {
               <p className="text-xs text-surface-400 mt-1">从认证器应用或网站获取的密钥，通常包含16-32个字符</p>
             </div>
             <div>
-              <label className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1.5">位数</label>
+              <label htmlFor="otp-digits" className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1.5">位数</label>
               <select
+                id="otp-digits"
+                name="otp-digits"
                 value={newAccount.digits}
                 onChange={(e) => setNewAccount({ ...newAccount, digits: Number(e.target.value) })}
                 className="select"
@@ -301,8 +309,10 @@ export function OtpTool() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1.5">周期（秒）</label>
+              <label htmlFor="otp-period" className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1.5">周期（秒）</label>
               <select
+                id="otp-period"
+                name="otp-period"
                 value={newAccount.period}
                 onChange={(e) => setNewAccount({ ...newAccount, period: Number(e.target.value) })}
                 className="select"

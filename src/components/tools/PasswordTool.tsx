@@ -77,6 +77,8 @@ export function PasswordTool() {
           <div className="flex-1 relative">
             <input
               type="text"
+              id="generated-password"
+              name="generated-password"
               value={password}
               readOnly
               placeholder="点击生成按钮..."
@@ -128,6 +130,8 @@ export function PasswordTool() {
           <span className="text-sm sm:text-base font-medium text-gray-700 dark:text-gray-300">长度</span>
           <input
             type="range"
+            id="password-length"
+            name="password-length"
             min={4}
             max={64}
             value={length}
@@ -147,6 +151,8 @@ export function PasswordTool() {
             <label key={key} className="flex items-center gap-2 sm:gap-3 cursor-pointer">
               <input
                 type="checkbox"
+                id={`password-option-${key}`}
+                name={`password-option-${key}`}
                 checked={options[key as keyof typeof options]}
                 onChange={(e) => setOptions({ ...options, [key]: e.target.checked })}
                 className="w-4 h-4 text-blue-500 rounded"
@@ -159,6 +165,8 @@ export function PasswordTool() {
         <label className="flex items-center gap-2 sm:gap-3 cursor-pointer">
           <input
             type="checkbox"
+            id="password-exclude-similar"
+            name="password-exclude-similar"
             checked={excludeSimilar}
             onChange={(e) => setExcludeSimilar(e.target.checked)}
             className="w-4 h-4 text-blue-500 rounded"

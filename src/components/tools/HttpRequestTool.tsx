@@ -351,6 +351,8 @@ export function HttpRequestTool() {
       <div className="card p-3 sm:p-4 sm:p-6 mb-4 sm:mb-4 sm:mb-5">
         <div className="flex gap-2 sm:gap-3">
           <select
+            id="http-method"
+            name="http-method"
             value={method}
             onChange={(e) => setMethod(e.target.value as HttpMethod)}
             className="select w-28 font-medium"
@@ -361,6 +363,8 @@ export function HttpRequestTool() {
           </select>
           <input
             type="text"
+            id="request-url"
+            name="request-url"
             value={baseUrl}
             onChange={(e) => setBaseUrl(e.target.value)}
             placeholder="输入 URL..."

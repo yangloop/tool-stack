@@ -313,12 +313,14 @@ export function WebsocketTool() {
       <div className="card p-2.5 sm:p-3 sm:p-4 sm:p-6 mb-4 sm:mb-5 space-y-4">
         <div className="flex flex-wrap gap-2 sm:gap-2.5 sm:p-3">
           <div className="flex-1 min-w-[300px]">
-            <label className="text-sm font-medium text-surface-700 dark:text-surface-300 mb-1.5 block">
+            <label htmlFor="websocket-url" className="text-sm font-medium text-surface-700 dark:text-surface-300 mb-1.5 block">
               WebSocket URL
             </label>
             <div className="flex gap-1.5 sm:gap-2">
               <input
                 type="text"
+                id="websocket-url"
+                name="websocket-url"
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
                 placeholder="wss://example.com/socket"
@@ -407,6 +409,8 @@ export function WebsocketTool() {
                   <label className="flex items-center gap-2 cursor-pointer">
                     <input
                       type="checkbox"
+                      id="ws-auto-reconnect"
+                      name="ws-auto-reconnect"
                       checked={autoReconnect}
                       onChange={(e) => setAutoReconnect(e.target.checked)}
                       className="w-3 h-3 sm:w-3.5 sm:h-3.5 sm:w-4 sm:h-4 rounded border-surface-300 text-primary-500 focus:ring-primary-500"
@@ -418,6 +422,8 @@ export function WebsocketTool() {
                       <span className="text-sm text-surface-500">间隔</span>
                       <input
                         type="number"
+                        id="ws-reconnect-interval"
+                        name="ws-reconnect-interval"
                         value={reconnectInterval}
                         onChange={(e) => setReconnectInterval(Number(e.target.value))}
                         min={1000}
@@ -434,6 +440,8 @@ export function WebsocketTool() {
                   <label className="flex items-center gap-2 cursor-pointer">
                     <input
                       type="checkbox"
+                      id="ws-heartbeat-enabled"
+                      name="ws-heartbeat-enabled"
                       checked={heartbeatEnabled}
                       onChange={(e) => setHeartbeatEnabled(e.target.checked)}
                       className="w-3 h-3 sm:w-3.5 sm:h-3.5 sm:w-4 sm:h-4 rounded border-surface-300 text-primary-500 focus:ring-primary-500"
@@ -446,6 +454,8 @@ export function WebsocketTool() {
                         <span className="text-sm text-surface-500">间隔</span>
                         <input
                           type="number"
+                          id="ws-heartbeat-interval"
+                          name="ws-heartbeat-interval"
                           value={heartbeatInterval}
                           onChange={(e) => setHeartbeatInterval(Number(e.target.value))}
                           min={5000}
@@ -458,6 +468,8 @@ export function WebsocketTool() {
                         <span className="text-sm text-surface-500">消息</span>
                         <input
                           type="text"
+                          id="ws-heartbeat-message"
+                          name="ws-heartbeat-message"
                           value={heartbeatMessage}
                           onChange={(e) => setHeartbeatMessage(e.target.value)}
                           className="flex-1 input py-1 text-sm"

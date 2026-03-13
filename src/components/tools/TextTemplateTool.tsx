@@ -315,6 +315,8 @@ export function TextTemplateTool() {
           <div className="flex flex-wrap items-center gap-2">
             <span className="text-xs sm:text-sm text-surface-600 dark:text-surface-400">分隔符:</span>
             <select
+              id="template-delimiter"
+              name="template-delimiter"
               value={useCustomDelimiter ? 'custom' : delimiterIndex}
               onChange={(e) => {
                 if (e.target.value === 'custom') {
@@ -339,6 +341,8 @@ export function TextTemplateTool() {
               <span className="text-xs sm:text-sm text-surface-500">格式:</span>
               <input
                 type="text"
+                id="template-custom-delimiter"
+                name="template-custom-delimiter"
                 value={customDelimiter}
                 onChange={(e) => setCustomDelimiter(e.target.value)}
                 placeholder="例如: {{}}"
@@ -374,11 +378,13 @@ export function TextTemplateTool() {
           <div className="pt-4 border-t border-surface-200 dark:border-surface-700 space-y-4">
             <div className="grid md:grid-cols-2 gap-4">
               <div>
-                <label className="text-xs sm:text-sm font-medium text-surface-700 dark:text-surface-300 mb-1.5 block">
+                <label htmlFor="template-separator" className="text-xs sm:text-sm font-medium text-surface-700 dark:text-surface-300 mb-1.5 block">
                   批量分隔符（用于分隔多条结果）
                 </label>
                 <input
                   type="text"
+                  id="template-separator"
+                  name="template-separator"
                   value={separator}
                   onChange={(e) => setSeparator(e.target.value)}
                   className="w-full input text-sm"
@@ -484,6 +490,8 @@ export function TextTemplateTool() {
                   <GripVertical className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-surface-300 flex-shrink-0" />
                   <input
                     type="text"
+                    id={`template-var-name-${index}`}
+                    name={`template-var-name-${index}`}
                     value={variable.name}
                     onChange={(e) => updateVariable(index, 'name', e.target.value)}
                     placeholder="变量名"
@@ -491,6 +499,8 @@ export function TextTemplateTool() {
                   />
                   <input
                     type="text"
+                    id={`template-var-default-${index}`}
+                    name={`template-var-default-${index}`}
                     value={variable.defaultValue}
                     onChange={(e) => updateVariable(index, 'defaultValue', e.target.value)}
                     placeholder="默认值"
@@ -550,6 +560,8 @@ export function TextTemplateTool() {
                           <td key={v.name} className="px-2 py-1">
                             <input
                               type="text"
+                              id={`template-data-${row.id}-${v.name}`}
+                              name={`template-data-${row.id}-${v.name}`}
                               value={row.values[v.name] || ''}
                               onChange={(e) => updateDataRow(row.id, v.name, e.target.value)}
                               className="w-full bg-transparent border-none p-1 text-xs sm:text-sm focus:ring-1 focus:ring-primary-500 rounded"

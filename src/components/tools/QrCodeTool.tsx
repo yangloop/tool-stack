@@ -187,9 +187,9 @@ export function QrCodeTool() {
         <div className="card p-4 sm:p-6 space-y-4 sm:space-y-5">
           {/* 内容输入 */}
           <div>
-            <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <div className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               内容
-            </label>
+            </div>
             <CodeEditor
               value={text}
               onChange={setText}
@@ -203,10 +203,12 @@ export function QrCodeTool() {
           {/* 尺寸和纠错级别 */}
           <div className="grid grid-cols-2 gap-3 sm:gap-4">
             <div>
-              <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label htmlFor="qr-size" className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 尺寸
               </label>
               <select
+                id="qr-size"
+                name="qr-size"
                 value={size}
                 onChange={(e) => setSize(Number(e.target.value))}
                 className="w-full px-2 sm:px-3 py-2 bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg text-xs sm:text-sm dark:text-white"
@@ -219,10 +221,12 @@ export function QrCodeTool() {
             </div>
 
             <div>
-              <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label htmlFor="qr-error-correction" className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 纠错级别
               </label>
               <select
+                id="qr-error-correction"
+                name="qr-error-correction"
                 value={errorCorrection}
                 onChange={(e) => setErrorCorrection(e.target.value as typeof errorCorrection)}
                 className="w-full px-2 sm:px-3 py-2 bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg text-xs sm:text-sm dark:text-white"
@@ -283,6 +287,8 @@ export function QrCodeTool() {
             <input
               ref={fileInputRef}
               type="file"
+              id="qrcode-logo"
+              name="qrcode-logo"
               accept="image/*"
               onChange={handleLogoUpload}
               className="hidden"
@@ -292,11 +298,13 @@ export function QrCodeTool() {
             {logoImage && (
               <div className="pt-2 border-t border-gray-200 dark:border-slate-700">
                 <div className="flex items-center justify-between mb-2">
-                  <label className="text-xs text-gray-600 dark:text-gray-400">尺寸</label>
+                  <label htmlFor="qrcode-logo-size" className="text-xs text-gray-600 dark:text-gray-400">尺寸</label>
                   <span className="text-xs text-gray-500">{logoSizePercent}%</span>
                 </div>
                 <input
                   type="range"
+                  id="qrcode-logo-size"
+                  name="qrcode-logo-size"
                   min="10"
                   max="20"
                   value={logoSizePercent}
@@ -352,12 +360,14 @@ export function QrCodeTool() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <ColorPicker
+                id="qrcode-fg"
                 label="前景色（二维码颜色）"
                 color={fgColor}
                 onChange={setFgColor}
                 presetColors={presetColors}
               />
               <ColorPicker
+                id="qrcode-bg"
                 label="背景色"
                 color={bgColor}
                 onChange={setBgColor}

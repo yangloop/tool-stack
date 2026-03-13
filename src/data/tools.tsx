@@ -19,7 +19,7 @@ const JwtTool = lazy(() => import('../components/tools/JwtTool').then(m => ({ de
 const RsaTool = lazy(() => import('../components/tools/RsaTool').then(m => ({ default: m.RsaTool })));
 const UaParserTool = lazy(() => import('../components/tools/UaParserTool').then(m => ({ default: m.UaParserTool })));
 const SqlTool = lazy(() => import('../components/tools/SqlTool').then(m => ({ default: m.SqlTool })));
-const SqlAdvisorTool = lazy(() => import('../components/tools/SqlAdvisorTool'));
+const SqlAdvisorTool = lazy(() => import('../components/tools/SqlAdvisorTool').then(m => ({ default: m.SqlAdvisorTool })));
 const CrontabTool = lazy(() => import('../components/tools/CrontabTool').then(m => ({ default: m.CrontabTool })));
 const UrlParserTool = lazy(() => import('../components/tools/UrlParserTool').then(m => ({ default: m.UrlParserTool })));
 const HttpRequestTool = lazy(() => import('../components/tools/HttpRequestTool').then(m => ({ default: m.HttpRequestTool })));

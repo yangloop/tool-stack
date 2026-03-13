@@ -358,6 +358,8 @@ export function RsaTool() {
                 <Shield className="w-4 h-4 sm:w-5 sm:h-5 text-surface-400" />
                 <span className="font-medium text-surface-700 dark:text-surface-300">密钥长度</span>
                 <select
+                  id="rsa-key-size"
+                  name="rsa-key-size"
                   value={keySize}
                   onChange={(e) => setKeySize(Number(e.target.value) as typeof keySize)}
                   disabled={isGenerating}

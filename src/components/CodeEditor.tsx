@@ -15,6 +15,7 @@ import { lightTheme, darkTheme } from '../styles/codemirror-theme';
 type Language = 'sql' | 'xml' | 'json' | 'html' | 'yaml' | 'shell' | 'text';
 
 interface CodeEditorProps {
+  id?: string;
   value: string;
   onChange: (value: string) => void;
   language: Language;
@@ -63,6 +64,7 @@ const getLanguageExtension = (language: Language): Extension => {
 };
 
 export function CodeEditor({
+  id,
   value,
   onChange,
   language,
@@ -154,7 +156,7 @@ export function CodeEditor({
   }, [variant, isDark]);
 
   return (
-    <div className={`code-editor-wrapper ${wrapperClassName}`}>
+    <div id={id} className={`code-editor-wrapper ${wrapperClassName}`}>
       <div className={containerClasses}>
         <CodeMirror
           key={isDark ? 'dark' : 'light'}  // 强制重新创建编辑器以应用主题变化

@@ -156,9 +156,9 @@ export function ColorTool() {
 
       {/* 预设颜色 */}
       <div className="card p-4 sm:p-6 mb-4">
-        <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 sm:mb-3">
+        <div className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 sm:mb-3">
           预设颜色
-        </label>
+        </div>
         <ColorSwatch 
           colors={presetColors}
           selectedColor={hex}
@@ -171,6 +171,7 @@ export function ColorTool() {
         {/* HEX */}
         <div className="card p-4 sm:p-6 space-y-3">
           <ColorPicker 
+            id="color-tool-hex"
             label="HEX"
             color={hex}
             onChange={handleHexChange}
@@ -180,13 +181,15 @@ export function ColorTool() {
 
         {/* RGB */}
         <div className="card p-4 sm:p-6 space-y-3">
-          <label className="font-medium text-sm sm:text-base text-gray-700 dark:text-gray-300">RGB</label>
+          <div className="font-medium text-sm sm:text-base text-gray-700 dark:text-gray-300">RGB</div>
           <div className="space-y-2">
             {(['r', 'g', 'b'] as const).map((key) => (
               <div key={key} className="flex items-center gap-2">
                 <span className="w-4 text-xs sm:text-sm text-gray-500 uppercase">{key}</span>
                 <input
                   type="number"
+                  id={`color-rgb-${key}`}
+                  name={`color-rgb-${key}`}
                   min={0}
                   max={255}
                   value={rgb[key]}
@@ -200,13 +203,15 @@ export function ColorTool() {
 
         {/* HSL */}
         <div className="card p-4 sm:p-6 space-y-3">
-          <label className="font-medium text-sm sm:text-base text-gray-700 dark:text-gray-300">HSL</label>
+          <div className="font-medium text-sm sm:text-base text-gray-700 dark:text-gray-300">HSL</div>
           <div className="space-y-2">
             {(['h', 's', 'l'] as const).map((key) => (
               <div key={key} className="flex items-center gap-2">
                 <span className="w-4 text-xs sm:text-sm text-gray-500 uppercase">{key}</span>
                 <input
                   type="number"
+                  id={`color-hsl-${key}`}
+                  name={`color-hsl-${key}`}
                   min={0}
                   max={key === 'h' ? 360 : 100}
                   value={hsl[key]}

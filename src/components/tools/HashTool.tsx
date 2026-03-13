@@ -96,9 +96,9 @@ export function HashTool() {
 
       <div className="card p-4 sm:p-6 mb-4 space-y-3 sm:space-y-4">
         <div>
-          <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <div className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             输入文本
-          </label>
+          </div>
           <CodeEditor
             value={input}
             onChange={setInput}
@@ -118,11 +118,13 @@ export function HashTool() {
         </div>
 
         <div>
-          <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <label htmlFor="hmac-key" className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             HMAC 密钥（可选）
           </label>
           <input
             type="text"
+            id="hmac-key"
+            name="hmac-key"
             value={hmacKey}
             onChange={(e) => setHmacKey(e.target.value)}
             placeholder="输入 HMAC 密钥..."

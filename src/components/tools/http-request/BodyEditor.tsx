@@ -209,12 +209,16 @@ export function BodyEditor({
                 <div className="flex items-center gap-1.5 flex-1">
                   <input
                     type="checkbox"
+                    id={`urlencoded-enabled-${index}`}
+                    name={`urlencoded-enabled-${index}`}
                     checked={item.enabled}
                     onChange={(e) => updateUrlEncodedItem(index, 'enabled', e.target.checked)}
                     className="w-3.5 h-3.5 rounded border-gray-300 text-blue-500 focus:ring-blue-500 flex-shrink-0"
                   />
                   <input
                     type="text"
+                    id={`urlencoded-key-${index}`}
+                    name={`urlencoded-key-${index}`}
                     value={item.key}
                     onChange={(e) => updateUrlEncodedItem(index, 'key', e.target.value)}
                     placeholder="字段名"
@@ -224,6 +228,8 @@ export function BodyEditor({
                 <div className="flex items-center gap-1.5 flex-1 pl-5 sm:pl-0">
                   <input
                     type="text"
+                    id={`urlencoded-value-${index}`}
+                    name={`urlencoded-value-${index}`}
                     value={item.value}
                     onChange={(e) => updateUrlEncodedItem(index, 'value', e.target.value)}
                     placeholder="字段值"
@@ -259,18 +265,24 @@ export function BodyEditor({
                 <div className="flex items-center gap-1.5 flex-1">
                   <input
                     type="checkbox"
+                    id={`formdata-enabled-${index}`}
+                    name={`formdata-enabled-${index}`}
                     checked={item.enabled}
                     onChange={(e) => updateFormDataItem(index, 'enabled', e.target.checked)}
                     className="w-3.5 h-3.5 rounded border-gray-300 text-blue-500 focus:ring-blue-500 flex-shrink-0"
                   />
                   <input
                     type="text"
+                    id={`formdata-key-${index}`}
+                    name={`formdata-key-${index}`}
                     value={item.key}
                     onChange={(e) => updateFormDataItem(index, 'key', e.target.value)}
                     placeholder="字段名"
                     className="flex-1 min-w-0 px-2.5 py-1.5 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-md text-xs dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                   <select
+                    id={`formdata-type-${index}`}
+                    name={`formdata-type-${index}`}
                     value={item.type}
                     onChange={(e) => updateFormDataItem(index, 'type', e.target.value as 'text' | 'file')}
                     className="px-2 py-1.5 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-md text-xs dark:text-white flex-shrink-0"
@@ -284,6 +296,8 @@ export function BodyEditor({
                   {item.type === 'text' ? (
                     <input
                       type="text"
+                      id={`formdata-value-${index}`}
+                      name={`formdata-value-${index}`}
                       value={item.value}
                       onChange={(e) => updateFormDataItem(index, 'value', e.target.value)}
                       placeholder="字段值"
@@ -293,6 +307,8 @@ export function BodyEditor({
                     <div className="flex-1 min-w-0 px-2.5 py-1.5 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-md">
                       <input
                         type="file"
+                        id={`formdata-file-${index}`}
+                        name={`formdata-file-${index}`}
                         className="w-full text-xs min-w-0"
                         onChange={(e) => {
                           const file = e.target.files?.[0];

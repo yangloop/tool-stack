@@ -219,7 +219,7 @@ export function UrlParserTool() {
       {/* 输入区域 */}
       <div className="card p-4 sm:p-6 space-y-3">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <label className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">
+          <label htmlFor="url-input" className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">
             URL 地址
           </label>
           <button
@@ -233,6 +233,8 @@ export function UrlParserTool() {
         </div>
         <input
           type="text"
+          id="url-input"
+          name="url-input"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="输入 URL 地址..."

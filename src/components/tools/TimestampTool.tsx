@@ -88,18 +88,22 @@ export function TimestampTool() {
       <div className="grid md:grid-cols-2 gap-3 sm:gap-4">
         <div className="card p-4 sm:p-6 space-y-3 sm:space-y-4">
           <div>
-            <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label htmlFor="timestamp-input" className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               时间戳
             </label>
             <div className="flex gap-2">
               <input
                 type="text"
+                id="timestamp-input"
+                name="timestamp-input"
                 value={timestamp}
                 onChange={(e) => setTimestamp(e.target.value)}
                 placeholder="输入时间戳..."
                 className="flex-1 px-3 sm:px-4 py-2 font-mono text-xs sm:text-sm bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-blue-500 dark:text-white"
               />
               <select
+                id="timestamp-unit"
+                name="timestamp-unit"
                 value={unit}
                 onChange={(e) => setUnit(e.target.value as 's' | 'ms')}
                 className="px-2 sm:px-3 py-2 bg-gray-100 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg text-xs sm:text-sm dark:text-white"
@@ -112,9 +116,11 @@ export function TimestampTool() {
 
           <div className="space-y-2 sm:space-y-3">
             <div>
-              <label className="block text-xs text-gray-500 mb-1">日期</label>
+              <label htmlFor="date-input" className="block text-xs text-gray-500 mb-1">日期</label>
               <input
                 type="date"
+                id="date-input"
+                name="date-input"
                 value={dateInput}
                 onChange={(e) => {
                   setDateInput(e.target.value);
@@ -124,9 +130,11 @@ export function TimestampTool() {
               />
             </div>
             <div>
-              <label className="block text-xs text-gray-500 mb-1">时间</label>
+              <label htmlFor="time-input" className="block text-xs text-gray-500 mb-1">时间</label>
               <input
                 type="time"
+                id="time-input"
+                name="time-input"
                 value={timeInput}
                 onChange={(e) => {
                   setTimeInput(e.target.value);
