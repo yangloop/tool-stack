@@ -1,10 +1,12 @@
 // Home.tsx - 现代化首页仪表盘组件
 import { 
-  FileJson, Code, Hash, Clock, ArrowRight,
+  FileJson, Code, Hash, Clock,
   Fingerprint, QrCode, Lock, Search, Palette, Key,
-  Sparkles, History, Star, Zap, ChevronRight,
+  Sparkles, History, Star, Zap,
   Terminal, Wrench, AlignLeft, Database, TrendingUp,
-  Box, Shield, Globe, Cpu, ShieldCheck
+  Box, Shield, Globe, Cpu, ShieldCheck, Braces,
+  Link, FileCode, GitCompare, FileText, Wifi, Container,
+  FileLock, Rocket
 } from 'lucide-react';
 import type { Tool } from '../types';
 import { tools, categories } from '../data/tools';
@@ -13,7 +15,9 @@ import { useLocalStorage } from '../hooks/useLocalStorage';
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   FileJson, Code, Hash, Clock, 
   Fingerprint, QrCode, Lock, Search, Palette, Key,
-  Terminal, Wrench, AlignLeft, Database, Box, Shield, Globe, Cpu, ShieldCheck
+  Terminal, Wrench, AlignLeft, Database, Box, Shield, Globe, Cpu, ShieldCheck,
+  Braces, Link, FileCode, GitCompare, FileText, Wifi, Container, FileLock,
+  Sparkles, Rocket
 };
 
 interface HomeProps {
@@ -35,8 +39,11 @@ export function Home({ onToolSelect }: HomeProps) {
     .map(id => tools.find(t => t.id === id))
     .filter((t): t is Tool => t !== undefined);
 
-  // 热门工具（取前4个）
-  const hotTools = tools.filter(t => t.hot).slice(0, 4);
+  // 热门工具
+  const hotTools = tools.filter(t => t.hot).slice(0, 6);
+
+  // 新增工具
+  const newTools = tools.filter(t => t.new).slice(0, 4);
 
   // 添加工具到最近使用
   const handleToolClick = (toolId: string) => {
@@ -48,311 +55,306 @@ export function Home({ onToolSelect }: HomeProps) {
   };
 
   return (
-    <div className="max-w-6xl mx-auto space-y-8 animate-fade-in">
-      {/* Hero 区域 - 现代化渐变背景 */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary-500 via-primary-600 to-primary-700 text-white">
-        {/* 装饰性背景图案 */}
+    <div className="max-w-7xl mx-auto space-y-6 animate-fade-in">
+      {/* Hero 区域 - 紧凑现代化 */}
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary-500 via-primary-600 to-primary-700 text-white">
         <div className="absolute inset-0 opacity-10">
           <div className="absolute -top-24 -right-24 w-96 h-96 bg-white rounded-full blur-3xl"></div>
           <div className="absolute -bottom-24 -left-24 w-72 h-72 bg-white rounded-full blur-3xl"></div>
         </div>
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4xIj48Y2lyY2xlIGN4PSIzMCIgY3k9IjMwIiByPSIyIi8+PC9nPjwvZz48L3N2Zz4=')]"></div>
         
-        <div className="relative px-4 sm:px-8 py-8 sm:py-12 md:py-16">
-          <div className="flex items-center gap-2 mb-4">
-            <span className="px-3 py-1 bg-white/20 backdrop-blur rounded-full text-xs font-medium">
-              v2.0 全新发布
-            </span>
-          </div>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 tracking-tight">
-            ToolStack <span className="text-primary-200">开发者工具箱</span>
-          </h1>
-          <p className="text-primary-100 text-base sm:text-lg max-w-2xl mb-6 sm:mb-8 leading-relaxed">
-            简洁高效的在线工具集合，助力开发效率提升。支持 JSON 格式化、SQL 智能分析与优化、Base64 编解码、二维码生成等 25+ 实用工具。
-          </p>
-          <div className="flex flex-col sm:flex-row flex-wrap gap-3">
-            <button
-              onClick={() => handleToolClick('json')}
-              className="inline-flex items-center justify-center sm:justify-start gap-2 px-5 sm:px-6 py-3 bg-white text-primary-600 rounded-xl font-medium hover:bg-primary-50 transition-colors shadow-lg shadow-black/10 touch-manipulation"
-            >
-              <FileJson className="w-5 h-5" />
-              <span>JSON 格式化</span>
-              <ArrowRight className="w-4 h-4 hidden sm:inline" />
-            </button>
-            <button
-              onClick={() => handleToolClick('sql-advisor')}
-              className="inline-flex items-center justify-center sm:justify-start gap-2 px-5 sm:px-6 py-3 bg-primary-400/30 text-white rounded-xl font-medium hover:bg-primary-400/40 transition-colors backdrop-blur touch-manipulation"
-            >
-              <Sparkles className="w-5 h-5" />
-              <span>SQL 分析优化</span>
-            </button>
-            <button
-              onClick={() => handleToolClick('base64')}
-              className="inline-flex items-center justify-center sm:justify-start gap-2 px-5 sm:px-6 py-3 bg-primary-400/20 text-white rounded-xl font-medium hover:bg-primary-400/30 transition-colors backdrop-blur touch-manipulation"
-            >
-              <Code className="w-5 h-5" />
-              <span>Base64 编解码</span>
-            </button>
+        <div className="relative px-6 py-8 sm:py-10">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+            <div className="flex-1">
+              <div className="flex items-center gap-2 mb-3">
+                <span className="px-3 py-1 bg-white/20 backdrop-blur rounded-full text-xs font-medium">
+                  30+ 实用工具
+                </span>
+                <span className="px-3 py-1 bg-white/10 backdrop-blur rounded-full text-xs font-medium text-primary-100">
+                  完全免费
+                </span>
+              </div>
+              <h1 className="text-2xl sm:text-3xl font-bold mb-3 tracking-tight">
+                开发者工具箱
+              </h1>
+              <p className="text-primary-100 text-sm sm:text-base max-w-xl leading-relaxed">
+                简洁高效的在线工具集合，支持 JSON 格式化、SQL 智能分析、Base64 编解码、二维码生成等多种实用工具，助力开发效率提升。
+              </p>
+            </div>
+            
+            {/* 快捷入口 */}
+            <div className="flex flex-wrap gap-2 lg:flex-col lg:gap-2">
+              <QuickAccessButton 
+                icon={FileJson} 
+                label="JSON 格式化" 
+                onClick={() => handleToolClick('json')} 
+              />
+              <QuickAccessButton 
+                icon={Sparkles} 
+                label="SQL 分析优化" 
+                onClick={() => handleToolClick('sql-advisor')} 
+              />
+              <QuickAccessButton 
+                icon={Code} 
+                label="Base64 编解码" 
+                onClick={() => handleToolClick('base64')} 
+              />
+            </div>
           </div>
         </div>
       </div>
 
-      {/* 最近使用 + 收藏 */}
-      {(recentToolsList.length > 0 || favoriteToolsList.length > 0) && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-          {/* 最近使用 */}
-          {recentToolsList.length > 0 && (
-            <section className="card">
-              <div className="flex items-center justify-between mb-5">
-                <div className="flex items-center gap-2">
-                  <div className="w-10 h-10 bg-primary-50 dark:bg-primary-900/20 rounded-xl flex items-center justify-center">
-                    <History className="w-5 h-5 text-primary-500" />
-                  </div>
-                  <h2 className="font-semibold text-surface-900 dark:text-surface-100">最近使用</h2>
-                </div>
+      {/* 快捷功能区：最近使用 + 我的收藏 + 热门推荐 */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        {/* 最近使用 */}
+        {recentToolsList.length > 0 && (
+          <section className="card">
+            <div className="flex items-center gap-2 mb-4">
+              <div className="w-8 h-8 bg-primary-50 dark:bg-primary-900/20 rounded-lg flex items-center justify-center">
+                <History className="w-4 h-4 text-primary-500" />
               </div>
-              <div className="space-y-1">
-                {recentToolsList.map(tool => (
-                  <ToolRow key={tool.id} tool={tool} onClick={() => handleToolClick(tool.id)} />
-                ))}
-              </div>
-            </section>
-          )}
+              <h2 className="font-semibold text-surface-900 dark:text-surface-100 text-sm">最近使用</h2>
+            </div>
+            <div className="space-y-1">
+              {recentToolsList.slice(0, 5).map(tool => (
+                <ToolRowSmall key={tool.id} tool={tool} onClick={() => handleToolClick(tool.id)} />
+              ))}
+            </div>
+          </section>
+        )}
 
-          {/* 我的收藏 */}
-          {favoriteToolsList.length > 0 && (
-            <section className="card">
-              <div className="flex items-center justify-between mb-5">
-                <div className="flex items-center gap-2">
-                  <div className="w-10 h-10 bg-amber-50 dark:bg-amber-900/20 rounded-xl flex items-center justify-center">
-                    <Star className="w-5 h-5 text-amber-500" />
-                  </div>
-                  <h2 className="font-semibold text-surface-900 dark:text-surface-100">我的收藏</h2>
-                </div>
+        {/* 我的收藏 */}
+        {favoriteToolsList.length > 0 && (
+          <section className="card">
+            <div className="flex items-center gap-2 mb-4">
+              <div className="w-8 h-8 bg-amber-50 dark:bg-amber-900/20 rounded-lg flex items-center justify-center">
+                <Star className="w-4 h-4 text-amber-500" />
               </div>
-              <div className="space-y-1">
-                {favoriteToolsList.map(tool => (
-                  <ToolRow key={tool.id} tool={tool} onClick={() => handleToolClick(tool.id)} />
-                ))}
-              </div>
-            </section>
-          )}
+              <h2 className="font-semibold text-surface-900 dark:text-surface-100 text-sm">我的收藏</h2>
+            </div>
+            <div className="space-y-1">
+              {favoriteToolsList.slice(0, 5).map(tool => (
+                <ToolRowSmall key={tool.id} tool={tool} onClick={() => handleToolClick(tool.id)} />
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* 热门推荐 */}
+        <section className={`card ${recentToolsList.length === 0 && favoriteToolsList.length === 0 ? 'lg:col-span-3' : recentToolsList.length === 0 || favoriteToolsList.length === 0 ? 'lg:col-span-2' : ''}`}>
+          <div className="flex items-center gap-2 mb-4">
+            <div className="w-8 h-8 bg-orange-50 dark:bg-orange-900/20 rounded-lg flex items-center justify-center">
+              <TrendingUp className="w-4 h-4 text-orange-500" />
+            </div>
+            <h2 className="font-semibold text-surface-900 dark:text-surface-100 text-sm">热门推荐</h2>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            {hotTools.map(tool => (
+              <ToolItem 
+                key={tool.id} 
+                tool={tool} 
+                onClick={() => handleToolClick(tool.id)}
+              />
+            ))}
+          </div>
+        </section>
+      </div>
+
+      {/* 全部工具 - 按分类展示 */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-surface-900 dark:text-surface-100">全部工具</h2>
+          <span className="text-xs text-surface-500">共 {tools.length} 个工具</span>
         </div>
-      )}
-
-      {/* 分类快捷入口 - 玻璃拟态风格 */}
-      <section>
-        <h2 className="text-lg font-semibold text-surface-900 dark:text-surface-100 mb-5">工具分类</h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           {categories.map(cat => {
             const Icon = iconMap[cat.icon] || Wrench;
-            const catToolsList = tools.filter(t => t.category === cat.id);
+            const catTools = tools.filter(t => t.category === cat.id);
+            
             return (
-              <button
-                key={cat.id}
-                onClick={() => onToolSelect(catToolsList[0]?.id || '')}
-                className="group p-4 sm:p-5 bg-surface-0 dark:bg-surface-800 rounded-2xl border border-surface-200 dark:border-surface-700 hover:border-primary-300 dark:hover:border-primary-500 hover:shadow-lg hover:shadow-primary-500/10 transition-all text-left touch-manipulation"
-              >
-                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-surface-100 to-surface-200 dark:from-surface-700 dark:to-surface-600 rounded-xl flex items-center justify-center mb-3 sm:mb-4 group-hover:from-primary-500 group-hover:to-primary-600 transition-all duration-300">
-                  <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-surface-600 dark:text-surface-400 group-hover:text-white transition-colors" />
+              <section key={cat.id} className="card p-4">
+                <div className="flex items-center gap-2 mb-3 pb-3 border-b border-surface-100 dark:border-surface-700">
+                  <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-primary-600 rounded-lg flex items-center justify-center text-white shadow-sm">
+                    <Icon className="w-4 h-4" />
+                  </div>
+                  <h3 className="font-semibold text-surface-900 dark:text-surface-100">{cat.name}</h3>
+                  <span className="ml-auto text-xs text-surface-400 bg-surface-100 dark:bg-surface-700 px-2 py-0.5 rounded-full">
+                    {catTools.length}
+                  </span>
                 </div>
-                <h3 className="font-medium text-surface-900 dark:text-surface-100 mb-1 text-sm sm:text-base">{cat.name}</h3>
-                <p className="text-xs text-surface-500">{catToolsList.length} 个工具</p>
-              </button>
+                <div className="space-y-1">
+                  {catTools.map(tool => (
+                    <ToolRowSmall 
+                      key={tool.id} 
+                      tool={tool} 
+                      onClick={() => handleToolClick(tool.id)}
+                      showTags
+                    />
+                  ))}
+                </div>
+              </section>
             );
           })}
         </div>
+      </div>
+
+      {/* 功能特性 */}
+      <section className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <FeatureCard 
+          icon={Zap} 
+          iconBg="bg-primary-50 dark:bg-primary-900/20"
+          iconColor="text-primary-500"
+          title="极速响应"
+          description="本地运行，无需服务器"
+        />
+        <FeatureCard 
+          icon={Shield} 
+          iconBg="bg-emerald-50 dark:bg-emerald-900/20"
+          iconColor="text-emerald-500"
+          title="隐私安全"
+          description="数据不上传服务器"
+        />
+        <FeatureCard 
+          icon={Rocket} 
+          iconBg="bg-purple-50 dark:bg-purple-900/20"
+          iconColor="text-purple-500"
+          title="持续更新"
+          description="不断优化功能体验"
+        />
+        <FeatureCard 
+          icon={Sparkles} 
+          iconBg="bg-amber-50 dark:bg-amber-900/20"
+          iconColor="text-amber-500"
+          title="简洁易用"
+          description="直观友好的界面设计"
+        />
       </section>
 
-      {/* 热门推荐 - 卡片悬停效果 */}
-      <section>
-        <div className="flex items-center justify-between mb-5">
-          <div className="flex items-center gap-2">
-            <div className="w-10 h-10 bg-orange-50 dark:bg-orange-900/20 rounded-xl flex items-center justify-center">
-              <TrendingUp className="w-5 h-5 text-orange-500" />
+      {/* 新增工具 */}
+      {newTools.length > 0 && (
+        <section className="card">
+          <div className="flex items-center gap-2 mb-4">
+            <div className="w-8 h-8 bg-green-50 dark:bg-green-900/20 rounded-lg flex items-center justify-center">
+              <Sparkles className="w-4 h-4 text-green-500" />
             </div>
-            <h2 className="text-lg font-semibold text-surface-900 dark:text-surface-100">热门推荐</h2>
+            <h2 className="font-semibold text-surface-900 dark:text-surface-100">最近新增</h2>
           </div>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-          {hotTools.map(tool => (
-            <ToolCard 
-              key={tool.id} 
-              tool={tool} 
-              onClick={() => handleToolClick(tool.id)}
-              isFavorite={favoriteTools.includes(tool.id)}
-              onToggleFavorite={(e) => {
-                e.stopPropagation();
-                setFavoriteTools(prev => 
-                  prev.includes(tool.id) 
-                    ? prev.filter(id => id !== tool.id)
-                    : [...prev, tool.id]
-                );
-              }}
-            />
-          ))}
-        </div>
-      </section>
-
-      {/* 功能特性展示 */}
-      <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
-        <div className="card text-center p-5 sm:p-6">
-          <div className="w-12 h-12 sm:w-14 sm:h-14 mx-auto mb-3 sm:mb-4 bg-primary-50 dark:bg-primary-900/20 rounded-2xl flex items-center justify-center">
-            <Zap className="w-6 h-6 sm:w-7 sm:h-7 text-primary-500" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            {newTools.map(tool => (
+              <ToolCard 
+                key={tool.id} 
+                tool={tool} 
+                onClick={() => handleToolClick(tool.id)}
+                isFavorite={favoriteTools.includes(tool.id)}
+                onToggleFavorite={(e) => {
+                  e.stopPropagation();
+                  setFavoriteTools(prev => 
+                    prev.includes(tool.id) 
+                      ? prev.filter(id => id !== tool.id)
+                      : [...prev, tool.id]
+                  );
+                }}
+              />
+            ))}
           </div>
-          <h3 className="font-semibold text-surface-900 dark:text-surface-100 mb-2">极速响应</h3>
-          <p className="text-sm text-surface-500">所有工具均在本地运行，无需服务器，即刻响应</p>
-        </div>
-        <div className="card text-center p-5 sm:p-6">
-          <div className="w-12 h-12 sm:w-14 sm:h-14 mx-auto mb-3 sm:mb-4 bg-emerald-50 dark:bg-emerald-900/20 rounded-2xl flex items-center justify-center">
-            <Shield className="w-6 h-6 sm:w-7 sm:h-7 text-emerald-500" />
-          </div>
-          <h3 className="font-semibold text-surface-900 dark:text-surface-100 mb-2">隐私安全</h3>
-          <p className="text-sm text-surface-500">数据不上传服务器，完全在浏览器本地处理</p>
-        </div>
-        <div className="card text-center p-5 sm:p-6">
-          <div className="w-12 h-12 sm:w-14 sm:h-14 mx-auto mb-3 sm:mb-4 bg-purple-50 dark:bg-purple-900/20 rounded-2xl flex items-center justify-center">
-            <Sparkles className="w-6 h-6 sm:w-7 sm:h-7 text-purple-500" />
-          </div>
-          <h3 className="font-semibold text-surface-900 dark:text-surface-100 mb-2">持续更新</h3>
-          <p className="text-sm text-surface-500">不断添加新工具，优化现有功能体验</p>
-        </div>
-      </section>
-
-      {/* 更新日志 - 时间线风格 */}
-      <section className="card">
-        <div className="flex items-center gap-2 mb-6">
-          <div className="w-10 h-10 bg-green-50 dark:bg-green-900/20 rounded-xl flex items-center justify-center">
-            <Clock className="w-5 h-5 text-green-500" />
-          </div>
-          <h2 className="font-semibold text-surface-900 dark:text-surface-100">最近更新</h2>
-        </div>
-        <div className="space-y-4">
-          <div className="flex items-start gap-4">
-            <div className="flex flex-col items-center">
-              <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
-              <div className="w-px h-full bg-surface-200 dark:bg-surface-700 mt-2"></div>
-            </div>
-            <div className="pb-4">
-              <span className="badge bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300 mb-1">FEATURE</span>
-              <p className="text-sm text-surface-700 dark:text-surface-300 mt-1"><strong>SQL 分析优化工具</strong>全面升级：支持语法错误检测、表名字段验证、数据类型检查、组合索引分析（最左前缀原则），兼容 MySQL、PostgreSQL、SQLite、MariaDB</p>
-              <p className="text-xs text-surface-400 mt-1">2026-03-12</p>
-            </div>
-          </div>
-          <div className="flex items-start gap-4">
-            <div className="flex flex-col items-center">
-              <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
-              <div className="w-px h-full bg-surface-200 dark:bg-surface-700 mt-2"></div>
-            </div>
-            <div className="pb-4">
-              <span className="badge bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300 mb-1">FIX</span>
-              <p className="text-sm text-surface-700 dark:text-surface-300 mt-1">优化按钮风格，统一视觉体验</p>
-              <p className="text-xs text-surface-400 mt-1">2026-03-12</p>
-            </div>
-          </div>
-          <div className="flex items-start gap-4">
-            <div className="flex flex-col items-center">
-              <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
-              <div className="w-px h-full bg-surface-200 dark:bg-surface-700 mt-2"></div>
-            </div>
-            <div className="pb-4">
-              <span className="badge bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300 mb-1">FIX</span>
-              <p className="text-sm text-surface-700 dark:text-surface-300 mt-1">适配移动端，优化手机浏览体验</p>
-              <p className="text-xs text-surface-400 mt-1">2026-03-12</p>
-            </div>
-          </div>
-          <div className="flex items-start gap-4">
-            <div className="flex flex-col items-center">
-              <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-              <div className="w-px h-full bg-surface-200 dark:bg-surface-700 mt-2"></div>
-            </div>
-            <div className="pb-4">
-              <span className="badge-success mb-1">NEW</span>
-              <p className="text-sm text-surface-700 dark:text-surface-300 mt-1">新增文本对比工具，支持差异高亮和实时对比</p>
-              <p className="text-xs text-surface-400 mt-1">2026-03-12</p>
-            </div>
-          </div>
-          <div className="flex items-start gap-4">
-            <div className="flex flex-col items-center">
-              <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-              <div className="w-px h-full bg-surface-200 dark:bg-surface-700 mt-2"></div>
-            </div>
-            <div className="pb-4">
-              <span className="badge-success mb-1">NEW</span>
-              <p className="text-sm text-surface-700 dark:text-surface-300 mt-1">新增 WebSocket 调试工具和 HTTP 请求工具</p>
-              <p className="text-xs text-surface-400 mt-1">2026-03-11</p>
-            </div>
-          </div>
-          <div className="flex items-start gap-4">
-            <div className="flex flex-col items-center">
-              <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-              <div className="w-px h-full bg-surface-200 dark:bg-surface-700 mt-2"></div>
-            </div>
-            <div className="pb-4">
-              <span className="badge-success mb-1">NEW</span>
-              <p className="text-sm text-surface-700 dark:text-surface-300 mt-1">新增 JWT 解码工具，支持解析和验证 JSON Web Token</p>
-              <p className="text-xs text-surface-400 mt-1">2024-03-10</p>
-            </div>
-          </div>
-          <div className="flex items-start gap-4">
-            <div className="flex flex-col items-center">
-              <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-              <div className="w-px h-full bg-surface-200 dark:bg-surface-700 mt-2"></div>
-            </div>
-            <div className="pb-4">
-              <span className="badge-primary mb-1">UPDATE</span>
-              <p className="text-sm text-surface-700 dark:text-surface-300 mt-1">优化 JSON 工具性能，支持大文件处理和实时格式化</p>
-              <p className="text-xs text-surface-400 mt-1">2024-03-08</p>
-            </div>
-          </div>
-          <div className="flex items-start gap-4">
-            <div className="flex flex-col items-center">
-              <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
-            </div>
-            <div>
-              <span className="badge bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300 mb-1">FEATURE</span>
-              <p className="text-sm text-surface-700 dark:text-surface-300 mt-1">新增全屏模式，工具使用更专注；UI 全面现代化升级</p>
-              <p className="text-xs text-surface-400 mt-1">2024-03-05</p>
-            </div>
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
     </div>
   );
 }
 
-// 工具行（用于最近使用和收藏）
-interface ToolRowProps {
-  tool: Tool;
-  onClick: () => void;
+// 快捷入口按钮
+function QuickAccessButton({ icon: Icon, label, onClick }: { icon: React.ComponentType<{ className?: string }>, label: string, onClick: () => void }) {
+  return (
+    <button
+      onClick={onClick}
+      className="flex items-center gap-2 px-4 py-2.5 bg-white/10 hover:bg-white/20 backdrop-blur rounded-xl text-sm font-medium transition-all duration-200 text-left group"
+    >
+      <Icon className="w-4 h-4 text-primary-100 group-hover:text-white transition-colors" />
+      <span>{label}</span>
+    </button>
+  );
 }
 
-function ToolRow({ tool, onClick }: ToolRowProps) {
+// 小型工具行（用于分类列表）
+interface ToolRowSmallProps {
+  tool: Tool;
+  onClick: () => void;
+  showTags?: boolean;
+}
+
+function ToolRowSmall({ tool, onClick, showTags }: ToolRowSmallProps) {
   const Icon = iconMap[tool.icon] || Code;
   
   return (
     <button
       onClick={onClick}
-      className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-surface-100 dark:hover:bg-surface-700 transition-colors text-left group"
+      className="w-full flex items-center gap-2.5 p-2 rounded-lg hover:bg-surface-50 dark:hover:bg-surface-700/50 transition-colors text-left group"
     >
-      <div className="w-10 h-10 bg-gradient-to-br from-primary-50 to-primary-100 dark:from-primary-900/20 dark:to-primary-800/20 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:from-primary-500 group-hover:to-primary-600 transition-all">
-        <Icon className="w-5 h-5 text-primary-500 group-hover:text-white transition-colors" />
+      <div className="w-8 h-8 bg-surface-100 dark:bg-surface-700 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-primary-50 dark:group-hover:bg-primary-900/20 transition-colors">
+        <Icon className="w-4 h-4 text-surface-500 group-hover:text-primary-500 transition-colors" />
       </div>
       <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2">
-          <span className="font-medium text-surface-900 dark:text-surface-100 text-sm">{tool.name}</span>
-          {tool.hot && (
-            <span className="badge-warning">HOT</span>
+        <div className="flex items-center gap-1.5">
+          <span className="font-medium text-surface-900 dark:text-surface-100 text-sm truncate">{tool.name}</span>
+          {showTags && (
+            <>
+              {tool.hot && (
+                <span className="flex-shrink-0 text-[9px] font-bold bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 px-1 py-0.5 rounded">HOT</span>
+              )}
+              {tool.new && (
+                <span className="flex-shrink-0 text-[9px] font-bold bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 px-1 py-0.5 rounded">NEW</span>
+              )}
+            </>
           )}
         </div>
         <p className="text-xs text-surface-500 truncate">{tool.description}</p>
       </div>
-      <ChevronRight className="w-4 h-4 text-surface-400 flex-shrink-0" />
     </button>
   );
 }
 
-// 工具卡片（用于热门推荐）
+// 工具项（用于热门推荐）
+function ToolItem({ tool, onClick }: { tool: Tool; onClick: () => void }) {
+  const Icon = iconMap[tool.icon] || Code;
+  
+  return (
+    <button
+      onClick={onClick}
+      className="flex items-center gap-2 p-2.5 rounded-xl bg-surface-50 dark:bg-surface-700/30 hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-colors text-left group"
+    >
+      <div className="w-8 h-8 bg-white dark:bg-surface-700 rounded-lg flex items-center justify-center flex-shrink-0 shadow-sm">
+        <Icon className="w-4 h-4 text-primary-500" />
+      </div>
+      <div className="flex-1 min-w-0">
+        <span className="font-medium text-surface-900 dark:text-surface-100 text-sm block truncate">{tool.name}</span>
+      </div>
+    </button>
+  );
+}
+
+// 功能特性卡片
+function FeatureCard({ icon: Icon, iconBg, iconColor, title, description }: { 
+  icon: React.ComponentType<{ className?: string }>, 
+  iconBg: string,
+  iconColor: string,
+  title: string, 
+  description: string 
+}) {
+  return (
+    <div className="card p-4 text-center">
+      <div className={`w-10 h-10 mx-auto mb-2 ${iconBg} rounded-xl flex items-center justify-center`}>
+        <Icon className={`w-5 h-5 ${iconColor}`} />
+      </div>
+      <h3 className="font-medium text-surface-900 dark:text-surface-100 text-sm mb-1">{title}</h3>
+      <p className="text-xs text-surface-500">{description}</p>
+    </div>
+  );
+}
+
+// 工具卡片（用于新增工具）
 interface ToolCardProps {
   tool: Tool;
   onClick: () => void;
@@ -371,11 +373,11 @@ function ToolCard({ tool, onClick, isFavorite, onToggleFavorite }: ToolCardProps
   return (
     <div
       onClick={onClick}
-      className="group cursor-pointer text-left p-5 bg-surface-0 dark:bg-surface-800 rounded-2xl border border-surface-200 dark:border-surface-700 hover:border-primary-300 dark:hover:border-primary-500 hover:shadow-lg hover:shadow-primary-500/10 transition-all duration-300"
+      className="group cursor-pointer text-left p-4 bg-surface-0 dark:bg-surface-800 rounded-xl border border-surface-200 dark:border-surface-700 hover:border-primary-300 dark:hover:border-primary-500 hover:shadow-lg hover:shadow-primary-500/10 transition-all duration-300"
     >
-      <div className="flex items-start justify-between mb-4">
-        <div className="w-12 h-12 bg-gradient-to-br from-primary-50 to-primary-100 dark:from-primary-900/20 dark:to-primary-800/20 rounded-xl flex items-center justify-center group-hover:from-primary-500 group-hover:to-primary-600 transition-all duration-300">
-          <Icon className="w-6 h-6 text-primary-500 group-hover:text-white transition-colors" />
+      <div className="flex items-start justify-between mb-3">
+        <div className="w-10 h-10 bg-gradient-to-br from-primary-50 to-primary-100 dark:from-primary-900/20 dark:to-primary-800/20 rounded-xl flex items-center justify-center group-hover:from-primary-500 group-hover:to-primary-600 transition-all duration-300">
+          <Icon className="w-5 h-5 text-primary-500 group-hover:text-white transition-colors" />
         </div>
         <div className="flex items-center gap-1">
           {onToggleFavorite && (
@@ -391,14 +393,14 @@ function ToolCard({ tool, onClick, isFavorite, onToggleFavorite }: ToolCardProps
             </button>
           )}
           {tool.new && (
-            <span className="badge-success">NEW</span>
+            <span className="text-[9px] font-bold bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 px-1.5 py-0.5 rounded">NEW</span>
           )}
         </div>
       </div>
-      <h3 className="font-semibold text-surface-900 dark:text-surface-100 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
+      <h3 className="font-semibold text-surface-900 dark:text-surface-100 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors text-sm">
         {tool.name}
       </h3>
-      <p className="text-sm text-surface-500 dark:text-surface-400 mt-1.5 line-clamp-2">
+      <p className="text-xs text-surface-500 dark:text-surface-400 mt-1 line-clamp-2">
         {tool.description}
       </p>
     </div>

@@ -24,5 +24,6 @@ export { WebsocketTool } from './WebsocketTool';
 export { Base64FileTool } from './Base64FileTool';
 export { TextTemplateTool } from './TextTemplateTool';
 export { DockerConvertTool } from './DockerConvertTool';
+export { XmlJsonTool } from './XmlJsonTool';
 export * from './docker-convert';
 export { KeyValueEditor, BodyEditor } from './http-request';

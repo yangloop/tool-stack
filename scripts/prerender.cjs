@@ -26,6 +26,12 @@ const toolsConfig = {
     keywords: 'SQL分析,SQL优化,SQL语法检查,SQL性能优化,SQL索引优化,组合索引检查,数据类型检查,表名验证,字段验证,MySQL优化,PostgreSQL优化,SQL查询优化,SQL调优工具,DDL检查,索引最左前缀',
     category: '格式化工具'
   },
+  'xml-json': {
+    name: 'XML / JSON 互转',
+    description: 'XML与JSON格式互相转换工具。支持XML属性转换为JSON字段、JSON对象转换为XML标签、格式化输出和高亮显示。自动检测数字和布尔值，支持嵌套结构和数组转换。',
+    keywords: 'XML转JSON,JSON转XML,XML转换,JSON转换,XML格式化,JSON格式化,XML解析,XML在线工具,JSON在线工具,XML JSON转换器',
+    category: '格式化工具'
+  },
   'base64': {
     name: 'Base64 编解码',
     description: 'Base64编码和解码工具。支持文本与Base64互转，URL安全的Base64编码。',

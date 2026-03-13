@@ -30,6 +30,7 @@ const WebsocketTool = lazy(() => import('../components/tools/WebsocketTool').the
 const Base64FileTool = lazy(() => import('../components/tools/Base64FileTool').then(m => ({ default: m.Base64FileTool })));
 const TextTemplateTool = lazy(() => import('../components/tools/TextTemplateTool').then(m => ({ default: m.TextTemplateTool })));
 const DockerConvertTool = lazy(() => import('../components/tools/DockerConvertTool').then(m => ({ default: m.DockerConvertTool })));
+const XmlJsonTool = lazy(() => import('../components/tools/XmlJsonTool').then(m => ({ default: m.XmlJsonTool })));
 
 export const tools: Tool[] = [
   // 格式化工具
@@ -60,6 +61,15 @@ export const tools: Tool[] = [
     category: 'format',
     component: SqlAdvisorTool,
     hot: true,
+    new: true,
+  },
+  {
+    id: 'xml-json',
+    name: 'XML / JSON 互转',
+    description: 'XML 与 JSON 格式互相转换，支持属性、格式化和高亮显示',
+    icon: 'FileCode',
+    category: 'format',
+    component: XmlJsonTool,
     new: true,
   },
   

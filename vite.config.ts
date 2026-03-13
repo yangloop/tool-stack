@@ -16,8 +16,8 @@ export default defineConfig({
     // 输出目录
     outDir: 'dist',
     
-    // 生成 sourcemap，便于调试
-    sourcemap: true,
+    // 生产环境不生成 sourcemap，减少体积
+    sourcemap: false,
     
     // 代码分割策略
     rollupOptions: {
@@ -25,25 +25,23 @@ export default defineConfig({
         main: resolve(__dirname, 'index.html'),
       },
       output: {
-        // 代码分割
+        // 代码分割 - 静态配置避免循环依赖
         manualChunks: {
           // 核心框架
           'vendor-core': ['react', 'react-dom', 'react-router-dom'],
-          // UI 图标
-          'vendor-icons': ['lucide-react'],
-          // JSON 查看器（较大，单独打包）
-          'vendor-json': ['react-json-view'],
-          // SQL 格式化器（单独打包）
-          'vendor-sql-formatter': ['sql-formatter'],
-          // 语法高亮（非常大，单独打包）
-          'vendor-highlighter': ['react-syntax-highlighter', 'react-syntax-highlighter/dist/esm/prism'],
-          // Docker 转换器（较大）
+          // UI 组件
+          'vendor-ui': ['lucide-react', 'react-colorful'],
+          // 语法高亮（大）
+          'vendor-highlight': ['react-syntax-highlighter'],
+          // Docker 工具（大）
           'vendor-docker': ['composerize', 'decomposerize'],
-          // 颜色选择器
-          'vendor-color': ['react-colorful'],
+          // JSON 查看器（大）
+          'vendor-json': ['react-json-view'],
+          // SQL 格式化器
+          'vendor-sql': ['sql-formatter'],
           // 加密相关
           'vendor-crypto': ['jsencrypt', 'crypto-js', 'otpauth'],
-          // 其他工具库
+          // 其他工具
           'vendor-utils': ['axios', 'qrcode'],
         },
         // 静态资源命名
@@ -76,6 +74,9 @@ export default defineConfig({
     
     // 调整 chunk 大小警告阈值（第三方库较大是正常的）
     chunkSizeWarningLimit: 700,
+    
+    // 启用 gzip 压缩报告
+    reportCompressedSize: true,
     
     // CSS 优化
     cssMinify: true,

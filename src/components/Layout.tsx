@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { useLocalStorage } from '../hooks/useLocalStorage';
 import { Link, useNavigate } from 'react-router-dom';
 import { 
   Menu, X, Github, Sun, Moon, Search, 
@@ -21,7 +22,7 @@ export function Layout({ children, activeToolId }: LayoutProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
+  const [expandedCategories, setExpandedCategories] = useLocalStorage<string[]>('sidebar-expanded-cats', ['format', 'encode', 'hash', 'security', 'dev', 'util']);
   const [isScrolled, setIsScrolled] = useState(false);
   
   const navigate = useNavigate();
@@ -44,15 +45,16 @@ export function Layout({ children, activeToolId }: LayoutProps) {
       )
     : [];
 
-  // 自动展开当前工具所属分类
-  useEffect(() => {
-    if (activeToolId) {
-      const tool = tools.find(t => t.id === activeToolId);
-      if (tool) {
-        setExpandedCategory(tool.category);
+  // 切换分类展开/折叠状态
+  const toggleCategory = (catId: string) => {
+    setExpandedCategories(prev => {
+      if (prev.includes(catId)) {
+        return prev.filter(id => id !== catId);
+      } else {
+        return [...prev, catId];
       }
-    }
-  }, [activeToolId]);
+    });
+  };
 
   // 监听滚动 - 用于头部阴影效果
   useEffect(() => {
@@ -333,13 +335,13 @@ export function Layout({ children, activeToolId }: LayoutProps) {
                 categories.map(cat => {
                   const Icon = iconMap[cat.icon] || Wrench;
                   const catTools = tools.filter(t => t.category === cat.id);
-                  const isExpanded = expandedCategory === cat.id;
+                  const isExpanded = expandedCategories.includes(cat.id);
                   const hasActiveTool = catTools.some(t => t.id === activeToolId);
                   
                   return (
                     <div key={cat.id}>
                       <button
-                        onClick={() => setExpandedCategory(isExpanded ? null : cat.id)}
+                        onClick={() => toggleCategory(cat.id)}
                         className={`
                           w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200
                           ${hasActiveTool 

@@ -4,7 +4,11 @@ import {
   Database, AlertCircle, AlignLeft, Minimize2
 } from 'lucide-react';
 import { format } from 'sql-formatter';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { PrismLight as SyntaxHighlighter } from 'react-syntax-highlighter';
+import sql from 'react-syntax-highlighter/dist/esm/languages/prism/sql';
+
+// 注册 SQL 语言
+SyntaxHighlighter.registerLanguage('sql', sql);
 import type { CSSProperties } from 'react';
 import { downloadFile, readFile } from '../../utils/helpers';
 import { useClipboard } from '../../hooks/useLocalStorage';
