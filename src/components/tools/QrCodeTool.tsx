@@ -1,5 +1,5 @@
-import { useState, useRef, useEffect } from 'react';
-import { Download, QrCode, Image as ImageIcon, RefreshCw, AlertTriangle } from 'lucide-react';
+import { useState, useRef, useEffect, useCallback } from 'react';
+import { Download, QrCode, Image as ImageIcon, RefreshCw, AlertTriangle, Upload, X } from 'lucide-react';
 import QRCodeLib from 'qrcode';
 import { AdFooter } from '../ads';
 import { ColorPicker } from '../common';
@@ -36,12 +36,23 @@ export function QrCodeTool() {
   const [fgColor, setFgColor] = useState('#000000');
   const [bgColor, setBgColor] = useState('#ffffff');
   const [errorCorrection, setErrorCorrection] = useState<'L' | 'M' | 'Q' | 'H'>('M');
+  const [logoImage, setLogoImage] = useState<HTMLImageElement | null>(null);
+  const [logoSizePercent, setLogoSizePercent] = useState(20);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
+  // 绘制二维码（包含Logo）
+  const drawQRCode = useCallback(() => {
     if (!text.trim() || !canvasRef.current) return;
 
-    QRCodeLib.toCanvas(canvasRef.current, text, {
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // 先生成基础二维码到临时 canvas
+    const tempCanvas = document.createElement('canvas');
+    
+    QRCodeLib.toCanvas(tempCanvas, text, {
       width: size,
       margin: 2,
       color: {
@@ -50,9 +61,37 @@ export function QrCodeTool() {
       },
       errorCorrectionLevel: errorCorrection,
     }, (err) => {
-      if (err) console.error(err);
+      if (err) {
+        console.error(err);
+        return;
+      }
+
+      // 设置目标 canvas 尺寸
+      canvas.width = size;
+      canvas.height = size;
+
+      // 绘制基础二维码
+      ctx.drawImage(tempCanvas, 0, 0);
+
+      // 如果有 Logo，绘制在中心
+      if (logoImage) {
+        const logoSize = Math.floor(size * (logoSizePercent / 100));
+        const x = (size - logoSize) / 2;
+        const y = (size - logoSize) / 2;
+
+        // 绘制白色背景（确保 Logo 区域清晰）
+        ctx.fillStyle = bgColor;
+        ctx.fillRect(x - 4, y - 4, logoSize + 8, logoSize + 8);
+
+        // 绘制 Logo
+        ctx.drawImage(logoImage, x, y, logoSize, logoSize);
+      }
     });
-  }, [text, size, fgColor, bgColor, errorCorrection]);
+  }, [text, size, fgColor, bgColor, errorCorrection, logoImage, logoSizePercent]);
+
+  useEffect(() => {
+    drawQRCode();
+  }, [drawQRCode]);
 
   const handleDownload = () => {
     if (!canvasRef.current) return;
@@ -60,6 +99,42 @@ export function QrCodeTool() {
     link.download = `qrcode-${Date.now()}.png`;
     link.href = canvasRef.current.toDataURL('image/png');
     link.click();
+  };
+
+  // 处理 Logo 上传
+  const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // 验证文件类型
+    if (!file.type.startsWith('image/')) {
+      alert('请上传图片文件');
+      return;
+    }
+
+    // 验证文件大小（最大 2MB）
+    if (file.size > 2 * 1024 * 1024) {
+      alert('图片大小不能超过 2MB');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        setLogoImage(img);
+      };
+      img.src = event.target?.result as string;
+    };
+    reader.readAsDataURL(file);
+  };
+
+  // 删除 Logo
+  const removeLogo = () => {
+    setLogoImage(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
   };
 
   // 反转颜色
@@ -156,6 +231,91 @@ export function QrCodeTool() {
             </div>
           </div>
 
+          {/* Logo 设置 */}
+          <div className="border border-gray-200 dark:border-slate-700 rounded-lg p-3 sm:p-4 space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">Logo</span>
+              {logoImage && (
+                <button
+                  onClick={removeLogo}
+                  className="text-gray-400 hover:text-red-500 transition-colors"
+                  title="删除 Logo"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              )}
+            </div>
+
+            {logoImage ? (
+              <div className="flex items-center gap-3">
+                <div className="w-16 h-16 border border-gray-200 dark:border-slate-700 rounded-lg overflow-hidden flex-shrink-0">
+                  <img
+                    src={logoImage.src}
+                    alt="Logo预览"
+                    className="w-full h-full object-contain"
+                  />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">已上传 Logo</p>
+                  <button
+                    onClick={() => fileInputRef.current?.click()}
+                    className="text-xs text-blue-500 hover:text-blue-600"
+                  >
+                    重新上传
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div
+                onClick={() => fileInputRef.current?.click()}
+                className="border-2 border-dashed border-gray-300 dark:border-slate-600 rounded-lg p-4 text-center cursor-pointer hover:border-blue-500 dark:hover:border-blue-400 transition-colors"
+              >
+                <Upload className="w-6 h-6 mx-auto mb-2 text-gray-400" />
+                <p className="text-xs text-gray-500 dark:text-gray-400">点击上传 Logo</p>
+                <p className="text-xs text-gray-400 mt-1">支持 JPG、PNG、GIF，最大 2MB</p>
+              </div>
+            )}
+
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleLogoUpload}
+              className="hidden"
+            />
+
+            {/* Logo 大小调节 */}
+            {logoImage && (
+              <div className="pt-2 border-t border-gray-200 dark:border-slate-700">
+                <div className="flex items-center justify-between mb-2">
+                  <label className="text-xs text-gray-600 dark:text-gray-400">尺寸</label>
+                  <span className="text-xs text-gray-500">{logoSizePercent}%</span>
+                </div>
+                <input
+                  type="range"
+                  min="10"
+                  max="20"
+                  value={logoSizePercent}
+                  onChange={(e) => setLogoSizePercent(Number(e.target.value))}
+                  className="w-full h-2 bg-gray-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-blue-500"
+                />
+                <div className="flex justify-between text-xs text-gray-400 mt-1">
+                  <span>小</span>
+                  <span>大</span>
+                </div>
+                
+                {/* Logo 尺寸提示 */}
+                {logoSizePercent >= 18 && errorCorrection !== 'H' && (
+                  <div className="mt-2 flex items-start gap-1.5 text-xs text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 p-2 rounded">
+                    <span>
+                      建议将纠错级别设为「H - 最高」以获得最佳扫描效果
+                    </span>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
           {/* 颜色选择器 */}
           <div className="space-y-3 sm:space-y-4">
             <div className="flex items-center justify-between flex-wrap gap-2">
@@ -224,10 +384,13 @@ export function QrCodeTool() {
         <div className="card p-4 sm:p-6 flex flex-col items-center justify-center min-h-[300px] sm:min-h-[400px]">
           {text.trim() ? (
             <>
-              <canvas
-                ref={canvasRef}
-                className="max-w-full h-auto border border-gray-200 dark:border-slate-700 rounded-lg shadow-sm"
-              />
+              <div className="max-w-full overflow-auto flex justify-center">
+                <canvas
+                  ref={canvasRef}
+                  className="border border-gray-200 dark:border-slate-700 rounded-lg shadow-sm"
+                  style={{ maxWidth: '100%', maxHeight: '50vh', objectFit: 'contain' }}
+                />
+              </div>
               <div className="mt-4 flex gap-2">
                 <button
                   onClick={handleDownload}
@@ -239,6 +402,7 @@ export function QrCodeTool() {
               </div>
               <p className="mt-3 text-xs text-gray-400">
                 {size} x {size} 像素
+                {logoImage && ' (含 Logo)'}
               </p>
             </>
           ) : (
