@@ -32,7 +32,7 @@
 ### 2. 首页SEO配置 (scripts/prerender.cjs)
 
 首页SEO在构建后通过脚本注入：
-- **标题**: ToolStack - 开发者工具箱
+- **标题**: ToolStack - 开发者在线工具箱 | JSON格式化 SQL优化 Base64编解码等25+工具
 - **描述**: 包含25+实用工具的概述，特别强调SQL格式化与智能优化分析功能
 - **关键词**: 包含SQL相关关键词（SQL格式化, SQL分析, SQL优化, SQL语法检查, 索引优化等）
 

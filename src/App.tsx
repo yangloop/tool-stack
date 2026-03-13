@@ -45,7 +45,7 @@ function ToolPage() {
 // 首页组件
 function HomePage() {
   useEffect(() => {
-    document.title = 'ToolStack - 开发者工具箱';
+    document.title = 'ToolStack - 开发者在线工具箱 | JSON格式化 SQL优化 Base64编解码等25+工具';
   }, []);
   
   return (
