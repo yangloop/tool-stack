@@ -395,6 +395,8 @@ export function Base64FileTool() {
                   </div>
                 </div>
                 <textarea
+                  id="base64file-output"
+                  name="base64file-output"
                   readOnly
                   value={showFullContent ? base64Content : base64Content.slice(0, MAX_DISPLAY_LENGTH)}
                   className="w-full h-40 sm:h-48 p-4 font-mono text-xs bg-surface-50 dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded-xl resize-none"
@@ -431,6 +433,8 @@ export function Base64FileTool() {
                 Base64 编码内容
               </label>
               <textarea
+                id="base64file-input"
+                name="base64file-input"
                 value={base64Content}
                 onChange={(e) => {
                   setBase64Content(e.target.value);

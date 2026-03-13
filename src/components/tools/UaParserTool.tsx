@@ -284,6 +284,8 @@ export function UaParserTool() {
           </div>
         </div>
         <textarea
+          id="ua-input"
+          name="ua-input"
           value={ua}
           onChange={(e) => setUa(e.target.value)}
           placeholder="输入 User Agent 字符串..."

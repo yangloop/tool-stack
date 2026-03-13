@@ -527,6 +527,8 @@ export function WebsocketTool() {
 
             {/* 输入框 */}
             <textarea
+              id="ws-message"
+              name="ws-message"
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
               placeholder={messageFormat === 'json' ? '{"type": "message"}' : '输入要发送的消息...'}
@@ -547,6 +549,8 @@ export function WebsocketTool() {
               <div className="pt-3 border-t border-surface-200 dark:border-surface-700">
                 <label className="text-xs text-surface-500 mb-1.5 block">JSON 模板</label>
                 <textarea
+                  id="ws-json-template"
+                  name="ws-json-template"
                   value={jsonTemplate}
                   onChange={(e) => setJsonTemplate(e.target.value)}
                   className="w-full h-20 sm:h-24 p-2 text-xs font-mono bg-surface-50 dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded-lg resize-none"

@@ -187,6 +187,8 @@ export function CurlImporter({ onImport }: CurlImporterProps) {
           </p>
           
           <textarea
+            id="curl-import"
+            name="curl-import"
             value={curlCommand}
             onChange={(e) => setCurlCommand(e.target.value)}
             placeholder={`curl --location --request POST 'https://api.example.com/data' \\\n  --header 'Content-Type: application/json' \\\n  --data-raw '{"key": "value"}'`}

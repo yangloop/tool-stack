@@ -11,6 +11,7 @@ import ReactJson from 'react-json-view';
 import { PrismLight as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneLight, oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import markup from 'react-syntax-highlighter/dist/esm/languages/prism/markup';
+import { CodeEditor } from '../CodeEditor';
 
 // 注册 XML 语言
 SyntaxHighlighter.registerLanguage('xml', markup);
@@ -148,8 +149,12 @@ export function XmlJsonTool() {
           throw new Error('无效的 JSON 格式');
         }
         
-        // 如果 JSON 不是对象或数组，包装它
+        // 如果 JSON 不是对象或数组，或者有多个顶层字段，包装它
+        // XML 必须有且只有一个根元素
         if (typeof jsonObj !== 'object' || jsonObj === null) {
+          jsonObj = { root: jsonObj };
+        } else if (!Array.isArray(jsonObj) && Object.keys(jsonObj).length > 1) {
+          // 普通对象且有多个顶层字段，需要包装
           jsonObj = { root: jsonObj };
         }
         
@@ -474,12 +479,12 @@ export function XmlJsonTool() {
               )}
             </div>
           </div>
-          <textarea
+          <CodeEditor
             value={input}
-            onChange={(e) => setInput(e.target.value)}
+            onChange={setInput}
+            language={mode === 'xml-to-json' ? 'xml' : 'json'}
             placeholder={mode === 'xml-to-json' ? '在此粘贴 XML 数据...' : '在此粘贴 JSON 数据...'}
-            className="w-full h-[250px] sm:h-[400px] p-3 sm:p-4 font-mono text-xs sm:text-sm bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg resize-y focus:ring-2 focus:ring-blue-500 dark:text-white whitespace-pre overflow-auto"
-            spellCheck={false}
+            height="250px sm:h-[400px]"
           />
         </div>
 

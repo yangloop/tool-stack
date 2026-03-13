@@ -189,6 +189,8 @@ export function QrCodeTool() {
               内容
             </label>
             <textarea
+              id="qrcode-content"
+              name="qrcode-content"
               value={text}
               onChange={(e) => setText(e.target.value)}
               placeholder="输入文本、URL 或任何内容..."

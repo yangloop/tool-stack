@@ -1,5 +1,5 @@
-import { Plus, Trash2, FileJson, FileText, Hash, AlignLeft, FileCode } from 'lucide-react';
-import { SyntaxHighlighter } from './SyntaxHighlighter';
+import { Plus, Trash2, FileJson, FileText, Hash, AlignLeft, FileCode, AlignLeft as FormatIcon } from 'lucide-react';
+import { CodeEditor } from '../../CodeEditor';
 
 export type BodyType = 'none' | 'form-data' | 'x-www-form-urlencoded' | 'json' | 'xml' | 'raw';
 
@@ -57,6 +57,45 @@ export function BodyEditor({
     }
   };
 
+  const formatXML = () => {
+    try {
+      const formatted = formatXml(xmlBody);
+      onXmlBodyChange(formatted);
+    } catch {
+      // Not valid XML
+    }
+  };
+
+  // XML 格式化函数
+  function formatXml(xml: string): string {
+    if (!xml.trim()) return xml;
+    
+    const PADDING = '  ';
+    let formatted = '';
+    let indent = 0;
+    
+    // 先移除多余的空白
+    let cleaned = xml.replace(/>\s+</g, '><').trim();
+    
+    const tokens = cleaned.split(/(<[^>]+>)/g).filter(t => t.trim() !== '');
+    
+    tokens.forEach(token => {
+      // 结束标签 - 减少缩进
+      if (token.match(/^<\/\w/)) {
+        indent--;
+      }
+      
+      formatted += PADDING.repeat(Math.max(0, indent)) + token + '\n';
+      
+      // 开始标签（非自闭合）- 增加缩进
+      if (token.match(/^<\w[^>]*[^/]>$/) && !token.match(/<\?xml/) && !token.match(/<!/) && !token.match(/^<\/\w/)) {
+        indent++;
+      }
+    });
+    
+    return formatted.trim();
+  }
+
   const addFormDataItem = () => {
     onFormDataChange([...formData, { key: '', value: '', type: 'text', enabled: true }]);
   };
@@ -107,33 +146,46 @@ export function BodyEditor({
                 格式化
               </button>
             </div>
-            <SyntaxHighlighter
-              code={jsonBody}
-              language="json"
+            <CodeEditor
+              value={jsonBody}
               onChange={onJsonBodyChange}
+              language="json"
               placeholder={'{"key": "value"}'}
+              height="h-56"
             />
           </div>
         );
 
       case 'xml':
         return (
-          <SyntaxHighlighter
-            code={xmlBody}
-            language="xml"
-            onChange={onXmlBodyChange}
-            placeholder={'<?xml version="1.0"?>\n<root>\n</root>'}
-          />
+          <div className="space-y-2">
+            <div className="flex justify-end">
+              <button 
+                onClick={formatXML} 
+                className="flex items-center gap-1 px-2 py-1 text-xs text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-600 rounded transition-colors"
+              >
+                <FormatIcon className="w-3 h-3" />
+                格式化
+              </button>
+            </div>
+            <CodeEditor
+              value={xmlBody}
+              onChange={onXmlBodyChange}
+              language="xml"
+              placeholder={'<?xml version="1.0"?>\n<root>\n</root>'}
+              height="h-56"
+            />
+          </div>
         );
 
       case 'raw':
         return (
-          <textarea
+          <CodeEditor
             value={rawBody}
-            onChange={(e) => onRawBodyChange(e.target.value)}
+            onChange={onRawBodyChange}
+            language="text"
             placeholder="输入原始文本..."
-            className="w-full h-56 p-3 font-mono text-xs bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg resize-none dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            spellCheck={false}
+            height="h-56"
           />
         );
 

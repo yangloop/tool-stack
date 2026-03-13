@@ -241,6 +241,8 @@ export function RsaTool() {
                   原文
                 </label>
                 <textarea
+                  id="rsa-plaintext"
+                  name="rsa-plaintext"
                   value={testText}
                   onChange={(e) => setTestText(e.target.value)}
                   placeholder="输入要加密的文本..."
@@ -263,6 +265,8 @@ export function RsaTool() {
                   密文 (Base64)
                 </label>
                 <textarea
+                  id="rsa-ciphertext"
+                  name="rsa-ciphertext"
                   value={encryptedText}
                   readOnly
                   placeholder="点击「加密」按钮生成密文..."
@@ -285,6 +289,8 @@ export function RsaTool() {
                   解密结果
                 </label>
                 <textarea
+                  id="rsa-decrypted"
+                  name="rsa-decrypted"
                   value={decryptedText}
                   readOnly
                   placeholder="点击「解密」按钮查看结果..."
@@ -436,6 +442,8 @@ export function RsaTool() {
                   </div>
                 </div>
                 <textarea
+                  id="rsa-publickey"
+                  name="rsa-publickey"
                   value={publicKey}
                   readOnly
                   className="w-full h-40 sm:h-48 p-4 font-mono text-xs bg-surface-50 dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded-xl resize-none"
@@ -470,6 +478,8 @@ export function RsaTool() {
                   </div>
                 </div>
                 <textarea
+                  id="rsa-privatekey"
+                  name="rsa-privatekey"
                   value={privateKey}
                   readOnly
                   className="w-full h-40 sm:h-48 p-4 font-mono text-xs bg-surface-50 dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded-xl resize-none"
@@ -492,6 +502,8 @@ export function RsaTool() {
                 <div>
                   <label className="text-sm font-medium text-surface-700 dark:text-surface-300 mb-2 block">自定义公钥</label>
                   <textarea
+                    id="rsa-custom-publickey"
+                    name="rsa-custom-publickey"
                     value={publicKey}
                     onChange={(e) => setPublicKey(e.target.value)}
                     placeholder="-----BEGIN PUBLIC KEY-----..."
@@ -501,6 +513,8 @@ export function RsaTool() {
                 <div>
                   <label className="text-sm font-medium text-surface-700 dark:text-surface-300 mb-2 block">自定义私钥</label>
                   <textarea
+                    id="rsa-custom-privatekey"
+                    name="rsa-custom-privatekey"
                     value={privateKey}
                     onChange={(e) => setPrivateKey(e.target.value)}
                     placeholder="-----BEGIN RSA PRIVATE KEY-----..."

@@ -13,242 +13,19 @@ import type { CSSProperties } from 'react';
 import { downloadFile, readFile } from '../../utils/helpers';
 import { useClipboard } from '../../hooks/useLocalStorage';
 import { AdInArticle, AdFooter } from '../ads';
+import { customLightTheme, customDarkTheme } from '../../styles/prism-theme';
+import { CodeEditor } from '../CodeEditor';
 
-// 自定义语法高亮主题 - 与项目风格统一
-const customLightTheme: { [key: string]: CSSProperties } = {
-  'code[class*="language-"]': {
-    color: '#374151',
-    background: 'transparent',
-    fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
-    fontSize: '14px',
-    lineHeight: '1.6',
-  },
-  'pre[class*="language-"]': {
-    color: '#374151',
-    background: 'transparent',
-    fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
-    fontSize: '14px',
-    lineHeight: '1.6',
-    padding: '1rem',
-    margin: 0,
-  },
-  'comment': {
-    color: '#9ca3af',
-    fontStyle: 'italic',
-  },
-  'prolog': {
-    color: '#9ca3af',
-  },
-  'doctype': {
-    color: '#9ca3af',
-  },
-  'cdata': {
-    color: '#9ca3af',
-  },
-  'punctuation': {
-    color: '#6b7280',
-  },
-  'property': {
-    color: '#2563eb',
-  },
-  'tag': {
-    color: '#2563eb',
-  },
-  'boolean': {
-    color: '#2563eb',
-  },
-  'number': {
-    color: '#ea580c',
-  },
-  'constant': {
-    color: '#2563eb',
-  },
-  'symbol': {
-    color: '#2563eb',
-  },
-  'deleted': {
-    color: '#dc2626',
-  },
-  'selector': {
-    color: '#059669',
-  },
-  'attr-name': {
-    color: '#ea580c',
-  },
-  'string': {
-    color: '#059669',
-  },
-  'char': {
-    color: '#059669',
-  },
-  'builtin': {
-    color: '#7c3aed',
-  },
-  'inserted': {
-    color: '#059669',
-  },
-  'operator': {
-    color: '#6b7280',
-  },
-  'entity': {
-    color: '#6b7280',
-    cursor: 'help',
-  },
-  'url': {
-    color: '#6b7280',
-  },
-  'variable': {
-    color: '#374151',
-  },
-  'atrule': {
-    color: '#2563eb',
-    fontWeight: 600,
-  },
-  'attr-value': {
-    color: '#059669',
-  },
-  'keyword': {
-    color: '#2563eb',
-    fontWeight: 600,
-  },
-  'function': {
-    color: '#7c3aed',
-  },
-  'class-name': {
-    color: '#2563eb',
-    fontWeight: 600,
-  },
-  'regex': {
-    color: '#ea580c',
-  },
-  'important': {
-    color: '#2563eb',
-    fontWeight: 'bold',
-  },
-  'bold': {
-    fontWeight: 'bold',
-  },
-  'italic': {
-    fontStyle: 'italic',
-  },
+// SQL 格式化工具使用 14px 字体（共享主题使用 13px）
+const sqlLightTheme: { [key: string]: CSSProperties } = {
+  ...customLightTheme,
+  'code[class*="language-"]': { ...customLightTheme['code[class*="language-"]'], fontSize: '14px' },
+  'pre[class*="language-"]': { ...customLightTheme['pre[class*="language-"]'], fontSize: '14px' },
 };
-
-const customDarkTheme: { [key: string]: CSSProperties } = {
-  'code[class*="language-"]': {
-    color: '#e5e7eb',
-    background: 'transparent',
-    fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
-    fontSize: '14px',
-    lineHeight: '1.6',
-  },
-  'pre[class*="language-"]': {
-    color: '#e5e7eb',
-    background: 'transparent',
-    fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
-    fontSize: '14px',
-    lineHeight: '1.6',
-    padding: '1rem',
-    margin: 0,
-  },
-  'comment': {
-    color: '#6b7280',
-    fontStyle: 'italic',
-  },
-  'prolog': {
-    color: '#6b7280',
-  },
-  'doctype': {
-    color: '#6b7280',
-  },
-  'cdata': {
-    color: '#6b7280',
-  },
-  'punctuation': {
-    color: '#9ca3af',
-  },
-  'property': {
-    color: '#60a5fa',
-  },
-  'tag': {
-    color: '#60a5fa',
-  },
-  'boolean': {
-    color: '#60a5fa',
-  },
-  'number': {
-    color: '#fb923c',
-  },
-  'constant': {
-    color: '#60a5fa',
-  },
-  'symbol': {
-    color: '#60a5fa',
-  },
-  'deleted': {
-    color: '#f87171',
-  },
-  'selector': {
-    color: '#34d399',
-  },
-  'attr-name': {
-    color: '#fb923c',
-  },
-  'string': {
-    color: '#34d399',
-  },
-  'char': {
-    color: '#34d399',
-  },
-  'builtin': {
-    color: '#a78bfa',
-  },
-  'inserted': {
-    color: '#34d399',
-  },
-  'operator': {
-    color: '#9ca3af',
-  },
-  'entity': {
-    color: '#9ca3af',
-    cursor: 'help',
-  },
-  'url': {
-    color: '#9ca3af',
-  },
-  'variable': {
-    color: '#e5e7eb',
-  },
-  'atrule': {
-    color: '#60a5fa',
-    fontWeight: 600,
-  },
-  'attr-value': {
-    color: '#34d399',
-  },
-  'keyword': {
-    color: '#60a5fa',
-    fontWeight: 600,
-  },
-  'function': {
-    color: '#a78bfa',
-  },
-  'class-name': {
-    color: '#60a5fa',
-    fontWeight: 600,
-  },
-  'regex': {
-    color: '#fb923c',
-  },
-  'important': {
-    color: '#60a5fa',
-    fontWeight: 'bold',
-  },
-  'bold': {
-    fontWeight: 'bold',
-  },
-  'italic': {
-    fontStyle: 'italic',
-  },
+const sqlDarkTheme: { [key: string]: CSSProperties } = {
+  ...customDarkTheme,
+  'code[class*="language-"]': { ...customDarkTheme['code[class*="language-"]'], fontSize: '14px' },
+  'pre[class*="language-"]': { ...customDarkTheme['pre[class*="language-"]'], fontSize: '14px' },
 };
 
 // SQL 统计
@@ -428,12 +205,12 @@ export function SqlTool() {
               {input && <SqlStats sql={input} />}
             </div>
           </div>
-          <textarea
+          <CodeEditor
             value={input}
-            onChange={(e) => setInput(e.target.value)}
+            onChange={setInput}
+            language="sql"
             placeholder="在此粘贴 SQL 语句...\n\n例如:\nSELECT * FROM users WHERE id = 1;"
-            className="flex-1 min-h-[300px] sm:min-h-[400px] p-3 sm:p-4 font-mono text-xs sm:text-sm bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg resize-none focus:ring-2 focus:ring-blue-500 dark:text-white"
-            spellCheck={false}
+            height="min-h-[300px] sm:min-h-[400px]"
           />
         </div>
 
@@ -482,7 +259,7 @@ export function SqlTool() {
             {output ? (
               <SyntaxHighlighter
                 language="sql"
-                style={isDark ? customDarkTheme : customLightTheme}
+                style={isDark ? sqlDarkTheme : sqlLightTheme}
                 customStyle={{
                   margin: 0,
                   padding: '1rem',

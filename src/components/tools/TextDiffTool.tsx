@@ -236,6 +236,8 @@ const version = "2.0";`);
             <span className="text-xs text-surface-400">{leftText.length} 字符</span>
           </div>
           <textarea
+            id="diff-original"
+            name="diff-original"
             value={leftText}
             onChange={(e) => setLeftText(e.target.value)}
             placeholder="在此粘贴原始文本..."
@@ -251,6 +253,8 @@ const version = "2.0";`);
             <span className="text-xs text-surface-400">{rightText.length} 字符</span>
           </div>
           <textarea
+            id="diff-modified"
+            name="diff-modified"
             value={rightText}
             onChange={(e) => setRightText(e.target.value)}
             placeholder="在此粘贴对比文本..."

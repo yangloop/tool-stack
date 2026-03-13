@@ -154,6 +154,8 @@ export function DockerConvertTool() {
             </div>
             
             <textarea
+              id="docker-run-input"
+              name="docker-run-input"
               value={dockerRunCommand}
               onChange={(e) => setDockerRunCommand(e.target.value)}
               placeholder="docker run -d --name myapp -p 8080:80 nginx"
@@ -208,6 +210,8 @@ export function DockerConvertTool() {
             </div>
             
             <textarea
+              id="docker-compose-output"
+              name="docker-compose-output"
               readOnly
               value={composeYaml}
               placeholder="点击转换按钮生成 docker-compose.yml..."
@@ -231,6 +235,8 @@ export function DockerConvertTool() {
             </div>
             
             <textarea
+              id="docker-compose-input"
+              name="docker-compose-input"
               value={composeInput}
               onChange={(e) => setComposeInput(e.target.value)}
               placeholder="version: &quot;3.8&quot;&#10;services:&#10;  web:&#10;    image: nginx&#10;    ports:&#10;      - 8080:80"
@@ -271,6 +277,8 @@ export function DockerConvertTool() {
             </div>
             
             <textarea
+              id="docker-run-output"
+              name="docker-run-output"
               readOnly
               value={dockerRunCommand}
               placeholder="点击转换按钮生成 docker run 命令..."
@@ -433,6 +441,8 @@ function FormConfigTab({
             反向解析（粘贴命令自动填充表单）
           </h4>
           <textarea
+            id="docker-parse-input"
+            name="docker-parse-input"
             value={parseInput}
             onChange={(e) => setParseInput(e.target.value)}
             placeholder="粘贴 docker run 命令或 docker-compose 配置..."
@@ -711,6 +721,8 @@ function OutputPanel({
         </div>
       </div>
       <textarea
+        id="docker-output"
+        name="docker-output"
         readOnly
         value={value}
         placeholder="点击生成按钮..."

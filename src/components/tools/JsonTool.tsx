@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { 
   Copy, Check, Download, Upload, Trash2, 
   Minimize2, FileJson, Braces, Type, Hash, List, AlertCircle
@@ -7,6 +7,7 @@ import ReactJson from 'react-json-view';
 import { downloadFile, readFile } from '../../utils/helpers';
 import { useClipboard } from '../../hooks/useLocalStorage';
 import { AdInArticle, AdFooter } from '../ads';
+import { CodeEditor } from '../CodeEditor';
 
 // JSON 统计信息
 function JsonStats({ json }: { json: string }) {
@@ -108,6 +109,25 @@ const slateTheme = {
   base0F: '#f472b6', // 特殊字符 (pink-400)
 };
 
+// JSON 语法高亮输入组件
+interface JsonInputHighlightProps {
+  value: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
+}
+
+function JsonInputHighlight({ value, onChange, placeholder }: JsonInputHighlightProps) {
+  return (
+    <CodeEditor
+      value={value}
+      onChange={onChange}
+      language="json"
+      placeholder={placeholder}
+      height="h-[250px] sm:h-[400px]"
+    />
+  );
+}
+
 // 格式化视图组件
 function FormattedView({ data, isDark }: { data: object; isDark: boolean }) {
   return (
@@ -140,7 +160,6 @@ export function JsonTool() {
   const [viewMode, setViewMode] = useState<'formatted' | 'compressed'>('formatted');
   const [isDark, setIsDark] = useState(false);
   const { copied, copy } = useClipboard();
-  const inputRef = useRef<HTMLTextAreaElement>(null);
 
   // 监听主题变化
   useEffect(() => {
@@ -340,7 +359,7 @@ export function JsonTool() {
 
       {/* 输入输出区域 */}
       <div className="grid lg:grid-cols-2 gap-3 sm:gap-4">
-        {/* 输入区域 */}
+        {/* 输入区域 - 带语法高亮 */}
         <div className="card p-4 sm:p-6 min-w-0">
           <div className="flex items-center justify-between mb-2 sm:mb-3">
             <div className="flex items-center gap-2">
@@ -352,13 +371,10 @@ export function JsonTool() {
               )}
             </div>
           </div>
-          <textarea
-            ref={inputRef}
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
+          <JsonInputHighlight 
+            value={input} 
+            onChange={setInput} 
             placeholder="在此粘贴 JSON 数据..."
-            className="w-full h-[250px] sm:h-[400px] p-3 sm:p-4 font-mono text-xs sm:text-sm bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg resize-y focus:ring-2 focus:ring-blue-500 dark:text-white whitespace-pre overflow-auto"
-            spellCheck={false}
           />
         </div>
 

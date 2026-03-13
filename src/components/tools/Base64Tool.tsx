@@ -68,6 +68,8 @@ export function Base64Tool() {
               {mode === 'encode' ? '原文' : 'Base64'}
             </label>
             <textarea
+              id="base64-input"
+              name="base64-input"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder={mode === 'encode' ? '输入要编码的文本...' : '输入要解码的 Base64...'}
@@ -92,6 +94,8 @@ export function Base64Tool() {
               )}
             </div>
             <textarea
+              id="base64-output"
+              name="base64-output"
               value={output}
               readOnly
               placeholder="结果..."

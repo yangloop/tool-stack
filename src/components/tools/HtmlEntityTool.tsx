@@ -81,6 +81,8 @@ export function HtmlEntityTool() {
               {mode === 'encode' ? '原文' : 'HTML 实体'}
             </label>
             <textarea
+              id="htmlentity-input"
+              name="htmlentity-input"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder={mode === 'encode' ? '输入 HTML 内容...' : '输入 HTML 实体...'}
@@ -104,6 +106,8 @@ export function HtmlEntityTool() {
               )}
             </div>
             <textarea
+              id="htmlentity-output"
+              name="htmlentity-output"
               value={output}
               readOnly
               placeholder="结果..."

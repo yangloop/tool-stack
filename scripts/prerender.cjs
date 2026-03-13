@@ -10,26 +10,26 @@ const path = require('path');
 const toolsConfig = {
   'json': {
     name: 'JSON 工具',
-    description: 'JSON格式化、压缩、验证和转换工具。支持语法高亮、树形查看、JSON路径查询等功能。',
-    keywords: 'JSON格式化,JSON压缩,JSON验证,JSON编辑器,JSON在线工具,JSON美化,JSON解析',
+    description: 'JSON格式化、压缩、验证和转换工具。支持语法高亮输入框、树形查看、JSON路径查询等功能。',
+    keywords: 'JSON格式化,JSON压缩,JSON验证,JSON编辑器,JSON在线工具,JSON美化,JSON解析,JSON语法高亮',
     category: '格式化工具'
   },
   'sql': {
     name: 'SQL 格式化',
-    description: 'SQL语句美化、压缩和语法高亮工具。支持多种SQL方言，自动格式化复杂查询语句。',
-    keywords: 'SQL格式化,SQL美化,SQL压缩,SQL语法高亮,MySQL格式化,PostgreSQL格式化',
+    description: 'SQL语句美化、压缩和语法高亮工具。支持语法高亮输入框，多种SQL方言，自动格式化复杂查询语句。',
+    keywords: 'SQL格式化,SQL美化,SQL压缩,SQL语法高亮,SQL编辑器,MySQL格式化,PostgreSQL格式化',
     category: '格式化工具'
   },
   'sql-advisor': {
     name: 'SQL 优化建议',
-    description: '智能SQL分析优化工具：检测SQL/DDL语法错误、验证表名字段匹配、检查数据类型兼容性、分析索引使用情况（支持组合索引最左前缀原则）、提供SQL性能优化建议。支持MySQL、PostgreSQL、SQLite、MariaDB等多种数据库。',
-    keywords: 'SQL分析,SQL优化,SQL语法检查,SQL性能优化,SQL索引优化,组合索引检查,数据类型检查,表名验证,字段验证,MySQL优化,PostgreSQL优化,SQL查询优化,SQL调优工具,DDL检查,索引最左前缀',
+    description: '智能SQL分析优化工具：检测SQL/DDL语法错误、验证表名字段匹配、检查数据类型兼容性、分析索引使用情况（支持组合索引最左前缀原则）、提供SQL性能优化建议。支持语法高亮输入框，MySQL/MariaDB、PostgreSQL、SQLite、SQL Server等多种数据库。',
+    keywords: 'SQL分析,SQL优化,SQL语法检查,SQL性能优化,SQL索引优化,组合索引检查,数据类型检查,表名验证,字段验证,MySQL优化,PostgreSQL优化,SQL Server优化,SQLite优化,MariaDB优化,SQL查询优化,SQL调优工具,DDL检查,索引最左前缀,SQL语法高亮',
     category: '格式化工具'
   },
   'xml-json': {
     name: 'XML / JSON 互转',
-    description: 'XML与JSON格式互相转换工具。支持XML属性转换为JSON字段、JSON对象转换为XML标签、格式化输出和高亮显示。自动检测数字和布尔值，支持嵌套结构和数组转换。',
-    keywords: 'XML转JSON,JSON转XML,XML转换,JSON转换,XML格式化,JSON格式化,XML解析,XML在线工具,JSON在线工具,XML JSON转换器',
+    description: 'XML与JSON格式互相转换工具。支持语法高亮输入框，XML属性转换为JSON字段、JSON对象转换为XML标签、格式化输出和高亮显示。自动检测数字和布尔值，支持嵌套结构和数组转换。',
+    keywords: 'XML转JSON,JSON转XML,XML转换,JSON转换,XML格式化,JSON格式化,XML解析,XML在线工具,JSON在线工具,XML JSON转换器,XML语法高亮,JSON语法高亮',
     category: '格式化工具'
   },
   'base64': {
@@ -118,8 +118,8 @@ const toolsConfig = {
   },
   'http-request': {
     name: 'HTTP 请求',
-    description: '在线API测试工具。支持GET、POST、PUT、DELETE等方法，自定义Headers和Body。',
-    keywords: 'HTTP请求,API测试工具,Postman在线,REST API测试,HTTP客户端',
+    description: '在线API测试工具。支持GET、POST、PUT、DELETE等方法，自定义Headers和Body。JSON/XML/Raw请求体支持语法高亮输入框。',
+    keywords: 'HTTP请求,API测试工具,Postman在线,REST API测试,HTTP客户端,JSON语法高亮,XML语法高亮',
     category: '开发工具'
   },
   'websocket': {
@@ -271,8 +271,8 @@ const homeJsonLd = {
 
 let homeHtml = indexHtml
   .replace(/<title>.*?<\/title>/, `<title>ToolStack - 开发者工具箱</title>`)
-  .replace(/<meta name="description" content=".*?"/, `<meta name="description" content="ToolStack 是一个现代化的开发者工具集合，包含 25+ 实用工具：JSON格式化、SQL格式化与智能优化分析、Base64编解码、哈希计算、RSA加密、二维码生成等。SQL分析工具支持语法检查、索引优化、数据类型验证、组合索引分析。界面简洁，支持深色模式。"`)
-  .replace(/<meta name="keywords" content=".*?"/, `<meta name="keywords" content="开发者工具,在线工具,JSON格式化,SQL格式化,SQL分析,SQL优化,SQL语法检查,索引优化,组合索引检查,Base64编解码,哈希计算,MD5,SHA,RSA加密,二维码生成,UUID生成,时间戳转换,正则表达式测试,Crontab生成器"`)
+  .replace(/<meta name="description" content=".*?"/, `<meta name="description" content="ToolStack 是一个现代化的开发者工具集合，包含 25+ 实用工具：JSON格式化、SQL格式化与智能优化分析、Base64编解码、哈希计算、RSA加密、二维码生成等。支持语法高亮输入框，SQL分析工具支持语法检查、索引优化。界面简洁，支持深色模式。"`)
+  .replace(/<meta name="keywords" content=".*?"/, `<meta name="keywords" content="开发者工具,在线工具,JSON格式化,SQL格式化,SQL分析,SQL优化,SQL语法检查,索引优化,组合索引检查,语法高亮,代码编辑器,Base64编解码,哈希计算,MD5,SHA,RSA加密,二维码生成"`)
   .replace(/<link rel="canonical" href=".*?"/, `<link rel="canonical" href="${domain}/"`)
   .replace(/<meta property="og:title" content=".*?"/, `<meta property="og:title" content="ToolStack - 开发者工具箱"`)
   .replace(/<meta property="og:description" content=".*?"/, `<meta property="og:description" content="ToolStack 是一个现代化的开发者工具集合，包含 25+ 实用工具：JSON格式化、SQL格式化与智能优化分析、Base64编解码、哈希计算等。界面简洁，支持深色模式。"`)

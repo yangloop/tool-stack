@@ -3,14 +3,17 @@ import {
   Sparkles, Database, AlertTriangle, CheckCircle, 
   Info, Lightbulb, Trash2, Play, Copy, Check,
   Zap, Search, Table2, AlertCircle, Settings,
-  X, BarChart3, Code2, Eye, EyeOff, ArrowRight
+  X, BarChart3, Code2, Eye, EyeOff, ArrowRight,
+  AlignLeft
 } from 'lucide-react';
+import { format } from 'sql-formatter';
 import { useClipboard } from '../../hooks/useLocalStorage';
 import { useSqlAdvisor } from '../../hooks/useSqlAdvisor';
 import { AdInArticle, AdFooter } from '../ads';
+import { CodeEditor } from '../CodeEditor';
 
 // 支持的数据库类型
-type DatabaseType = 'mysql' | 'postgresql' | 'sqlite' | 'mariadb' | 'bigquery';
+type DatabaseType = 'mysql' | 'postgresql' | 'sqlite' | 'sqlserver';
 
 // 分析结果类型
 type AnalysisType = 'critical' | 'warning' | 'info' | 'optimization' | 'success';
@@ -18,9 +21,9 @@ type AnalysisType = 'critical' | 'warning' | 'info' | 'optimization' | 'success'
 // 数据库配置
 const DATABASE_CONFIGS: Record<DatabaseType, { name: string; description: string; features: string[] }> = {
   mysql: {
-    name: 'MySQL',
-    description: 'MySQL 5.7+ / 8.0+',
-    features: ['完整的DDL支持', 'JSON类型', '窗口函数', 'CTE']
+    name: 'MySQL / MariaDB',
+    description: 'MySQL 5.7+ / 8.0+ 及 MariaDB 10.3+',
+    features: ['完整的DDL支持', 'JSON类型', '窗口函数', 'CTE', 'MariaDB兼容']
   },
   postgresql: {
     name: 'PostgreSQL',
@@ -32,15 +35,10 @@ const DATABASE_CONFIGS: Record<DatabaseType, { name: string; description: string
     description: 'SQLite 3.x',
     features: ['轻量级', '文件数据库', '有限ALTER支持']
   },
-  mariadb: {
-    name: 'MariaDB',
-    description: 'MariaDB 10.3+',
-    features: ['MySQL兼容', '序列', '动态列']
-  },
-  bigquery: {
-    name: 'BigQuery',
-    description: 'Google BigQuery',
-    features: ['嵌套重复字段', '分区表', '集群']
+  sqlserver: {
+    name: 'SQL Server',
+    description: 'Microsoft SQL Server 2016+',
+    features: ['T-SQL支持', '聚集索引', '分区表', '窗口函数']
   }
 };
 
@@ -55,7 +53,7 @@ export function SqlAdvisorTool() {
   const { copied, copy } = useClipboard();
 
   // 使用 SQL Advisor Hook
-  const { results, schemas, isAnalyzing, analyze, error, hasAnalyzed } = useSqlAdvisor();
+  const { results, schemas, isAnalyzing, analyze, reset, error, hasAnalyzed } = useSqlAdvisor();
 
   // 按类别分组的结果
   const filteredResults = (() => {
@@ -73,15 +71,49 @@ export function SqlAdvisorTool() {
     total: results.length
   }))();
 
+  // 格式化 SQL
+  const formatSQL = (sql: string): string => {
+    if (!sql.trim()) return sql;
+    try {
+      // 映射数据库类型到 sql-formatter 支持的类型
+      const formatterDialect: Record<DatabaseType, string> = {
+        mysql: 'mysql',
+        postgresql: 'postgresql',
+        sqlite: 'sqlite',
+        sqlserver: 'transactsql',
+      };
+      
+      return format(sql, {
+        language: formatterDialect[dbType] as any,
+        tabWidth: 2,
+        keywordCase: 'upper',
+        linesBetweenQueries: 2,
+      });
+    } catch (e) {
+      // 格式化失败时返回原内容
+      return sql;
+    }
+  };
+
+  const handleFormatDDL = () => {
+    setDdlInput(formatSQL(ddlInput));
+  };
+
+  const handleFormatSQL = () => {
+    setSqlInput(formatSQL(sqlInput));
+  };
+
   // 事件处理
   const handleAnalyze = useCallback(() => {
-    analyze(sqlInput, ddlInput, dbType);
-  }, [analyze, sqlInput, ddlInput, dbType]);
+    // 仅分析DDL模式时，不传SQL输入
+    analyze(showDDLOnly ? '' : sqlInput, ddlInput, dbType);
+  }, [analyze, sqlInput, ddlInput, dbType, showDDLOnly]);
 
   const handleClear = useCallback(() => {
     setDdlInput('');
     setSqlInput('');
-  }, []);
+    reset(); // 清除分析结果
+  }, [reset]);
 
   const handleCopyResults = async () => {
     const text = results.map((r, i) => 
@@ -90,15 +122,17 @@ export function SqlAdvisorTool() {
     await copy(text);
   };
 
-  // 加载示例
-  const loadExample = () => {
-    const exampleDDL = `-- 用户表
+  // 加载示例 - 根据数据库类型加载对应的 DDL 和 SQL
+  const loadExample = useCallback(() => {
+    const examples: Record<DatabaseType, { ddl: string; sql: string }> = {
+      mysql: {
+        ddl: `-- 用户表
 CREATE TABLE users (
     id INT PRIMARY KEY AUTO_INCREMENT,
     username VARCHAR(50) NOT NULL,
     email VARCHAR(100) NOT NULL,
     age INT,
-    status ENUM('active', 'inactive') DEFAULT 'active',
+    status VARCHAR(20) DEFAULT 'active',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     INDEX idx_username (username),
     INDEX idx_email (email),
@@ -115,19 +149,128 @@ CREATE TABLE orders (
     INDEX idx_user_id (user_id),
     INDEX idx_status_created (status, created_at),
     INDEX idx_user_status (user_id, status)
-);`;
-
-    const exampleSQL = `-- 查询示例：有一些优化空间
+);`,
+        sql: `-- 查询示例：有一些优化空间
 SELECT * FROM users u
 JOIN orders o ON u.id = o.user_id
 WHERE u.status = 'active' 
   AND u.age > 18
 ORDER BY o.created_at DESC
-LIMIT 10;`;
+LIMIT 10;`
+      },
+      postgresql: {
+        ddl: `-- 用户表
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(50) NOT NULL,
+    email VARCHAR(100) NOT NULL,
+    age INTEGER,
+    status VARCHAR(20) DEFAULT 'active',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
-    setDdlInput(exampleDDL);
-    setSqlInput(exampleSQL);
-  };
+CREATE INDEX idx_username ON users (username);
+CREATE INDEX idx_email ON users (email);
+CREATE INDEX idx_status_created ON users (status, created_at);
+
+-- 订单表
+CREATE TABLE orders (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL,
+    amount NUMERIC(10, 2) NOT NULL,
+    status VARCHAR(20) DEFAULT 'pending',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX idx_user_id ON orders (user_id);
+CREATE INDEX idx_status_created ON orders (status, created_at);
+CREATE INDEX idx_user_status ON orders (user_id, status);`,
+        sql: `-- 查询示例：有一些优化空间
+SELECT * FROM users u
+JOIN orders o ON u.id = o.user_id
+WHERE u.status = 'active' 
+  AND u.age > 18
+ORDER BY o.created_at DESC
+LIMIT 10;`
+      },
+      sqlite: {
+        ddl: `-- 用户表
+CREATE TABLE users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT NOT NULL,
+    email TEXT NOT NULL,
+    age INTEGER,
+    status TEXT DEFAULT 'active',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX idx_username ON users (username);
+CREATE INDEX idx_email ON users (email);
+CREATE INDEX idx_status_created ON users (status, created_at);
+
+-- 订单表
+CREATE TABLE orders (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    amount REAL NOT NULL,
+    status TEXT DEFAULT 'pending',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX idx_user_id ON orders (user_id);
+CREATE INDEX idx_status_created ON orders (status, created_at);
+CREATE INDEX idx_user_status ON orders (user_id, status);`,
+        sql: `-- 查询示例：有一些优化空间
+SELECT * FROM users u
+JOIN orders o ON u.id = o.user_id
+WHERE u.status = 'active' 
+  AND u.age > 18
+ORDER BY o.created_at DESC
+LIMIT 10;`
+      },
+      sqlserver: {
+        ddl: `-- 用户表
+CREATE TABLE users (
+    id INT PRIMARY KEY IDENTITY(1,1),
+    username NVARCHAR(50) NOT NULL,
+    email NVARCHAR(100) NOT NULL,
+    age INT,
+    status NVARCHAR(20) DEFAULT 'active',
+    created_at DATETIME2 DEFAULT GETDATE()
+);
+
+CREATE INDEX idx_username ON users (username);
+CREATE INDEX idx_email ON users (email);
+CREATE INDEX idx_status_created ON users (status, created_at);
+
+-- 订单表
+CREATE TABLE orders (
+    id INT PRIMARY KEY IDENTITY(1,1),
+    user_id INT NOT NULL,
+    amount DECIMAL(10, 2) NOT NULL,
+    status NVARCHAR(20) DEFAULT 'pending',
+    created_at DATETIME2 DEFAULT GETDATE()
+);
+
+CREATE INDEX idx_user_id ON orders (user_id);
+CREATE INDEX idx_status_created ON orders (status, created_at);
+CREATE INDEX idx_user_status ON orders (user_id, status);`,
+        sql: `-- 查询示例：有一些优化空间
+SELECT * FROM users u
+INNER JOIN orders o ON u.id = o.user_id
+WHERE u.status = 'active' 
+  AND u.age > 18
+ORDER BY o.created_at DESC
+OFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY;`
+      }
+    };
+
+    const example = examples[dbType];
+    if (example) {
+      setDdlInput(example.ddl);
+      setSqlInput(example.sql);
+    }
+  }, [dbType]);
 
   // 渲染辅助函数
   const getTypeIcon = (type: AnalysisType) => {
@@ -235,7 +378,7 @@ LIMIT 10;`;
       <div className="flex flex-wrap items-center gap-2 mb-4">
         <button 
           onClick={handleAnalyze} 
-          disabled={isAnalyzing || !sqlInput.trim()} 
+          disabled={isAnalyzing || (!showDDLOnly && !sqlInput.trim())} 
           className="btn-primary btn-tool disabled:opacity-50"
         >
           {isAnalyzing ? (
@@ -243,7 +386,7 @@ LIMIT 10;`;
           ) : (
             <Play className="w-3.5 h-3.5 flex-shrink-0" />
           )}
-          {isAnalyzing ? '分析中...' : '分析SQL'}
+          {isAnalyzing ? '分析中...' : showDDLOnly ? '分析DDL' : '分析SQL'}
         </button>
         <button onClick={handleClear} className="btn-ghost-danger btn-tool">
           <Trash2 className="w-3.5 h-3.5 flex-shrink-0" />
@@ -289,18 +432,30 @@ LIMIT 10;`;
               <span className="text-sm font-medium text-gray-700 dark:text-gray-300">表结构 (DDL)</span>
               <span className="text-xs text-gray-400">{dbType.toUpperCase()}</span>
             </div>
-            {parsedDDL && schemas.length > 0 && (
-              <span className="text-xs px-2 py-0.5 bg-green-100 text-green-700 rounded-full">
-                已解析 {schemas.length} 个表
-              </span>
-            )}
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleFormatDDL}
+                disabled={!ddlInput.trim()}
+                className="btn-ghost btn-tool-sm disabled:opacity-30"
+                title="格式化 DDL"
+              >
+                <AlignLeft className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">格式化</span>
+              </button>
+              {parsedDDL && schemas.length > 0 && (
+                <span className="text-xs px-2 py-0.5 bg-green-100 text-green-700 rounded-full">
+                  已解析 {schemas.length} 个表
+                </span>
+              )}
+            </div>
           </div>
-          <textarea
+          <CodeEditor
             value={ddlInput}
-            onChange={(e) => setDdlInput(e.target.value)}
+            onChange={setDdlInput}
+            language="sql"
             placeholder={`-- 在此粘贴 CREATE TABLE 语句...\n-- 支持 ${DATABASE_CONFIGS[dbType].name} 语法`}
-            className="w-full h-[250px] p-3 font-mono text-xs bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg resize-none focus:ring-2 focus:ring-purple-500 dark:text-white"
-            spellCheck={false}
+            height={showDDLOnly ? '500px' : '250px'}
+            padding={12}
           />
           {schemas.length > 0 && (
             <div className="mt-2 flex flex-wrap gap-1">
@@ -319,17 +474,29 @@ LIMIT 10;`;
 
         {!showDDLOnly && (
           <div className="card p-4 sm:p-5">
-            <div className="flex items-center gap-2 mb-3">
-              <Database className="w-4 h-4 text-gray-500" />
-              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">SQL 语句</span>
-              <span className="text-xs text-purple-500">{dbType.toUpperCase()}</span>
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <Database className="w-4 h-4 text-gray-500" />
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">SQL 语句</span>
+                <span className="text-xs text-purple-500">{dbType.toUpperCase()}</span>
+              </div>
+              <button
+                onClick={handleFormatSQL}
+                disabled={!sqlInput.trim()}
+                className="btn-ghost btn-tool-sm disabled:opacity-30"
+                title="格式化 SQL"
+              >
+                <AlignLeft className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">格式化</span>
+              </button>
             </div>
-            <textarea
+            <CodeEditor
               value={sqlInput}
-              onChange={(e) => setSqlInput(e.target.value)}
+              onChange={setSqlInput}
+              language="sql"
               placeholder={`-- 在此粘贴要分析的 SQL 语句...\n-- 支持 SELECT/INSERT/UPDATE/DELETE`}
-              className="w-full h-[250px] p-3 font-mono text-xs bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg resize-none focus:ring-2 focus:ring-purple-500 dark:text-white"
-              spellCheck={false}
+              height="250px"
+              padding={12}
             />
           </div>
         )}

@@ -4,9 +4,9 @@ import type { DatabaseType } from './types';
 
 export const DATABASE_CONFIGS: Record<DatabaseType, { name: string; description: string; features: string[] }> = {
   mysql: {
-    name: 'MySQL',
-    description: 'MySQL 5.7+ / 8.0+',
-    features: ['完整的DDL支持', 'JSON类型', '窗口函数', 'CTE']
+    name: 'MySQL / MariaDB',
+    description: 'MySQL 5.7+ / 8.0+ 及 MariaDB 10.3+',
+    features: ['完整的DDL支持', 'JSON类型', '窗口函数', 'CTE', 'MariaDB兼容']
   },
   postgresql: {
     name: 'PostgreSQL',
@@ -18,15 +18,10 @@ export const DATABASE_CONFIGS: Record<DatabaseType, { name: string; description:
     description: 'SQLite 3.x',
     features: ['轻量级', '文件数据库', '有限ALTER支持']
   },
-  mariadb: {
-    name: 'MariaDB',
-    description: 'MariaDB 10.3+',
-    features: ['MySQL兼容', '序列', '动态列']
-  },
-  bigquery: {
-    name: 'BigQuery',
-    description: 'Google BigQuery',
-    features: ['嵌套重复字段', '分区表', '集群']
+  sqlserver: {
+    name: 'SQL Server',
+    description: 'Microsoft SQL Server 2016+',
+    features: ['T-SQL支持', '聚集索引', '分区表', '窗口函数']
   }
 };
 

@@ -102,16 +102,52 @@ export function checkTypeCompatibility(
 // 从AST节点提取值
 export function extractValueFromNode(node: any): ValueExtraction {
   if (!node) return { value: undefined, isStringLiteral: false, type: 'null' };
-  if (node.type === 'number') return { value: node.value, isStringLiteral: false, type: 'number' };
+  if (node.type === 'number') {
+    const numValue = typeof node.value === 'number' ? node.value : Number(node.value);
+    return { value: numValue, isStringLiteral: false, type: 'number' };
+  }
   if (node.type === 'single_quote_string' || node.type === 'double_quote_string' || node.type === 'string') {
-    return { value: node.value, isStringLiteral: true, type: 'string' };
+    // 确保值是字符串
+    const strValue = typeof node.value === 'string' ? node.value : String(node.value ?? '');
+    return { value: strValue, isStringLiteral: true, type: 'string' };
   }
-  if (node.type === 'bool') return { value: node.value, isStringLiteral: false, type: 'boolean' };
+  if (node.type === 'bool') {
+    const boolValue = typeof node.value === 'boolean' ? node.value : (node.value === 'true' || node.value === true);
+    return { value: boolValue, isStringLiteral: false, type: 'boolean' };
+  }
   if (node.type === 'null') return { value: null, isStringLiteral: false, type: 'null' };
-  if (node.value !== undefined) {
-    return extractValueFromNode(node.value);
+  
+  // 处理嵌套 value 属性
+  if (node.value !== undefined && node.value !== null) {
+    // 如果 value 是原始类型，直接使用
+    if (typeof node.value === 'string' || typeof node.value === 'number' || typeof node.value === 'boolean') {
+      const type = typeof node.value === 'number' ? 'number' : (typeof node.value === 'string' ? 'string' : 'boolean');
+      return { value: node.value, isStringLiteral: type === 'string', type };
+    }
+    // 如果 value 是对象，递归解析
+    if (typeof node.value === 'object') {
+      return extractValueFromNode(node.value);
+    }
   }
-  return { value: node, isStringLiteral: false, type: 'unknown' };
+  
+  // 处理 expr 属性（某些解析器使用）
+  if (node.expr !== undefined && node.expr !== null) {
+    return extractValueFromNode(node.expr);
+  }
+  
+  // 如果节点本身就是原始值
+  if (typeof node === 'string' || typeof node === 'number' || typeof node === 'boolean') {
+    const type = typeof node === 'number' ? 'number' : (typeof node === 'string' ? 'string' : 'boolean');
+    return { value: node, isStringLiteral: type === 'string', type };
+  }
+  
+  // 最后尝试转换为字符串
+  const strValue = String(node);
+  // 避免 [object Object]
+  if (strValue === '[object Object]') {
+    return { value: undefined, isStringLiteral: false, type: 'unknown' };
+  }
+  return { value: strValue, isStringLiteral: false, type: 'unknown' };
 }
 
 // 检测值的数据类型
@@ -120,16 +156,34 @@ export function detectValueType(value: unknown, isStringLiteral: boolean = false
   if (isStringLiteral) return 'string';
   if (typeof value === 'object' && value !== null) {
     const node = value as any;
+    // 处理 AST 节点类型
     if (node.type === 'number') {
-      const numValue = node.value;
-      return Number.isInteger(Number(numValue)) ? 'integer' : 'float';
+      const numValue = node.value !== undefined ? node.value : node;
+      const num = Number(numValue);
+      return Number.isInteger(num) ? 'integer' : 'float';
     }
     if (node.type === 'single_quote_string' || node.type === 'double_quote_string' || node.type === 'string') {
       return 'string';
     }
     if (node.type === 'bool') return 'boolean';
     if (node.type === 'null') return 'null';
-    if (node.value !== undefined) return detectValueType(node.value);
+    // 递归处理嵌套 value
+    if (node.value !== undefined) {
+      // 如果 value 是原始类型，直接判断
+      if (typeof node.value === 'number') {
+        return Number.isInteger(node.value) ? 'integer' : 'float';
+      }
+      if (typeof node.value === 'string') return 'string';
+      if (typeof node.value === 'boolean') return 'boolean';
+      // 如果是对象，递归
+      if (typeof node.value === 'object') {
+        return detectValueType(node.value);
+      }
+    }
+    // 处理 expr 属性
+    if (node.expr !== undefined) {
+      return detectValueType(node.expr);
+    }
     return 'unknown';
   }
   if (typeof value === 'number') return Number.isInteger(value) ? 'integer' : 'float';

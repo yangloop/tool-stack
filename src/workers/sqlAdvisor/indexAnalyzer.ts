@@ -10,6 +10,23 @@ import type {
 } from './types';
 import { generateId } from './utils';
 
+// 安全地获取字符串的小写形式
+function safeToLowerCase(value: any): string | undefined {
+  if (typeof value === 'string') return value.toLowerCase();
+  if (value && typeof value === 'object') {
+    // 如果是对象，尝试获取常见的字符串属性
+    if (typeof value.column === 'string') return value.column.toLowerCase();
+    if (typeof value.name === 'string') return value.name.toLowerCase();
+    if (typeof value.table === 'string') return value.table.toLowerCase();
+  }
+  return undefined;
+}
+
+// 安全地将字符串数组转换为小写数组
+function safeMapToLowerCase(values: any[]): string[] {
+  return values.map(v => safeToLowerCase(v)).filter((v): v is string => v !== undefined);
+}
+
 // 分析索引使用情况
 export function analyzeIndexUsage(
   schemas: TableSchema[],
@@ -26,31 +43,37 @@ export function analyzeIndexUsage(
 
   // 初始化表查询信息
   schemas.forEach(schema => {
-    tableQueryInfo.set(schema.name.toLowerCase(), {
-      whereCols: [],
-      orderByCols: [],
-      groupByCols: [],
-      joinCols: []
-    });
+    const schemaNameLower = safeToLowerCase(schema.name);
+    if (schemaNameLower) {
+      tableQueryInfo.set(schemaNameLower, {
+        whereCols: [],
+        orderByCols: [],
+        groupByCols: [],
+        joinCols: []
+      });
+    }
   });
 
   // 辅助函数：获取字段所属的实际表
   const getColumnTable = (col: { name: string; table?: string }): string | null => {
-    if (col.table) {
+    const colNameLower = safeToLowerCase(col.name);
+    const colTableLower = safeToLowerCase(col.table);
+    
+    if (colTableLower) {
       const table = tables.find(t => 
-        t.name.toLowerCase() === col.table?.toLowerCase() || 
-        t.alias?.toLowerCase() === col.table?.toLowerCase()
+        safeToLowerCase(t.name) === colTableLower || 
+        safeToLowerCase(t.alias) === colTableLower
       );
-      if (table) return table.name.toLowerCase();
+      if (table) return safeToLowerCase(table.name) || null;
     }
     // 如果只有一个表，字段就属于那个表
     if (tables.length === 1) {
-      return tables[0].name.toLowerCase();
+      return safeToLowerCase(tables[0].name) || null;
     }
     // 尝试在所有表中查找该字段
     for (const schema of schemas) {
-      if (schema.columns.some(c => c.name.toLowerCase() === col.name.toLowerCase())) {
-        return schema.name.toLowerCase();
+      if (schema.columns.some(c => safeToLowerCase(c.name) === colNameLower)) {
+        return safeToLowerCase(schema.name) || null;
       }
     }
     return null;
@@ -99,10 +122,17 @@ export function analyzeIndexUsage(
 
   // 分析每个表的索引使用情况
   schemas.forEach(schema => {
-    const queryInfo = tableQueryInfo.get(schema.name.toLowerCase());
+    const schemaNameLower = safeToLowerCase(schema.name);
+    if (!schemaNameLower) return;
+    const queryInfo = tableQueryInfo.get(schemaNameLower);
     if (!queryInfo) return;
 
     const indexes = schema.indexes || [];
+    
+    // 检查JOIN的索引使用
+    if (queryInfo.joinCols.length > 0) {
+      checkJoinIndex(schema, queryInfo.joinCols, indexes, results, line);
+    }
     
     // 检查WHERE条件的索引使用
     if (queryInfo.whereCols.length > 0) {
@@ -128,11 +158,6 @@ export function analyzeIndexUsage(
     if (queryInfo.groupByCols.length > 0) {
       checkGroupByIndex(schema, queryInfo.groupByCols, indexes, results, line);
     }
-
-    // 检查JOIN的索引使用
-    if (queryInfo.joinCols.length > 0) {
-      checkJoinIndex(schema, queryInfo.joinCols, indexes, results, line);
-    }
   });
 }
 
@@ -144,17 +169,18 @@ export function checkWhereIndex(
   results: AnalysisResult[],
   line: number
 ): void {
-  const whereColsLower = whereCols.map(c => c.toLowerCase());
+  const whereColsLower = safeMapToLowerCase(whereCols);
   const colsWithoutIndex: string[] = [];
   const partialIndexMatches: Array<{ col: string; index: IndexDef; position: number }> = [];
 
   for (const col of whereCols) {
-    const colLower = col.toLowerCase();
+    const colLower = safeToLowerCase(col);
+    if (!colLower) continue;
     let hasIndex = false;
     
     for (const idx of indexes) {
       if (idx.columns.length === 0) continue;
-      const idxColsLower = idx.columns.map(c => c.toLowerCase());
+      const idxColsLower = safeMapToLowerCase(idx.columns);
       
       if (idxColsLower[0] === colLower) {
         hasIndex = true;
@@ -180,7 +206,7 @@ export function checkWhereIndex(
   for (const idx of indexes) {
     if (idx.columns.length < 2) continue;
     
-    const idxColsLower = idx.columns.map(c => c.toLowerCase());
+    const idxColsLower = safeMapToLowerCase(idx.columns);
     let matchCount = 0;
     
     for (let i = 0; i < idxColsLower.length && i < whereColsLower.length; i++) {
@@ -249,7 +275,7 @@ export function checkWhereOrderByIndex(
   line: number
 ): void {
   const combinedCols = [...whereCols, ...orderByCols.map(c => c.name)];
-  const combinedColsLower = combinedCols.map(c => c.toLowerCase());
+  const combinedColsLower = safeMapToLowerCase(combinedCols);
   
   let hasCombinedIndex = false;
   let bestMatch: IndexDef | null = null;
@@ -257,7 +283,7 @@ export function checkWhereOrderByIndex(
   for (const idx of indexes) {
     if (idx.columns.length < combinedCols.length) continue;
     
-    const idxColsLower = idx.columns.map(c => c.toLowerCase());
+    const idxColsLower = safeMapToLowerCase(idx.columns);
     let match = true;
     
     for (let i = 0; i < combinedColsLower.length; i++) {
@@ -272,7 +298,7 @@ export function checkWhereOrderByIndex(
       break;
     }
     
-    const whereColsLower = whereCols.map(c => c.toLowerCase());
+    const whereColsLower = safeMapToLowerCase(whereCols);
     let whereMatch = true;
     for (let i = 0; i < whereColsLower.length; i++) {
       if (idxColsLower[i] !== whereColsLower[i]) {
@@ -319,14 +345,14 @@ export function checkWhereGroupByIndex(
   line: number
 ): void {
   const combinedCols = [...whereCols, ...groupByCols];
-  const combinedColsLower = combinedCols.map(c => c.toLowerCase());
+  const combinedColsLower = safeMapToLowerCase(combinedCols);
   
   let hasCombinedIndex = false;
   
   for (const idx of indexes) {
     if (idx.columns.length < combinedCols.length) continue;
     
-    const idxColsLower = idx.columns.map(c => c.toLowerCase());
+    const idxColsLower = safeMapToLowerCase(idx.columns);
     let match = true;
     
     for (let i = 0; i < combinedColsLower.length; i++) {
@@ -364,12 +390,12 @@ export function checkOrderByIndex(
   line: number
 ): void {
   const orderColsOnly = orderByCols.map(c => c.name);
-  const orderColsLower = orderColsOnly.map(c => c.toLowerCase());
+  const orderColsLower = safeMapToLowerCase(orderColsOnly);
   
   let hasIndex = false;
   
   for (const idx of indexes) {
-    const idxColsLower = idx.columns.map(c => c.toLowerCase());
+    const idxColsLower = safeMapToLowerCase(idx.columns);
     
     if (orderColsLower.length > idxColsLower.length) continue;
     
@@ -410,12 +436,12 @@ export function checkGroupByIndex(
   results: AnalysisResult[],
   line: number
 ): void {
-  const groupColsLower = groupByCols.map(c => c.toLowerCase());
+  const groupColsLower = safeMapToLowerCase(groupByCols);
   
   let hasIndex = false;
   
   for (const idx of indexes) {
-    const idxColsLower = idx.columns.map(c => c.toLowerCase());
+    const idxColsLower = safeMapToLowerCase(idx.columns);
     
     if (groupColsLower.length > idxColsLower.length) continue;
     
@@ -455,17 +481,21 @@ export function checkJoinIndex(
   line: number
 ): void {
   for (const col of joinCols) {
-    const colLower = col.toLowerCase();
+    const colLower = safeToLowerCase(col);
+    if (!colLower) continue;
+    
     let hasIndex = false;
     
     for (const idx of indexes) {
-      if (idx.columns.length > 0 && idx.columns[0].toLowerCase() === colLower) {
+      const firstIdxCol = safeToLowerCase(idx.columns[0]);
+      if (firstIdxCol && firstIdxCol === colLower) {
         hasIndex = true;
         break;
       }
     }
     
     if (!hasIndex) {
+      console.log('[checkJoinIndex] 未找到索引:', schema.name, '.', col);
       results.push({
         id: generateId(),
         type: 'optimization',
@@ -491,10 +521,13 @@ export function analyzeWhereIndexUsage(
     const missingIndexCols: string[] = [];
     
     for (const col of whereCols) {
-      const colLower = col.toLowerCase();
-      const hasIndex = indexes.some(idx => 
-        idx.columns.length > 0 && idx.columns[0].toLowerCase() === colLower
-      );
+      const colLower = safeToLowerCase(col);
+      if (!colLower) continue;
+      
+      const hasIndex = indexes.some(idx => {
+        const firstIdxCol = safeToLowerCase(idx.columns[0]);
+        return firstIdxCol && firstIdxCol === colLower;
+      });
       
       if (!hasIndex) {
         missingIndexCols.push(col);

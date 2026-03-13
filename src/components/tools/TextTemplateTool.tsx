@@ -388,6 +388,8 @@ export function TextTemplateTool() {
                   从 CSV 导入数据
                 </label>
                 <textarea
+                  id="template-csv"
+                  name="template-csv"
                   placeholder="name,age,city&#10;张三,25,北京&#10;李四,30,上海"
                   onChange={(e) => importFromCsv(e.target.value)}
                   className="w-full h-20 input text-xs"
@@ -441,6 +443,8 @@ export function TextTemplateTool() {
               </div>
             </div>
             <textarea
+              id="template-editor"
+              name="template-editor"
               value={template}
               onChange={(e) => setTemplate(e.target.value)}
               placeholder="输入模板，使用变量如 {{name}}..."
@@ -594,6 +598,8 @@ export function TextTemplateTool() {
             </div>
             
             <textarea
+              id="template-result"
+              name="template-result"
               readOnly
               value={activeTab === 'single' ? defaultResult : batchResult}
               className="w-full h-40 sm:h-48 lg:h-64 p-3 sm:p-4 font-mono text-xs sm:text-sm bg-surface-50 dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded-xl resize-none"

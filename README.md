@@ -1,6 +1,6 @@
 # ToolStack - IT 工具箱
 
-一个现代化的 IT 工具集合网站，专为开发者和系统管理员设计。包含 25+ 实用工具，涵盖 JSON/SQL 格式化与优化、编解码、加密安全、开发调试等多个领域，界面简洁美观，支持深色模式。
+一个现代化的 IT 工具集合网站，专为开发者和系统管理员设计。包含 20+ 实用工具，涵盖 JSON/SQL 格式化与优化、编解码、加密安全、开发调试等多个领域，界面简洁美观，支持深色模式。
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![React](https://img.shields.io/badge/react-19-61DAFB.svg)
@@ -16,6 +16,7 @@
 - 💾 **本地优先** - 数据存储在本地，保护隐私
 - 🔌 **Web Worker** - RSA 密钥生成等耗时任务使用后台线程
 - 🎯 **专业组件** - 使用业界标准第三方库实现核心功能
+- 📝 **统一代码编辑器** - 公共 CodeEditor 组件支持 SQL/JSON/XML/JS/TS/CSS/YAML/Text 多语言语法高亮
 
 ## 🚀 在线演示
 
@@ -140,6 +141,7 @@ npm run preview
 │   │   │   ├── docker-convert/  # Docker 转换工具模块
 │   │   │   ├── http-request/    # HTTP 请求工具模块
 │   │   │   └── ...
+│   │   ├── CodeEditor.tsx  # 公共代码编辑器组件（支持多语言语法高亮）
 │   │   ├── common/         # 通用组件（颜色选择器等）
 │   │   ├── Layout.tsx      # 布局组件
 │   │   └── ads/            # 广告组件
@@ -189,6 +191,7 @@ npm run preview
 - 支持浅色/深色模式切换
 - 优先使用成熟的第三方库实现核心功能
 - 颜色选择器等通用组件抽取到 `src/components/common/`
+- **代码编辑器统一使用 `CodeEditor` 组件**，支持 SQL/JSON/XML/JS/TS/CSS/YAML/Text 多语言语法高亮
 
 ## 🤝 贡献指南
 
@@ -208,7 +211,7 @@ npm run preview
 - [react-colorful](https://github.com/omgovich/react-colorful) - 现代化颜色选择器
 - [@uiw/react-json-view](https://github.com/uiwjs/react-json-view) - JSON 查看器
 - [sql-formatter](https://github.com/sql-formatter-org/sql-formatter) - SQL 格式化
-- [node-sql-parser](https://github.com/taozhi8833998/node-sql-parser) - SQL 解析器（支持MySQL、PostgreSQL、SQLite、MariaDB）
+- [node-sql-parser](https://github.com/taozhi8833998/node-sql-parser) - SQL 解析器（支持MySQL/MariaDB、PostgreSQL、SQLite、SQL Server）
 - [react-syntax-highlighter](https://github.com/react-syntax-highlighter/react-syntax-highlighter) - 语法高亮
 - [composerize](https://github.com/magicmark/composerize) - Docker 命令转换
 - [decomposerize](https://github.com/magicmark/composerize) - Docker Compose 转换

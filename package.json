@@ -10,6 +10,7 @@
   },
   "devDependencies": {
     "@types/diff": "^7.0.0",
+    "@types/prismjs": "^1.26.6",
     "@types/qrcode": "^1.5.6",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
@@ -20,12 +21,10 @@
     "tailwindcss": "^3.4.17",
     "terser": "^5.46.0",
     "typescript": "~5.9.3",
-    "vite": "^7.3.1",
-    "vite-plugin-sitemap": "^0.8.2"
+    "vite": "^7.3.1"
   },
   "dependencies": {
     "@types/crypto-js": "^4.2.2",
-    "@types/prismjs": "^1.26.6",
     "axios": "^1.13.6",
     "composerize": "^1.7.5",
     "crypto-js": "^4.2.0",
@@ -44,6 +43,7 @@
     "react-dom": "^19.2.4",
     "react-json-view": "^1.21.3",
     "react-router-dom": "^7.13.1",
+    "react-simple-code-editor": "^0.14.1",
     "react-syntax-highlighter": "^16.1.1",
     "sql-formatter": "^15.7.2"
   }

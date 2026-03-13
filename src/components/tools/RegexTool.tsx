@@ -358,6 +358,8 @@ export function RegexTool() {
             测试文本
           </label>
           <textarea
+            id="regex-test"
+            name="regex-test"
             value={testText}
             onChange={(e) => setTestText(e.target.value)}
             placeholder="输入要测试的文本..."

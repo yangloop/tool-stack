@@ -65,6 +65,8 @@ export function UrlTool() {
               {mode === 'encode' ? '原文' : '编码后的 URL'}
             </label>
             <textarea
+              id="url-input"
+              name="url-input"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder={mode === 'encode' ? '输入要编码的文本...' : '输入要解码的 URL...'}
@@ -88,6 +90,8 @@ export function UrlTool() {
               )}
             </div>
             <textarea
+              id="url-output"
+              name="url-output"
               value={output}
               readOnly
               placeholder="结果..."

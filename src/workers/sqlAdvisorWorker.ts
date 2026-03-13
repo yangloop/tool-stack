@@ -1,7 +1,6 @@
 // SQL Advisor Worker - 在独立线程中处理 SQL 解析和分析
 // 模块化版本：将功能拆分到多个子模块
 
-import { Parser } from 'node-sql-parser';
 import type { 
   DatabaseType, 
   AnalysisResult, 
@@ -12,20 +11,211 @@ import { generateId, checkTypeCompatibility, detectValueType } from './sqlAdviso
 import { parseDDL, extractSelectInfo, extractWhereConditions } from './sqlAdvisor/parser';
 import { analyzeIndexUsage, analyzeWhereIndexUsage } from './sqlAdvisor/indexAnalyzer';
 import { analyzeOptimizationRules, analyzeCommonPatterns } from './sqlAdvisor/optimizationRules';
+import type { Parser } from 'node-sql-parser/build/mysql';
 
-// 分析 SQL 主函数
-function analyzeSQL(
-  sqlInput: string,
+// 根据数据库类型动态导入对应的 Parser
+async function loadParser(dbType: DatabaseType): Promise<typeof Parser> {
+  switch (dbType) {
+    case 'mysql':
+      const mysqlModule = await import('node-sql-parser/build/mysql');
+      return mysqlModule.Parser;
+    case 'postgresql':
+      const pgModule = await import('node-sql-parser/build/postgresql');
+      return pgModule.Parser;
+    case 'sqlite':
+      const sqliteModule = await import('node-sql-parser/build/sqlite');
+      return sqliteModule.Parser;
+
+
+    case 'sqlserver':
+      const sqlserverModule = await import('node-sql-parser/build/transactsql');
+      return sqlserverModule.Parser;
+    default:
+      // 默认使用 MySQL 解析器
+      const defaultModule = await import('node-sql-parser/build/mysql');
+      return defaultModule.Parser;
+  }
+}
+
+// 仅分析 DDL
+async function analyzeDDLOnly(
   ddlInput: string,
   dbType: DatabaseType
-): { results: AnalysisResult[]; schemas: TableSchema[] } {
+): Promise<{ results: AnalysisResult[]; schemas: TableSchema[] }> {
   const newResults: AnalysisResult[] = [];
   
-  if (!sqlInput.trim()) {
+  if (!ddlInput.trim()) {
     return { results: [], schemas: [] };
   }
 
-  const parser = new Parser();
+  const ParserClass = await loadParser(dbType);
+  const parser = new ParserClass();
+
+  // 解析DDL
+  const { schemas, errors: ddlErrors } = parseDDL(ddlInput, dbType, parser);
+
+  // 添加DDL解析错误
+  ddlErrors.forEach(err => {
+    newResults.push({
+      id: generateId(),
+      type: 'critical',
+      category: 'DDL语法检查',
+      title: 'DDL语法错误',
+      description: err.message,
+      line: err.line,
+      sql: err.sql
+    });
+  });
+
+  // DDL规范检查
+  analyzeDDLStandards(schemas, newResults);
+
+  // 如果没有问题，添加成功提示
+  if (newResults.length === 0) {
+    newResults.push({
+      id: generateId(),
+      type: 'success',
+      category: 'DDL检查',
+      title: 'DDL语法检查通过',
+      description: `成功解析 ${schemas.length} 个表，未发现语法错误`
+    });
+  }
+
+  return { results: newResults, schemas };
+}
+
+// DDL 规范检查
+function analyzeDDLStandards(
+  schemas: TableSchema[],
+  results: AnalysisResult[]
+): void {
+  schemas.forEach(schema => {
+    // 检查主键
+    const hasPrimaryKey = schema.columns.some(col => col.isPrimary);
+    if (!hasPrimaryKey) {
+      results.push({
+        id: generateId(),
+        type: 'warning',
+        category: 'DDL规范',
+        title: `表 ${schema.name} 缺少主键`,
+        description: '表中没有定义主键，建议每个表都有主键以保证数据唯一性和查询性能',
+        suggestion: '为表添加 PRIMARY KEY 约束'
+      });
+    }
+
+    // 检查索引
+    if ((!schema.indexes || schema.indexes.length === 0) && schema.columns.length > 3) {
+      results.push({
+        id: generateId(),
+        type: 'info',
+        category: 'DDL规范',
+        title: `表 ${schema.name} 缺少索引`,
+        description: '表中没有定义索引，可能影响查询性能',
+        suggestion: '为经常查询的字段添加索引'
+      });
+    }
+
+    // 检查字段命名规范
+    schema.columns.forEach(col => {
+      // 检查是否使用保留字
+      const reservedWords = ['select', 'insert', 'update', 'delete', 'from', 'where', 'order', 'group', 'index', 'key'];
+      if (reservedWords.includes(col.name?.toLowerCase())) {
+        results.push({
+          id: generateId(),
+          type: 'warning',
+          category: 'DDL规范',
+          title: `字段名使用保留字: ${col.name}`,
+          description: `字段 "${col.name}" 是 SQL 保留字，可能导致语法冲突`,
+          suggestion: '建议修改字段名或使用反引号/方括号包裹'
+        });
+      }
+
+      // 检查大写命名
+      if (col.name && col.name !== col.name.toLowerCase() && col.name !== col.name.toUpperCase()) {
+        results.push({
+          id: generateId(),
+          type: 'info',
+          category: 'DDL规范',
+          title: `字段名大小写混合: ${col.name}`,
+          description: '字段名使用大小写混合可能在不同数据库中表现不一致',
+          suggestion: '建议使用全小写加下划线的命名方式 (snake_case)'
+        });
+      }
+    });
+
+    // 检查重复索引
+    if (schema.indexes && schema.indexes.length > 1) {
+      const indexSignatures = new Map<string, string>();
+      schema.indexes.forEach(idx => {
+        const signature = idx.columns?.map((c: string) => c.toLowerCase()).join(',');
+        if (signature) {
+          if (indexSignatures.has(signature)) {
+            results.push({
+              id: generateId(),
+              type: 'warning',
+              category: 'DDL规范',
+              title: `表 ${schema.name} 存在重复索引`,
+              description: `索引 "${idx.name}" 与 "${indexSignatures.get(signature)}" 包含相同的列`,
+              suggestion: '考虑删除重复索引以减少维护开销'
+            });
+          } else {
+            indexSignatures.set(signature, idx.name);
+          }
+        }
+      });
+    }
+
+    // 检查索引字段是否存在于表中
+    if (schema.indexes && schema.indexes.length > 0) {
+      const columnNames = new Set(schema.columns.map(col => col.name?.toLowerCase()).filter(Boolean));
+      
+      for (const index of schema.indexes) {
+        for (const colName of index.columns) {
+          const colNameLower = colName?.toLowerCase();
+          if (colNameLower && !columnNames.has(colNameLower)) {
+            // 查找相似字段名用于建议
+            let suggested: string | undefined;
+            for (const col of schema.columns) {
+              const existingCol = col.name?.toLowerCase();
+              if (existingCol && (existingCol.includes(colNameLower) || colNameLower.includes(existingCol))) {
+                suggested = col.name;
+                break;
+              }
+            }
+            
+            results.push({
+              id: generateId(),
+              type: 'critical',
+              category: 'DDL语法检查',
+              title: `索引字段不存在: ${schema.name}.${colName}`,
+              description: `索引 "${index.name}" 引用了不存在的字段 "${colName}"${suggested ? `。您是否指的是 "${suggested}"？` : ''}`,
+              suggestion: '请检查索引定义中的字段名拼写，或确保字段已在表中定义'
+            });
+          }
+        }
+      }
+    }
+  });
+}
+
+// 分析 SQL 主函数
+async function analyzeSQL(
+  sqlInput: string,
+  ddlInput: string,
+  dbType: DatabaseType
+): Promise<{ results: AnalysisResult[]; schemas: TableSchema[] }> {
+  const newResults: AnalysisResult[] = [];
+  
+  // 如果SQL输入为空但DDL不为空，执行纯DDL分析
+  if (!sqlInput.trim()) {
+    if (ddlInput.trim()) {
+      return analyzeDDLOnly(ddlInput, dbType);
+    }
+    return { results: [], schemas: [] };
+  }
+
+  const ParserClass = await loadParser(dbType);
+  const parser = new ParserClass();
 
   // 解析DDL
   const { schemas, errors: ddlErrors } = parseDDL(ddlInput, dbType, parser);
@@ -46,7 +236,9 @@ function analyzeSQL(
   // 解析SQL
   let ast: any;
   try {
-    ast = parser.astify(sqlInput, { database: dbType });
+    const parserDbMap: Record<string, string> = { sqlserver: 'transactsql' };
+    const parserDbType = parserDbMap[dbType] || dbType;
+    ast = parser.astify(sqlInput, { database: parserDbType });
   } catch (e: any) {
     newResults.push({
       id: generateId(),
@@ -157,14 +349,16 @@ function checkTableNames(
   results: AnalysisResult[],
   line: number
 ): void {
-  const schemaTableNames = new Set(schemas.map(s => s.name.toLowerCase()));
+  const schemaTableNames = new Set(schemas.map(s => s.name?.toLowerCase()).filter(Boolean));
   
   tables.forEach(table => {
-    const tableLower = table.name.toLowerCase();
+    const tableLower = table.name?.toLowerCase();
+    if (!tableLower) return;
     if (!schemaTableNames.has(tableLower)) {
       let suggested: string | undefined;
       for (const schema of schemas) {
-        const schemaName = schema.name.toLowerCase();
+        const schemaName = schema.name?.toLowerCase();
+        if (!schemaName) continue;
         if (schemaName.includes(tableLower) || tableLower.includes(schemaName)) {
           suggested = schema.name;
           break;
@@ -200,8 +394,8 @@ function checkColumnsAndTypes(
   const allColumns = new Map<string, { table: string; column: { name: string; type: string } }>();
   schemas.forEach(schema => {
     schema.columns.forEach(col => {
-      allColumns.set(`${schema.name.toLowerCase()}.${col.name.toLowerCase()}`, { table: schema.name, column: col });
-      allColumns.set(col.name.toLowerCase(), { table: schema.name, column: col });
+      allColumns.set(`${schema.name?.toLowerCase()}.${col.name?.toLowerCase()}`, { table: schema.name, column: col });
+      allColumns.set(col.name?.toLowerCase(), { table: schema.name, column: col });
     });
   });
 
@@ -273,8 +467,8 @@ function checkColumnExists(
   results: AnalysisResult[],
   line: number
 ): void {
-  const colLower = col.name.toLowerCase();
-  const fullName = col.table ? `${col.table.toLowerCase()}.${colLower}` : colLower;
+  const colLower = col.name?.toLowerCase();
+  const fullName = col.table ? `${col.table?.toLowerCase()}.${colLower}` : colLower;
   
   if (!allColumns.has(colLower) && !allColumns.has(fullName)) {
     let suggested: string | undefined;
@@ -357,7 +551,7 @@ function analyzeInsertStatement(
   if (schemas.length > 0 && insertStmt.table) {
     const tableName = insertStmt.table[0]?.table;
     if (tableName) {
-      const schemaTable = schemas.find(s => s.name.toLowerCase() === tableName.toLowerCase());
+      const schemaTable = schemas.find(s => s.name?.toLowerCase() === tableName?.toLowerCase());
       if (!schemaTable) {
         results.push({
           id: generateId(),
@@ -373,11 +567,11 @@ function analyzeInsertStatement(
 }
 
 // Worker 消息处理
-self.onmessage = (event: MessageEvent) => {
+self.onmessage = async (event: MessageEvent) => {
   const { sqlInput, ddlInput, dbType, id } = event.data;
   
   try {
-    const { results, schemas } = analyzeSQL(sqlInput, ddlInput, dbType);
+    const { results, schemas } = await analyzeSQL(sqlInput, ddlInput, dbType);
     self.postMessage({ type: 'success', results, schemas, id });
   } catch (error: any) {
     self.postMessage({ 

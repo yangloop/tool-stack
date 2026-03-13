@@ -176,6 +176,18 @@
     min-width: 44px;
   }
 
+  /* 小型工具栏按钮 */
+  .btn-tool-sm {
+    @apply inline-flex items-center justify-center gap-1;
+    @apply px-2 py-1 rounded-md;
+    @apply text-xs font-medium;
+    @apply transition-all duration-200 ease-out;
+    @apply active:scale-95;
+    @apply touch-manipulation;
+    min-height: 28px;
+    min-width: 28px;
+  }
+
   /* 分段按钮组 */
   .btn-group {
     @apply inline-flex bg-surface-100 dark:bg-surface-800 p-1 rounded-xl;
@@ -577,4 +589,11 @@ code {
 :not(pre) > code {
   @apply bg-surface-100 dark:bg-surface-800 text-primary-600 dark:text-primary-400;
   @apply px-1.5 py-0.5 rounded-md text-sm font-medium;
+}
+
+/* JSON 输入高亮层 - 强制所有 token 无背景色，防止选中时出现重影 */
+.json-input-highlighter *,
+.json-input-highlighter *::before,
+.json-input-highlighter *::after {
+  background: transparent !important;
 }

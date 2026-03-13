@@ -1,7 +1,7 @@
 // SQL Advisor Hook - 封装 Web Worker 的使用
 import { useState, useCallback, useRef, useEffect } from 'react';
 
-type DatabaseType = 'mysql' | 'postgresql' | 'sqlite' | 'mariadb' | 'bigquery';
+type DatabaseType = 'mysql' | 'postgresql' | 'sqlite' | 'sqlserver';
 
 interface AnalysisResult {
   id: string;
@@ -44,6 +44,7 @@ interface UseSqlAdvisorReturn {
   schemas: TableSchema[];
   isAnalyzing: boolean;
   analyze: (sqlInput: string, ddlInput: string, dbType: DatabaseType) => void;
+  reset: () => void;
   error: string | null;
   hasAnalyzed: boolean;
 }
@@ -97,8 +98,8 @@ export function useSqlAdvisor(): UseSqlAdvisorReturn {
   const analyze = useCallback((sqlInput: string, ddlInput: string, dbType: DatabaseType) => {
     if (!workerRef.current) return;
     
-    // 如果没有SQL输入，清空结果
-    if (!sqlInput.trim()) {
+    // 如果没有SQL输入且没有DDL输入，清空结果
+    if (!sqlInput.trim() && !ddlInput.trim()) {
       setResults([]);
       setSchemas([]);
       setIsAnalyzing(false);
@@ -122,11 +123,22 @@ export function useSqlAdvisor(): UseSqlAdvisorReturn {
     });
   }, []);
 
+  // 重置/清除分析结果
+  const reset = useCallback(() => {
+    setResults([]);
+    setSchemas([]);
+    setError(null);
+    setIsAnalyzing(false);
+    setHasAnalyzed(false);
+    pendingIdRef.current += 1;
+  }, []);
+
   return {
     results,
     schemas,
     isAnalyzing,
     analyze,
+    reset,
     error,
     hasAnalyzed
   };

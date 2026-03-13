@@ -98,6 +98,8 @@ export function HashTool() {
             输入文本
           </label>
           <textarea
+            id="hash-input"
+            name="hash-input"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="输入要计算哈希的文本..."

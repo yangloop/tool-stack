@@ -1,6 +1,6 @@
 // SQL Advisor 类型定义
 
-export type DatabaseType = 'mysql' | 'postgresql' | 'sqlite' | 'mariadb' | 'bigquery';
+export type DatabaseType = 'mysql' | 'postgresql' | 'sqlite' | 'sqlserver';
 
 export type AnalysisType = 'critical' | 'warning' | 'info' | 'optimization' | 'success';
 
