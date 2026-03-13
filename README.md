@@ -4,7 +4,7 @@
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![React](https://img.shields.io/badge/react-19-61DAFB.svg)
-![TypeScript](https://img.shields.io/badge/typescript-5.6-3178C6.svg)
+![TypeScript](https://img.shields.io/badge/typescript-5.9-3178C6.svg)
 ![Vite](https://img.shields.io/badge/vite-7-646CFF.svg)
 
 ## ✨ 特性
@@ -19,7 +19,7 @@
 
 ## 🚀 在线演示
 
-[https://toolstack.example.com](https://toolstack.example.com) （请替换为实际地址）
+[ https://toolstack.juvvv.com]( https://toolstack.juvvv.com) （请替换为实际地址）
 
 ## 🛠️ 工具列表
 
@@ -29,6 +29,7 @@
 | JSON 工具 | 格式化、压缩、验证 JSON，支持树形查看 | [@uiw/react-json-view](https://github.com/uiwjs/react-json-view) |
 | SQL 格式化 | SQL 语句美化、压缩和语法高亮 | [sql-formatter](https://github.com/sql-formatter-org/sql-formatter) + [react-syntax-highlighter](https://github.com/react-syntax-highlighter/react-syntax-highlighter) |
 | SQL 分析优化 | 智能SQL分析：语法检查、表名字段验证、数据类型检查、索引优化建议（支持组合索引最左前缀）、性能优化 | [node-sql-parser](https://github.com/taozhi8833998/node-sql-parser) |
+| XML/JSON 互转 | XML 与 JSON 格式互相转换，支持属性、格式化和高亮显示 | [fast-xml-parser](https://github.com/NaturalIntelligence/fast-xml-parser) |
 
 ### 编解码工具
 | 工具 | 描述 |
@@ -76,7 +77,7 @@
 ## 📦 技术栈
 
 - **前端框架**: React 19
-- **开发语言**: TypeScript 5.6
+- **开发语言**: TypeScript 5.9
 - **构建工具**: Vite 7
 - **样式**: Tailwind CSS 3 + 自定义设计系统
 - **路由**: React Router 7
@@ -96,6 +97,8 @@
 | [decomposerize](https://github.com/magicmark/composerize) | Docker Compose 转换 | ^1.x |
 | [axios](https://github.com/axios/axios) | HTTP 请求 | ^1.x |
 | [qrcode](https://github.com/soldair/node-qrcode) | 二维码生成 | ^1.x |
+| [fast-xml-parser](https://github.com/NaturalIntelligence/fast-xml-parser) | XML 解析与转换 | ^5.x |
+| [diff](https://github.com/kpdecker/jsdiff) | 文本差异对比 | ^7.x |
 
 ## 🏗️ 安装与运行
 
@@ -211,3 +214,5 @@ npm run preview
 - [decomposerize](https://github.com/magicmark/composerize) - Docker Compose 转换
 - [jsencrypt](https://github.com/travist/jsencrypt) - RSA 加密
 - [otpauth](https://github.com/hectorm/otpauth) - TOTP 实现
+- [fast-xml-parser](https://github.com/NaturalIntelligence/fast-xml-parser) - XML 解析与转换
+- [diff](https://github.com/kpdecker/jsdiff) - 文本差异对比

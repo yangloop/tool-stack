@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { Link, useNavigate } from 'react-router-dom';
 import { 
-  Menu, X, Github, Sun, Moon, Search, 
+  Menu, X, Sun, Moon, Search, 
   AlignLeft, Code, Hash, Terminal, Wrench, Database, Clock, Globe, Send,
   Maximize2, Minimize2, Home, ChevronDown, Shield, Sparkles
 } from 'lucide-react';
@@ -212,7 +212,7 @@ export function Layout({ children, activeToolId }: LayoutProps) {
                   </div>
                 </button>
                 
-                {/* GitHub链接 */}
+                {/* Gitee链接 */}
                 <a
                   href="https://gitee.com/yangloop/tool-stack"
                   target="_blank"
@@ -220,7 +220,22 @@ export function Layout({ children, activeToolId }: LayoutProps) {
                   className="hidden sm:flex items-center justify-center w-10 h-10 rounded-xl text-surface-600 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-700 hover:text-primary-500 dark:hover:text-primary-400 transition-all duration-200"
                   title="Gitee"
                 >
-                  <Github className="w-5 h-5" />
+                  <svg className="w-5 h-5" viewBox="0 0 1024 1024" fill="currentColor">
+                    <path d="M512 1024q-104 0-199-40-92-39-163-110T40 711Q0 616 0 512t40-199Q79 221 150 150T313 40q95-40 199-40t199 40q92 39 163 110t110 163q40 95 40 199t-40 199q-39 92-110 163T711 984q-95 40-199 40z m259-569H480q-10 0-17.5 7.5T455 480v64q0 10 7.5 17.5T480 569h177q11 0 18.5 7.5T683 594v13q0 31-22.5 53.5T607 683H367q-11 0-18.5-7.5T341 657V417q0-31 22.5-53.5T417 341h354q11 0 18-7t7-18v-63q0-11-7-18t-18-7H417q-38 0-72.5 14T283 283q-27 27-41 61.5T228 417v354q0 11 7 18t18 7h373q46 0 85.5-22.5t62-62Q796 672 796 626V480q0-10-7-17.5t-18-7.5z"/>
+                  </svg>
+                </a>
+
+                {/* GitHub链接 */}
+                <a
+                  href="https://github.com/yangloop/tool-stack"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hidden sm:flex items-center justify-center w-10 h-10 rounded-xl text-surface-600 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-700 hover:text-primary-500 dark:hover:text-primary-400 transition-all duration-200"
+                  title="GitHub"
+                >
+                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                  </svg>
                 </a>
               </div>
             </div>
