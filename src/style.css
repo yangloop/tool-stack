@@ -650,15 +650,6 @@ code {
   border-left-color: #38bdf8; /* primary-400 */
 }
 
-/* 当前行高亮 */
-.code-editor-content .cm-activeLine {
-  background-color: #f1f5f9 !important; /* surface-100 */
-}
-
-.dark .code-editor-content .cm-activeLine {
-  background-color: #1e293b !important; /* surface-800 */
-}
-
 /* 行号样式 */
 .code-editor-content .cm-gutters {
   background-color: transparent !important;
@@ -669,14 +660,6 @@ code {
 .dark .code-editor-content .cm-gutters {
   border-right-color: #334155; /* surface-700 */
   color: #64748b; /* surface-500 */
-}
-
-.code-editor-content .cm-activeLineGutter {
-  background-color: #f1f5f9 !important; /* surface-100 */
-}
-
-.dark .code-editor-content .cm-activeLineGutter {
-  background-color: #1e293b !important; /* surface-800 */
 }
 
 /* 滚动条样式统一 */

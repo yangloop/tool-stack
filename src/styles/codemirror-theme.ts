@@ -97,19 +97,10 @@ export const lightTheme: Extension = EditorView.theme({
     borderRadius: '2px',
   },
   
-  '.cm-activeLine': {
-    backgroundColor: lightThemeConfig.lineHighlight,
-    borderRadius: '2px',
-  },
-  
   '.cm-gutters': {
     backgroundColor: lightThemeConfig.gutterBackground,
     color: lightThemeConfig.gutterForeground,
     borderRight: `1px solid ${lightThemeConfig.gutterBorder}`,
-  },
-  
-  '.cm-activeLineGutter': {
-    backgroundColor: lightThemeConfig.lineHighlight,
   },
   
   // 滚动条样式
@@ -253,19 +244,10 @@ export const darkTheme: Extension = EditorView.theme({
     borderRadius: '2px',
   },
   
-  '.cm-activeLine': {
-    backgroundColor: darkThemeConfig.lineHighlight,
-    borderRadius: '2px',
-  },
-  
   '.cm-gutters': {
     backgroundColor: darkThemeConfig.gutterBackground,
     color: darkThemeConfig.gutterForeground,
     borderRight: `1px solid ${darkThemeConfig.gutterBorder}`,
-  },
-  
-  '.cm-activeLineGutter': {
-    backgroundColor: darkThemeConfig.lineHighlight,
   },
   
   // 滚动条样式
