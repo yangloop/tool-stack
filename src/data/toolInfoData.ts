@@ -415,6 +415,26 @@ export const toolInfoData: Record<string, ToolInfoData> = {
       ],
     },
   },
+  'number-base': {
+    description: {
+      items: [
+        '支持二进制、八进制、十进制、十六进制互转',
+        '自动识别输入格式，实时转换结果',
+        '支持带前缀（0b、0o、0x）的数值输入',
+        '支持负数进制转换',
+        '提供常用数值对照表',
+      ],
+    },
+    legend: {
+      title: '进制前缀',
+      items: [
+        { text: '0b', label: '二进制' },
+        { text: '0o', label: '八进制' },
+        { text: '', label: '十进制' },
+        { text: '0x', label: '十六进制' },
+      ],
+    },
+  },
 };
 
 // 获取工具信息数据的辅助函数

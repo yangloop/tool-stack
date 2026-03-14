@@ -31,6 +31,7 @@ const Base64FileTool = lazy(() => import('../components/tools/Base64FileTool').t
 const TextTemplateTool = lazy(() => import('../components/tools/TextTemplateTool').then(m => ({ default: m.TextTemplateTool })));
 const DockerConvertTool = lazy(() => import('../components/tools/DockerConvertTool').then(m => ({ default: m.DockerConvertTool })));
 const XmlJsonTool = lazy(() => import('../components/tools/XmlJsonTool').then(m => ({ default: m.XmlJsonTool })));
+const NumberBaseTool = lazy(() => import('../components/tools/NumberBaseTool').then(m => ({ default: m.NumberBaseTool })));
 
 export const tools: Tool[] = [
   // ==================== 格式化工具 ====================
@@ -285,6 +286,15 @@ export const tools: Tool[] = [
     icon: 'Palette',
     category: 'util',
     component: ColorTool,
+  },
+  {
+    id: 'number-base',
+    name: '进制转换',
+    description: '二进制、八进制、十进制、十六进制互转',
+    icon: 'Binary',
+    category: 'util',
+    component: NumberBaseTool,
+    new: true,
   },
 ];
 
