@@ -13,19 +13,39 @@
 ```javascript
 'tool-id': {
   name: '工具名称',
-  description: '工具描述（用于meta description）',
-  keywords: '关键词1,关键词2,关键词3',
-  category: '分类名称'
+  description: '工具描述（用于meta description，对话式描述更佳）',
+  keywords: '关键词1,关键词2,关键词3,长尾疑问词',
+  category: '分类名称',
+  faq: [
+    { q: '常见问题?', a: '答案内容' }
+  ],
+  howTo: {
+    steps: [
+      { name: '步骤1', text: '详细说明' }
+    ]
+  }
 }
 ```
 
-#### SQL分析优化工具 SEO 配置
+#### AI SEO 优化配置示例
 ```javascript
 'sql-advisor': {
-  name: 'SQL分析优化工具',
-  description: '智能SQL分析优化工具：检测SQL/DDL语法错误、验证表名字段匹配、检查数据类型兼容性、分析索引使用情况（支持组合索引最左前缀原则）、提供SQL性能优化建议。支持MySQL、PostgreSQL、SQLite、MariaDB等多种数据库。',
-  keywords: 'SQL分析,SQL优化,SQL语法检查,SQL性能优化,SQL索引优化,组合索引检查,数据类型检查,表名验证,字段验证,MySQL优化,PostgreSQL优化,SQL查询优化,SQL调优工具,DDL检查,索引最左前缀',
-  category: '格式化工具'
+  name: 'SQL 优化建议',
+  description: '智能 SQL 分析与优化工具，帮助检测语法错误、分析索引使用情况、验证数据类型兼容性。支持 MySQL、PostgreSQL、SQLite、MariaDB 等数据库，提供专业的性能优化建议。',
+  keywords: 'SQL分析,SQL优化,SQL语法检查,SQL性能优化,SQL索引优化,组合索引检查,MySQL优化,PostgreSQL优化,SQL怎么优化,SQL索引怎么设置',
+  category: '格式化',
+  faq: [
+    { q: 'SQL 优化工具能做什么？', a: '可以检测 SQL/DDL 语法错误、验证表名和字段匹配、检查数据类型兼容性、分析索引使用情况。' },
+    { q: '如何优化 SQL 查询性能？', a: '工具会分析你的 SQL 语句，检查是否使用了合适的索引、是否存在全表扫描。' },
+    { q: '什么是组合索引最左前缀原则？', a: '组合索引的最左前缀原则指查询条件必须从索引的最左边列开始匹配才能使用索引。' }
+  ],
+  howTo: {
+    steps: [
+      { name: '输入 SQL 和 DDL', text: '在上方输入 SQL 查询语句，在下方输入对应的表结构 DDL' },
+      { name: '选择数据库类型', text: '选择你使用的数据库类型以获得准确的分析结果' },
+      { name: '查看优化建议', text: '系统会生成详细的分析报告，包括语法检查、索引建议、性能优化提示' }
+    ]
+  }
 }
 ```
 
@@ -63,10 +83,25 @@ HTML模板中包含SEO占位符，构建时被替换：
 
 ### SEO最佳实践
 
-1. **描述**: 控制在150-160字符，包含核心功能关键词
-2. **关键词**: 包含工具名称、功能、相关技术栈
+1. **描述**: 控制在150-160字符，采用对话式描述（如"免费在线 XXX 工具，可快速..."）
+2. **关键词**: 包含工具名称、功能、相关技术栈、长尾疑问词（如"XXX怎么用"）
 3. **标题格式**: `工具名称 - 分类 | ToolStack`
-4. **结构化数据**: 每个工具页面都包含 JSON-LD 格式的 Schema.org 标记
+4. **结构化数据**: 每个工具页面包含 JSON-LD 格式的 Schema.org 标记，包括：
+   - WebPage / SoftwareApplication（基础）
+   - HowTo（使用步骤）
+   - FAQPage（常见问题）
+   - Organization（作者信息）
+
+### AI SEO (AIO/GEO/AEO) 优化
+
+为适配 AI 搜索引擎（ChatGPT、Perplexity、Claude 等），做了以下优化：
+
+1. **FAQ 结构化内容**: 每个工具配置 3-4 个常见问题，以 FAQPage Schema 形式输出
+2. **HowTo 步骤**: 提供清晰的使用步骤，便于 AI 提取操作指南
+3. **对话式关键词**: 增加长尾疑问词（如"SQL怎么优化"、"JSON怎么格式化"）
+4. **robots.txt AI 规则**: 允许 GPTBot、Claude-Web、PerplexityBot 等 AI 爬虫抓取
+5. **语义化描述**: 描述采用自然语言，回答"这个工具是什么、能做什么、如何使用"
+6. **@graph 格式**: 使用 Schema.org 的 @graph 格式输出多个结构化数据类型
 
 ## 技术栈
 
