@@ -1,5 +1,5 @@
 import type { ButtonHTMLAttributes, ReactNode } from 'react';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Copy, Check } from 'lucide-react';
 
 export type ButtonVariant = 
   | 'primary' 
@@ -288,8 +288,6 @@ interface CopyButtonProps {
   variant?: 'button' | 'ghost' | 'icon';
   size?: ButtonSize;
 }
-
-import { Copy, Check } from 'lucide-react';
 
 export function CopyButton({
   text,

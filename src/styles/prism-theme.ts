@@ -241,7 +241,7 @@ export const customDarkTheme: { [key: string]: CSSProperties } = {
   },
 };
 
-// CSS 字符串形式的主题（用于 react-simple-code-editor）
+// CSS 字符串形式的主题（用于代码显示区域样式）
 export const sqlEditorStyles = `
   /* 基础文本颜色 - 编辑器内容 */
   .sql-editor-container pre,

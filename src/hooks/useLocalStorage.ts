@@ -1,18 +1,37 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 
 export function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T | ((val: T) => T)) => void] {
-  const [storedValue, setStoredValue] = useState<T>(initialValue);
-
-  useEffect(() => {
+  // 使用 ref 存储初始值，避免依赖数组变化导致无限循环
+  const initialValueRef = useRef(initialValue);
+  const initializedRef = useRef(false);
+  
+  const [storedValue, setStoredValue] = useState<T>(() => {
+    // 在初始化时直接读取 localStorage，避免闪烁
     try {
       const item = window.localStorage.getItem(key);
-      if (item) {
-        setStoredValue(JSON.parse(item));
-      }
-    } catch (error) {
-      console.warn(`Error reading localStorage key "${key}":`, error);
+      return item ? JSON.parse(item) : initialValueRef.current;
+    } catch {
+      return initialValueRef.current;
     }
-  }, [key]);
+  });
+
+  // 当 key 改变时重新读取
+  useEffect(() => {
+    if (initializedRef.current) {
+      try {
+        const item = window.localStorage.getItem(key);
+        if (item) {
+          setStoredValue(JSON.parse(item));
+        } else {
+          setStoredValue(initialValueRef.current);
+        }
+      } catch (error) {
+        console.warn(`Error reading localStorage key "${key}":`, error);
+      }
+    } else {
+      initializedRef.current = true;
+    }
+  }, [key]); // 注意：不依赖 initialValue，使用 ref 存储
 
   const setValue = useCallback((value: T | ((val: T) => T)) => {
     try {

@@ -88,7 +88,7 @@ export function Layout({ children, activeToolId }: LayoutProps) {
     }
   }, [isMobileMenuOpen]);
 
-  // 键盘快捷键
+  // 键盘快捷键 - 合并到一个 useEffect 中
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       // CMD/Ctrl + K 打开搜索
@@ -97,25 +97,18 @@ export function Layout({ children, activeToolId }: LayoutProps) {
         const searchInput = document.querySelector('input[type="text"]') as HTMLInputElement;
         searchInput?.focus();
       }
-      // ESC 关闭移动端菜单
-      if (e.key === 'Escape' && isMobileMenuOpen) {
-        setIsMobileMenuOpen(false);
+      // ESC 关闭移动端菜单或退出全屏
+      if (e.key === 'Escape') {
+        if (isMobileMenuOpen) {
+          setIsMobileMenuOpen(false);
+        } else if (isFullscreen) {
+          setIsFullscreen(false);
+        }
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isMobileMenuOpen]);
-
-  // 全屏模式下按 ESC 退出
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isFullscreen) {
-        setIsFullscreen(false);
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isFullscreen]);
+  }, [isMobileMenuOpen, isFullscreen]);
 
   const activeTool = tools.find(t => t.id === activeToolId);
 

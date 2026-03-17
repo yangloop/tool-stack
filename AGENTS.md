@@ -75,11 +75,26 @@ HTML模板中包含SEO占位符，构建时被替换：
 
 ## 开发规范
 
-### 添加新工具的SEO步骤
+### 添加新工具的完整步骤
 
-1. 在 `scripts/prerender.cjs` 的 `toolsConfig` 中添加工具配置
-2. 确保包含详细的 `description` 和 `keywords`
-3. 重新构建项目生成SEO页面
+1. **创建工具组件** - 在 `src/features/tools/components/` 创建工具组件
+2. **注册工具** - 在 `src/data/tools.tsx` 中注册工具（使用 React.lazy 动态导入）
+3. **配置SEO** - 在 `scripts/prerender.cjs` 的 `toolsConfig` 中添加工具配置
+4. **重新构建** - 运行 `npm run build` 生成SEO页面
+
+工具组件示例：
+```tsx
+// src/features/tools/components/MyTool.tsx
+import { ToolPageContainer } from '../../components/common';
+
+export function MyTool() {
+  return (
+    <ToolPageContainer toolId="my-tool" title="我的工具" description="描述">
+      {/* 工具内容 */}
+    </ToolPageContainer>
+  );
+}
+```
 
 ### SEO最佳实践
 
@@ -109,6 +124,36 @@ HTML模板中包含SEO占位符，构建时被替换：
 - **构建工具**: Vite 7
 - **SEO生成**: 自定义 Node.js 脚本 (prerender.cjs)
 - **结构化数据**: Schema.org JSON-LD
+
+## 项目结构
+
+```
+src/
+├── pages/              # 页面级组件
+│   └── Home.tsx
+├── features/           # 功能模块（按领域组织）
+│   └── tools/          # 工具功能模块
+│       ├── components/ # 工具组件（29个工具）
+│       ├── hooks/      # 工具相关 Hooks（如 useSqlAdvisor）
+│       └── workers/    # Web Workers
+├── components/         # 通用 UI 组件
+│   ├── common/         # 通用组件库
+│   ├── ads/            # 广告组件
+│   ├── CodeEditor.tsx  # 代码编辑器
+│   └── Layout.tsx      # 布局组件
+├── data/               # 数据配置
+├── hooks/              # 通用 Hooks
+├── styles/             # 样式配置
+├── types/              # TypeScript 类型
+└── utils/              # 工具函数
+```
+
+### 目录组织原则
+
+- **`pages/`** - 路由级页面组件
+- **`features/`** - 按功能领域组织的模块，包含该领域的组件、Hooks、Workers
+- **`components/`** - 跨功能复用的通用 UI 组件
+- **`hooks/`** - 与具体功能无关的通用 Hooks
 
 ## 构建命令
 
@@ -215,3 +260,225 @@ import { CodeEditor } from '../components/CodeEditor';
 2. 所有工具调用 CodeEditor 时，样式会自动应用全局样式配置
 3. 字体使用项目统一字体 `'JetBrains Mono', 'Fira Code', monospace`
 4. 移动端自动优化字体大小防止 iOS 缩放
+
+---
+
+## 公共组件库 (src/components/common)
+
+### 概述
+
+公共组件库提供了一套统一的 UI 组件，用于快速构建工具页面，减少重复代码。
+
+### 导入方式
+
+```tsx
+import { 
+  ToolPageContainer, 
+  ToolHeader, 
+  ConvertToolLayout,
+  InputPanel,
+  OutputPanel,
+  InputOutputLayout,
+  Button, 
+  CopyButton 
+} from '../components/common';
+```
+
+### ToolPageContainer - 工具页面容器
+
+统一处理页面布局、标题、工具信息和广告位。
+
+```tsx
+<ToolPageContainer
+  toolId="base64"           // 工具ID，用于自动显示 ToolInfo
+  title="Base64 编解码"      // 页面标题
+  description="编码和解码"    // 页面描述
+  icon={IconComponent}      // 图标组件
+  iconColorClass="text-primary-500"  // 图标颜色类名（可选）
+  maxWidth="lg"             // 最大宽度: sm | md | lg | xl | full
+  showAds={true}            // 是否显示广告
+  showToolInfo={true}       // 是否显示工具信息
+  compactHeader={false}     // 是否使用紧凑标题样式
+  headerActions={<button>}  // 标题右侧操作区域
+>
+  <YourToolContent />
+</ToolPageContainer>
+```
+
+### ToolHeader - 工具标题
+
+统一的标题组件，支持标准样式和紧凑样式。
+
+```tsx
+// 标准样式
+<ToolHeader
+  icon={FileJson}
+  title="JSON 工具"
+  description="格式化、压缩、验证"
+  iconColorClass="text-blue-500"
+/>
+
+// 紧凑样式（工具栏样式）
+<ToolHeader
+  icon={Key}
+  title="JWT 解码"
+  description="解析 JWT 令牌"
+  compact
+  actions={<button>加载示例</button>}
+/>
+```
+
+### ConvertToolLayout - 编解码工具布局
+
+适用于 Base64、URL、HTML 实体等编解码工具的统一布局。
+
+```tsx
+<ConvertToolLayout
+  input={input}
+  onInputChange={setInput}
+  output={output}
+  mode={mode}                    // 'encode' | 'decode'
+  onModeChange={setMode}
+  onSwap={handleSwap}            // 交换输入输出
+  inputLabel="原文"
+  outputLabel="Base64"
+  language="text"                // CodeEditor 语言
+  inputPlaceholder="输入..."
+  error="转换失败"               // 错误时显示的输出
+/>
+```
+
+### InputPanel / OutputPanel - 输入输出面板
+
+用于构建自定义的双栏布局。
+
+```tsx
+<InputOutputLayout
+  input={
+    <InputPanel
+      value={input}
+      onChange={setInput}
+      title="输入 SQL"
+      language="sql"
+      stats={input.length > 0 && <span>{input.length} 字符</span>}
+    />
+  }
+  output={
+    <OutputPanel
+      value={output}
+      title="输出"
+      copyable={!!output}
+      onCopy={handleCopy}
+      headerActions={<ButtonGroup>...</ButtonGroup>}
+    >
+      {/* 自定义内容覆盖默认编辑器 */}
+      <SyntaxHighlighter>{output}</SyntaxHighlighter>
+    </OutputPanel>
+  }
+/>
+```
+
+### Button 组件
+
+```tsx
+// 基础按钮
+<Button variant="primary" size="md">提交</Button>
+
+// 复制按钮
+<CopyButton 
+  text="要复制的文本" 
+  variant="ghost" 
+  size="sm"
+  onCopy={() => console.log('已复制')}
+/>
+
+// 图标按钮
+<IconButton 
+  icon={<Trash2 className="w-4 h-4" />} 
+  label="删除"
+  variant="danger"
+/>
+```
+
+**Button 变体**: `primary` | `secondary` | `success` | `warning` | `danger` | `info` | `ghost` | `ghost-success` | `ghost-danger`
+
+**Button 尺寸**: `xs` | `sm` | `md` | `lg` | `xl`
+
+---
+
+## Hooks (src/hooks)
+
+### useTheme - 主题管理
+
+```tsx
+import { useTheme, useThemeColor } from '../hooks';
+
+// 获取当前主题状态
+const { isDark, isReady } = useTheme();
+
+// 根据主题获取不同颜色
+const bgColor = useThemeColor('#ffffff', '#0f172a');
+
+// 切换主题
+const { isDark, toggleTheme, setTheme } = useThemeToggle();
+```
+
+### useClipboard - 剪贴板
+
+```tsx
+import { useClipboard } from '../hooks';
+
+const { copied, copy } = useClipboard(2000); // 2秒后重置状态
+
+const handleCopy = async () => {
+  await copy('要复制的文本');
+};
+```
+
+### useLocalStorage - 本地存储
+
+```tsx
+import { useLocalStorage } from '../hooks';
+
+const [value, setValue] = useLocalStorage('key', defaultValue);
+```
+
+---
+
+## 主题系统
+
+### 颜色规范
+
+项目使用统一的颜色系统，所有组件应遵循以下规范：
+
+| 用途 | 浅色模式 | 深色模式 |
+|------|----------|----------|
+| 背景 | `surface-0` / `surface-50` | `surface-900` / `surface-800` |
+| 文字 | `surface-900` / `surface-700` | `surface-100` / `surface-300` |
+| 边框 | `surface-200` | `surface-700` |
+| 主色 | `primary-500` | `primary-400` |
+| 提示文字 | `surface-400` / `surface-500` | `surface-400` / `surface-500` |
+
+### 使用示例
+
+```tsx
+// 卡片背景
+<div className="bg-surface-0 dark:bg-surface-800">
+
+// 文字颜色
+<p className="text-surface-900 dark:text-surface-100">
+<span className="text-surface-500">
+
+// 边框
+<div className="border border-surface-200 dark:border-surface-700">
+
+// 按钮/交互元素
+<button className="text-primary-500 hover:text-primary-600">
+```
+
+### 避免使用的颜色类
+
+❌ **不要** 混用以下颜色类（已逐步替换）：
+- `gray-*` - 使用 `surface-*` 替代
+- `slate-*` - 使用 `surface-*` 替代
+- `blue-*` - 使用 `primary-*` 替代

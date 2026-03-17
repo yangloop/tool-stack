@@ -81,7 +81,7 @@ export function CodeEditor({
 }: CodeEditorProps) {
   const [isDark, setIsDark] = useState(false);
 
-  // 监听深色模式变化
+  // 监听深色模式变化 - 使用防抖优化性能
   useEffect(() => {
     const checkDarkMode = () => {
       const isDarkMode = document.documentElement.classList.contains('dark');
@@ -90,12 +90,13 @@ export function CodeEditor({
     
     checkDarkMode();
     
-    // 创建 MutationObserver 监听 class 变化
-    const observer = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        if (mutation.attributeName === 'class') {
-          checkDarkMode();
-        }
+    // 使用 requestAnimationFrame 防抖优化 MutationObserver 回调
+    let rafId: number | null = null;
+    const observer = new MutationObserver(() => {
+      if (rafId) cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(() => {
+        checkDarkMode();
+        rafId = null;
       });
     });
     
@@ -104,7 +105,10 @@ export function CodeEditor({
       attributeFilter: ['class'],
     });
     
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      if (rafId) cancelAnimationFrame(rafId);
+    };
   }, []);
 
   // 计算高度
@@ -115,14 +119,12 @@ export function CodeEditor({
     return height;
   }, [height]);
 
-  // 组合扩展
+  // 组合扩展 - 使用更稳定的主题切换方式
   const extensions = useMemo(() => {
     const base: Extension[] = [
       getLanguageExtension(language),
       EditorView.lineWrapping,
-      // 应用主题
-      isDark ? darkTheme : lightTheme,
-      // 自定义字体大小
+      // 自定义字体大小和主题
       EditorView.theme({
         '.cm-content': { 
           fontSize,
@@ -130,6 +132,8 @@ export function CodeEditor({
         },
         '.cm-gutters': { fontSize },
       }),
+      // 动态主题扩展
+      isDark ? darkTheme : lightTheme,
       ...customExtensions,
     ];
 
@@ -159,7 +163,6 @@ export function CodeEditor({
     <div id={id} className={`code-editor-wrapper ${wrapperClassName}`}>
       <div className={containerClasses}>
         <CodeMirror
-          key={isDark ? 'dark' : 'light'}  // 强制重新创建编辑器以应用主题变化
           value={value}
           height={heightStyle}
           placeholder={placeholder}

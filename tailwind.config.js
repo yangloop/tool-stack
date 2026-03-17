@@ -19,6 +19,7 @@ export default {
           700: '#0369a1',
           800: '#075985',
           900: '#0c4a6e',
+          950: '#082f49',
         },
         surface: {
           0: '#ffffff',
@@ -32,6 +33,7 @@ export default {
           700: '#334155',
           800: '#1e293b',
           900: '#0f172a',
+          950: '#020617',
         },
       },
       fontFamily: {
@@ -42,12 +44,15 @@ export default {
         'soft': '0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 10px 20px -2px rgba(0, 0, 0, 0.04)',
         'glow': '0 0 20px rgba(14, 165, 233, 0.15)',
         'glow-lg': '0 0 40px rgba(14, 165, 233, 0.2)',
+        'card': '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+        'card-hover': '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
       },
       animation: {
         'fade-in': 'fadeIn 0.3s ease-out',
         'slide-in': 'slideIn 0.3s ease-out',
         'scale-in': 'scaleIn 0.2s ease-out',
         'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        'spin-slow': 'spin 2s linear infinite',
       },
       keyframes: {
         fadeIn: {
@@ -66,7 +71,19 @@ export default {
       backdropBlur: {
         xs: '2px',
       },
+      transitionDuration: {
+        '400': '400ms',
+      },
+      transitionTimingFunction: {
+        'spring': 'cubic-bezier(0.34, 1.56, 0.64, 1)',
+      },
     },
   },
-  plugins: [],
+  // 性能优化：禁用未使用的核心插件
+  corePlugins: {
+    container: false, // 使用自定义布局
+  },
+  plugins: [
+    // 可以在这里添加自定义插件
+  ],
 }

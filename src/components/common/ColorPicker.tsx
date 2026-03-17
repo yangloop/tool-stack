@@ -39,7 +39,7 @@ export function ColorPicker({
   return (
     <div className="w-full">
       {label && (
-        <div className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+        <div className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
           {label}
         </div>
       )}
@@ -49,14 +49,14 @@ export function ColorPicker({
         <div className="relative" ref={pickerRef}>
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="w-10 h-10 rounded-lg border-2 border-gray-200 dark:border-slate-600 shadow-sm flex items-center justify-center transition-transform hover:scale-105"
+            className="w-10 h-10 rounded-lg border-2 border-surface-200 dark:border-surface-600 shadow-sm flex items-center justify-center transition-transform hover:scale-105"
             style={{ backgroundColor: color }}
             title="点击选择颜色"
           />
           
           {/* 弹出式颜色选择器 */}
           {isOpen && (
-            <div className="absolute z-50 top-full left-0 mt-2 p-3 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-gray-200 dark:border-slate-700">
+            <div className="absolute z-50 top-full left-0 mt-2 p-3 bg-surface-0 dark:bg-surface-800 rounded-xl shadow-xl border border-surface-200 dark:border-surface-700">
               <HexColorPicker 
                 color={color} 
                 onChange={onChange}
@@ -65,7 +65,7 @@ export function ColorPicker({
               
               {/* 预设颜色 */}
               {presetColors.length > 0 && (
-                <div className="mt-3 pt-3 border-t border-gray-200 dark:border-slate-700">
+                <div className="mt-3 pt-3 border-t border-surface-200 dark:border-surface-700">
                   <div className="flex flex-wrap gap-1.5">
                     {presetColors.map((presetColor) => (
                       <button
@@ -73,8 +73,8 @@ export function ColorPicker({
                         onClick={() => onChange(presetColor)}
                         className={`w-5 h-5 rounded border-2 transition-all ${
                           color.toLowerCase() === presetColor.toLowerCase()
-                            ? 'border-blue-500 scale-110'
-                            : 'border-gray-200 dark:border-slate-600 hover:scale-105'
+                            ? 'border-primary-500 scale-110'
+                            : 'border-surface-200 dark:border-surface-600 hover:scale-105'
                         }`}
                         style={{ backgroundColor: presetColor }}
                         title={presetColor}
@@ -95,12 +95,12 @@ export function ColorPicker({
             color={color}
             onChange={onChange}
             prefixed
-            className="w-full px-3 py-2 bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg text-sm font-mono dark:text-white uppercase focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+            className="w-full px-3 py-2 bg-surface-50 dark:bg-surface-900 border border-surface-200 dark:border-surface-700 rounded-lg text-sm font-mono dark:text-white uppercase focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
           />
           {showCopy && (
             <button
               onClick={() => copy(color)}
-              className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+              className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-surface-400 hover:text-surface-600 dark:hover:text-surface-200 transition-colors"
               title="复制颜色值"
             >
               {copied ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
@@ -128,8 +128,8 @@ export function ColorSwatch({ colors, selectedColor, onSelect }: ColorSwatchProp
           onClick={() => onSelect(color)}
           className={`w-6 h-6 rounded-md border-2 transition-all ${
             selectedColor.toLowerCase() === color.toLowerCase()
-              ? 'border-blue-500 scale-110'
-              : 'border-gray-200 dark:border-slate-600 hover:scale-105'
+              ? 'border-primary-500 scale-110'
+              : 'border-surface-200 dark:border-surface-600 hover:scale-105'
           }`}
           style={{ backgroundColor: color }}
           title={color}

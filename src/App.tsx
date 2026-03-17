@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route, useParams, useLocation, Navigate } from 'react-router-dom';
 import { useEffect, Suspense } from 'react';
 import { Layout } from './components/Layout';
-import { Home } from './components/Home';
+import { Home } from './pages/Home';
 import { tools } from './data/tools';
 
 // 加载中组件
