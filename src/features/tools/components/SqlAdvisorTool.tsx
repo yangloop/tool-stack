@@ -12,6 +12,7 @@ import { useSqlAdvisor } from '../hooks/useSqlAdvisor';
 import { AdInArticle, AdFooter } from '../../../components/ads';
 import { CodeEditor } from '../../../components/CodeEditor';
 import { ToolInfoAuto } from './ToolInfoSection';
+import { ToolHeader } from '../../../components/common';
 
 // 支持的数据库类型
 type DatabaseType = 'mysql' | 'postgresql' | 'sqlite' | 'sqlserver';
@@ -318,18 +319,12 @@ OFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY;`
 
   return (
     <div className="max-w-7xl mx-auto">
-      {/* 头部 */}
-      <div className="mb-4 sm:mb-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-xl sm:text-2xl font-bold text-surface-900 dark:text-surface-100 flex items-center gap-2">
-              <Sparkles className="w-6 h-6 sm:w-7 sm:h-7 text-purple-500" />
-              SQL 优化建议
-            </h1>
-            <p className="text-surface-500 dark:text-surface-400 mt-1 text-xs sm:text-sm">
-              智能分析SQL语法、检查DDL一致性、优化索引使用
-            </p>
-          </div>
+      <ToolHeader
+        icon={Sparkles}
+        title="SQL 优化建议"
+        description="智能分析SQL语法、检查DDL一致性、优化索引使用"
+        iconColorClass="text-purple-500"
+        actions={
           <button
             onClick={() => setShowSettings(!showSettings)}
             className="btn-ghost btn-tool"
@@ -337,8 +332,8 @@ OFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY;`
           >
             <Settings className="w-4 h-4" />
           </button>
-        </div>
-      </div>
+        }
+      />
 
       {/* 设置面板 */}
       {showSettings && (

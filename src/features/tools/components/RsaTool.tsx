@@ -6,6 +6,7 @@ import { downloadFile } from '../../../utils/helpers';
 import { AdFooter } from '../../../components/ads';
 import { ToolInfoAuto } from './ToolInfoSection';
 import { CodeEditor } from '../../../components/CodeEditor';
+import { ToolHeader } from '../../../components/common';
 
 // 使用 Web Worker 生成 RSA 密钥，避免阻塞 UI
 interface WorkerResult {
@@ -166,20 +167,10 @@ export function RsaTool() {
 
   return (
     <div className="max-w-6xl mx-auto animate-fade-in">
-      {/* 标题 */}
-      <div className="tool-header">
-        <div className="tool-icon">
-          <Key className="w-6 h-6" />
-        </div>
-        <div className="flex-1">
-          <h1 className="text-xl font-semibold text-surface-900 dark:text-surface-100">
-            RSA 密钥生成
-          </h1>
-          <p className="text-sm text-surface-500 mt-0.5">
-            生成 RSA 公钥和私钥，支持加密/解密测试
-          </p>
-        </div>
-      </div>
+      <ToolHeader
+        title="RSA 密钥生成"
+        description="生成 RSA 公私钥对"
+      />
 
       {/* Tab 导航 */}
       <div className="flex gap-1 border-b border-surface-200 dark:border-surface-700 mb-4 sm:mb-5">

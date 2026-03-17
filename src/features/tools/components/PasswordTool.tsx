@@ -1,9 +1,10 @@
 import { useState, useCallback } from 'react';
-import { Copy, Check, RefreshCw, Lock, Settings2 } from 'lucide-react';
+import { Copy, Check, RefreshCw, Settings2 } from 'lucide-react';
 import { useClipboard } from '../../../hooks/useLocalStorage';
 import { randomString } from '../../../utils/helpers';
 import { AdFooter } from '../../../components/ads';
 import { ToolInfoAuto } from './ToolInfoSection';
+import { ToolHeader } from '../../../components/common';
 
 export function PasswordTool() {
   const [password, setPassword] = useState('');
@@ -61,15 +62,10 @@ export function PasswordTool() {
 
   return (
     <div className="max-w-4xl mx-auto">
-      <div className="mb-4 sm:mb-6">
-        <h1 className="text-xl sm:text-2xl font-bold text-surface-900 dark:text-surface-100 flex items-center gap-2">
-          <Lock className="w-5 h-5 sm:w-6 sm:h-6 text-primary-500" />
-          密码生成
-        </h1>
-        <p className="text-surface-500 dark:text-surface-400 mt-1">
-          生成安全随机密码
-        </p>
-      </div>
+      <ToolHeader
+        title="密码生成器"
+        description="生成高强度随机密码"
+      />
 
       {/* 密码显示 */}
       <div className="card p-4 sm:p-6 mb-4">

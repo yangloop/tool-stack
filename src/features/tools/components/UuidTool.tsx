@@ -3,6 +3,7 @@ import { Copy, Check, RefreshCw, Fingerprint, Settings2 } from 'lucide-react';
 import { useClipboard } from '../../../hooks/useLocalStorage';
 import { AdFooter } from '../../../components/ads';
 import { ToolInfoAuto } from './ToolInfoSection';
+import { ToolHeader } from '../../../components/common';
 
 export function UuidTool() {
   const [uuids, setUuids] = useState<string[]>([]);
@@ -39,15 +40,11 @@ export function UuidTool() {
 
   return (
     <div className="max-w-4xl mx-auto">
-      <div className="mb-4 sm:mb-6">
-        <h1 className="text-xl sm:text-2xl font-bold text-surface-900 dark:text-surface-100 flex items-center gap-2">
-          <Fingerprint className="w-5 h-5 sm:w-6 sm:h-6 text-primary-500" />
-          UUID 生成
-        </h1>
-        <p className="text-surface-500 dark:text-surface-400 mt-1">
-          生成标准 UUID v4 唯一标识符
-        </p>
-      </div>
+      <ToolHeader
+        icon={Fingerprint}
+        title="UUID 生成器"
+        description="生成通用唯一识别码"
+      />
 
       <div className="card p-4 sm:p-6 mb-4 space-y-3 sm:space-y-4">
         <div className="flex flex-wrap items-center gap-3 sm:gap-4">

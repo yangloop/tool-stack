@@ -4,6 +4,7 @@ import { useClipboard } from '../../../hooks/useLocalStorage';
 import { AdFooter } from '../../../components/ads';
 import { CodeEditor } from '../../../components/CodeEditor';
 import { ToolInfoAuto } from './ToolInfoSection';
+import { ToolHeader } from '../../../components/common';
 
 export function UrlTool() {
   const [input, setInput] = useState('');
@@ -30,12 +31,10 @@ export function UrlTool() {
 
   return (
     <div className="max-w-4xl mx-auto">
-      <div className="mb-4 sm:mb-6">
-        <h1 className="text-xl sm:text-2xl font-bold text-surface-900 dark:text-surface-100">URL 编解码</h1>
-        <p className="text-surface-500 dark:text-surface-400 mt-1 text-xs sm:text-sm">
-          URL 编码和解码工具
-        </p>
-      </div>
+      <ToolHeader
+        title="URL 编解码"
+        description="URL 编码和解码工具"
+      />
 
       <div className="card p-4 sm:p-6 mb-4">
         <div className="flex flex-wrap items-center gap-3 sm:gap-4 mb-4">

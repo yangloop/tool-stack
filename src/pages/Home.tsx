@@ -88,7 +88,7 @@ export function Home({ onToolSelect }: HomeProps) {
             <div className="flex flex-wrap gap-2 lg:flex-col lg:gap-2">
               <QuickAccessButton 
                 icon={FileJson} 
-                label="JSON 格式化" 
+                label="JSON 工具" 
                 onClick={() => handleToolClick('json')} 
               />
               <QuickAccessButton 

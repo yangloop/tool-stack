@@ -7,6 +7,7 @@ import { XMLParser, XMLBuilder, XMLValidator } from 'fast-xml-parser';
 import { useClipboard } from '../../../hooks/useLocalStorage';
 import { AdInArticle, AdFooter } from '../../../components/ads';
 import { ToolInfoAuto } from './ToolInfoSection';
+import { ToolHeader } from '../../../components/common';
 import { downloadFile, readFile } from '../../../utils/helpers';
 import ReactJson from 'react-json-view';
 import { CodeEditor } from '../../../components/CodeEditor';
@@ -279,15 +280,12 @@ export function XmlJsonTool() {
   return (
     <div className="max-w-7xl mx-auto">
       {/* 标题 */}
-      <div className="mb-4 sm:mb-6">
-        <h1 className="text-xl sm:text-2xl font-bold text-surface-900 dark:text-surface-100 flex items-center gap-2">
-          <FileCode className="w-6 h-6 sm:w-7 sm:h-7 text-primary-500" />
-          XML / JSON 互转
-        </h1>
-        <p className="text-sm sm:text-base text-surface-500 dark:text-surface-400 mt-1">
-          XML 与 JSON 格式互相转换，支持属性、格式化和高亮显示
-        </p>
-      </div>
+      <ToolHeader
+        icon={FileCode}
+        title="XML / JSON 互转"
+        description="XML 与 JSON 格式互相转换，支持属性、格式化和高亮显示"
+        iconColorClass="text-primary-500"
+      />
 
       {/* 工具栏 */}
       <div className="flex flex-wrap items-center gap-2 mb-4">

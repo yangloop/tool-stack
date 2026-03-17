@@ -1,8 +1,9 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { Shield, Plus, Trash2, Copy, Check, QrCode, Download, Upload } from 'lucide-react';
+import { Shield, Plus, Trash2, Copy, Check, QrCode } from 'lucide-react';
 import { useClipboard, useLocalStorage } from '../../../hooks/useLocalStorage';
 import { AdFooter } from '../../../components/ads';
 import { ToolInfoAuto } from './ToolInfoSection';
+import { ToolHeader } from '../../../components/common';
 import * as OTPAuth from 'otpauth';
 import QRCode from 'qrcode';
 
@@ -173,67 +174,12 @@ export function OtpTool() {
     copy(code);
   };
 
-  // 导出账户
-  const handleExport = () => {
-    const data = JSON.stringify(accounts, null, 2);
-    const blob = new Blob([data], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `otp-backup-${new Date().toISOString().split('T')[0]}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  };
-
-  // 导入账户
-  const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      try {
-        const imported = JSON.parse(event.target?.result as string);
-        if (Array.isArray(imported)) {
-          setAccounts([...accounts, ...imported]);
-        }
-      } catch {
-        alert('导入失败，请检查文件格式');
-      }
-    };
-    reader.readAsText(file);
-    e.target.value = '';
-  };
-
   return (
     <div className="max-w-4xl mx-auto animate-fade-in">
-      {/* 工具标题 */}
-      <div className="tool-header">
-        <div className="tool-icon">
-          <Shield className="w-5 h-5 sm:w-6 sm:h-6" />
-        </div>
-        <div className="flex-1">
-          <h1 className="text-xl font-semibold text-surface-900 dark:text-surface-100">
-            OTP 生成
-          </h1>
-          <p className="text-sm text-surface-500 mt-0.5">
-            生成 TOTP 双因素认证验证码，支持 Google Authenticator
-          </p>
-        </div>
-        <div className="flex items-center gap-1.5 sm:gap-2">
-          <button onClick={handleExport} className="btn-secondary btn-tool" disabled={accounts.length === 0}>
-            <Download className="w-3.5 h-3.5 flex-shrink-0" />
-            导出
-          </button>
-          <label className="btn-secondary btn-tool cursor-pointer">
-            <Upload className="w-3.5 h-3.5 flex-shrink-0" />
-            导入
-            <input type="file" accept=".json" onChange={handleImport} className="hidden" />
-          </label>
-        </div>
-      </div>
+      <ToolHeader
+        title="OTP 验证码"
+        description="生成基于时间的一次性密码（TOTP）"
+      />
 
       {/* 添加账户按钮 */}
       <div className="flex justify-end mb-4 sm:mb-5">

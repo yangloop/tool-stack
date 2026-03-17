@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import { 
-  Clock, Copy, Check, Calendar, RefreshCw,
+  Copy, Check, Calendar, RefreshCw,
   Info, AlertCircle, Save
 } from 'lucide-react';
 import { useClipboard } from '../../../hooks/useLocalStorage';
 import { AdFooter } from '../../../components/ads';
 import { ToolInfoAuto } from './ToolInfoSection';
+import { ToolHeader } from '../../../components/common';
 
 // Cron 字段定义
 interface CronField {
@@ -226,16 +227,10 @@ export function CrontabTool() {
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
-      {/* 标题 */}
-      <div className="mb-4 sm:mb-6">
-        <h1 className="text-xl sm:text-2xl font-bold text-surface-900 dark:text-surface-100 flex items-center gap-2">
-          <Clock className="w-6 h-6 sm:w-7 sm:h-7 text-primary-500" />
-          Crontab 生成
-        </h1>
-        <p className="text-surface-500 dark:text-surface-400 mt-1">
-          可视化生成和解析 Unix/Linux 定时任务表达式
-        </p>
-      </div>
+      <ToolHeader
+        title="Crontab 表达式"
+        description="解析和生成 Crontab 定时任务表达式"
+      />
 
       {/* 表达式显示 */}
       <div className="card p-4 sm:p-6 bg-gradient-to-r from-primary-50 to-indigo-50 dark:from-surface-800 dark:to-surface-900">

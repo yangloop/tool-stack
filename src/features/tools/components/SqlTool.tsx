@@ -9,6 +9,7 @@ import { useClipboard } from '../../../hooks/useLocalStorage';
 import { AdInArticle, AdFooter } from '../../../components/ads';
 import { ToolInfoAuto } from './ToolInfoSection';
 import { CodeEditor } from '../../../components/CodeEditor';
+import { ToolHeader } from '../../../components/common';
 
 // SQL 统计
 function SqlStats({ sql }: { sql: string }) {
@@ -121,16 +122,12 @@ export function SqlTool() {
 
   return (
     <div className="max-w-7xl mx-auto">
-      {/* 标题 */}
-      <div className="mb-4 sm:mb-6">
-        <h1 className="text-xl sm:text-2xl font-bold text-surface-900 dark:text-surface-100 flex items-center gap-2">
-          <Database className="w-6 h-6 sm:w-7 sm:h-7 text-primary-500" />
-          SQL 格式化
-        </h1>
-        <p className="text-surface-500 dark:text-surface-400 mt-1 text-xs sm:text-sm">
-          SQL 语句美化、压缩和语法高亮
-        </p>
-      </div>
+      <ToolHeader
+        icon={Database}
+        title="SQL 格式化"
+        description="SQL 语句美化、压缩和语法高亮"
+        iconColorClass="text-primary-500"
+      />
 
       {/* 工具栏 */}
       <div className="flex flex-wrap items-center gap-2 mb-4">

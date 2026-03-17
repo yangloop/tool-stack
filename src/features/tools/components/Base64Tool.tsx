@@ -6,6 +6,7 @@ import { useClipboard } from '../../../hooks/useLocalStorage';
 import { AdFooter } from '../../../components/ads';
 import { CodeEditor } from '../../../components/CodeEditor';
 import { ToolInfoAuto } from './ToolInfoSection';
+import { ToolHeader } from '../../../components/common';
 
 export function Base64Tool() {
   const [input, setInput] = useState('');
@@ -32,12 +33,10 @@ export function Base64Tool() {
 
   return (
     <div className="max-w-4xl mx-auto">
-      <div className="mb-4 sm:mb-6">
-        <h1 className="text-xl sm:text-2xl font-bold text-surface-900 dark:text-surface-100">Base64 编解码</h1>
-        <p className="text-sm sm:text-base text-surface-500 dark:text-surface-400 mt-1">
-          Base64 编码和解码工具
-        </p>
-      </div>
+      <ToolHeader
+        title="Base64 编解码"
+        description="Base64 编码和解码工具"
+      />
 
       <div className="card mb-4 p-4 sm:p-6">
         <div className="flex items-center gap-2 sm:gap-4 mb-4">

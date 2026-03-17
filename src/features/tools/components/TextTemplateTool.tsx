@@ -18,6 +18,7 @@ import { useClipboard } from '../../../hooks/useLocalStorage';
 import { AdFooter } from '../../../components/ads';
 import { ToolInfoAuto } from './ToolInfoSection';
 import { CodeEditor } from '../../../components/CodeEditor';
+import { ToolHeader } from '../../../components/common';
 
 interface VariableDef {
   name: string;
@@ -293,20 +294,10 @@ export function TextTemplateTool() {
 
   return (
     <div className="max-w-6xl mx-auto animate-fade-in">
-      {/* 标题 */}
-      <div className="tool-header">
-        <div className="tool-icon w-9 h-9 sm:w-12 sm:h-12">
-          <FileText className="w-5 h-5 sm:w-6 sm:h-6" />
-        </div>
-        <div className="flex-1 min-w-0">
-          <h1 className="text-lg sm:text-xl font-semibold text-surface-900 dark:text-surface-100">
-            文本模板替换
-          </h1>
-          <p className="text-xs sm:text-sm text-surface-500 mt-0.5">
-            使用变量模板批量生成文本，支持自定义分隔符和数据表格
-          </p>
-        </div>
-      </div>
+      <ToolHeader
+        title="文本模板"
+        description="使用模板引擎批量生成文本"
+      />
 
       {/* 设置栏 */}
       <div className="card p-4 sm:p-6 mb-4 sm:mb-5 space-y-4">

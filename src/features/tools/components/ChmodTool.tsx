@@ -1,8 +1,9 @@
 import { useState, useCallback, useEffect } from 'react';
-import { FileLock, Copy, Check, Terminal, RefreshCw, Shield, Users, User, Lock } from 'lucide-react';
+import { Copy, Check, Terminal, RefreshCw, Shield, Users, User, Lock } from 'lucide-react';
 import { useClipboard } from '../../../hooks/useLocalStorage';
 import { AdFooter } from '../../../components/ads';
 import { ToolInfoAuto } from './ToolInfoSection';
+import { ToolHeader } from '../../../components/common';
 
 interface PermissionState {
   owner: { read: boolean; write: boolean; execute: boolean };
@@ -203,20 +204,10 @@ export function ChmodTool() {
 
   return (
     <div className="max-w-6xl mx-auto animate-fade-in">
-      {/* 标题 */}
-      <div className="tool-header">
-        <div className="tool-icon">
-          <FileLock className="w-6 h-6" />
-        </div>
-        <div className="flex-1">
-          <h1 className="text-xl font-semibold text-surface-900 dark:text-surface-100">
-            Chmod 计算
-          </h1>
-          <p className="text-sm text-surface-500 mt-0.5">
-            Linux 文件权限计算，数字权限与符号权限互转
-          </p>
-        </div>
-      </div>
+      <ToolHeader
+        title="Chmod 计算器"
+        description="Linux 文件权限计算器"
+      />
 
       {/* 快速结果 */}
       <div className="card p-3 sm:p-6 mb-4 sm:mb-5 space-y-4">

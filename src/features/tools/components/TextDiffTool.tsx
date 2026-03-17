@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { CodeEditor } from '../../../components/CodeEditor';
-import { GitCompare, Trash2, ArrowLeftRight, Copy, Check, FileText, Sparkles } from 'lucide-react';
+import { GitCompare, Trash2, ArrowLeftRight, Copy, Check, FileText } from 'lucide-react';
+import { ToolHeader } from '../../../components/common';
 import * as Diff from 'diff';
 import { useClipboard } from '../../../hooks/useLocalStorage';
 import { AdFooter } from '../../../components/ads';
@@ -187,47 +188,12 @@ export function TextDiffTool() {
     copy(diffText);
   };
 
-  // 示例数据
-  const loadExample = () => {
-    setLeftText(`function greet(name) {
-  console.log("Hello, " + name + "!");
-  return true;
-}
-
-const user = "World";`);
-    setRightText(`function greet(name) {
-  console.log(\`Hello, \${name}!\`);
-  return { success: true };
-}
-
-const user = "ToolStack";
-const version = "2.0";`);
-  };
-
   return (
     <div className="max-w-7xl mx-auto animate-fade-in">
-      {/* 工具标题 */}
-      <div className="tool-header">
-        <div className="tool-icon w-9 h-9 sm:w-10 sm:h-10">
-          <GitCompare className="w-5 h-5 sm:w-6 sm:h-6" />
-        </div>
-        <div className="flex-1 min-w-0">
-          <h1 className="text-lg sm:text-xl font-semibold text-surface-900 dark:text-surface-100">
-            文本对比
-          </h1>
-          <p className="text-xs sm:text-sm text-surface-500 mt-0.5">
-            使用 diff 库比较两段文本的差异，支持行内字符级高亮
-          </p>
-        </div>
-        <button
-          onClick={loadExample}
-          className="btn-secondary btn-tool"
-        >
-          <Sparkles className="w-3.5 h-3.5 flex-shrink-0" />
-          <span className="hidden sm:inline">加载示例</span>
-          <span className="sm:hidden">示例</span>
-        </button>
-      </div>
+      <ToolHeader
+        title="文本比对"
+        description="对比两段文本的差异"
+      />
 
       {/* 输入区域 */}
       <div className="grid lg:grid-cols-2 gap-3 sm:gap-4 mb-4 sm:mb-5">

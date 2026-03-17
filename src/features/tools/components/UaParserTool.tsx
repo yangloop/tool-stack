@@ -2,12 +2,13 @@ import { useState, useEffect } from 'react';
 import { 
   Monitor, Smartphone, Globe, Cpu, Layers, 
   Copy, Check, RefreshCw, AlertCircle, Info,
-  ChevronDown, ChevronUp, Terminal
+  ChevronDown, ChevronUp
 } from 'lucide-react';
 import { useClipboard } from '../../../hooks/useLocalStorage';
 import { AdFooter } from '../../../components/ads';
 import { ToolInfoAuto } from './ToolInfoSection';
 import { CodeEditor } from '../../../components/CodeEditor';
+import { ToolHeader } from '../../../components/common';
 
 // UA 解析结果类型
 interface UAParseResult {
@@ -250,16 +251,10 @@ export function UaParserTool() {
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
-      {/* 标题 */}
-      <div className="mb-4 sm:mb-6">
-        <h1 className="text-xl sm:text-2xl font-bold text-surface-900 dark:text-surface-100 flex items-center gap-1.5 sm:gap-2">
-          <Terminal className="w-6 h-6 sm:w-7 sm:h-7 text-primary-500" />
-          UA 解析
-        </h1>
-        <p className="text-surface-500 dark:text-surface-400 mt-1">
-          解析浏览器 User Agent 字符串，获取设备、浏览器、操作系统信息
-        </p>
-      </div>
+      <ToolHeader
+        title="UA 解析器"
+        description="解析 User-Agent 字符串，获取浏览器、操作系统等信息"
+      />
 
       {/* UA 输入 */}
       <div className="card p-4 sm:p-6 space-y-3">

@@ -3,6 +3,7 @@ import { Search, AlertCircle } from 'lucide-react';
 import { AdFooter } from '../../../components/ads';
 import { ToolInfoAuto } from './ToolInfoSection';
 import { CodeEditor } from '../../../components/CodeEditor';
+import { ToolHeader } from '../../../components/common';
 
 const commonPatterns = [
   { name: '邮箱', pattern: '^[\\w.-]+@[\\w.-]+\\.\\w+$' },
@@ -239,15 +240,12 @@ export function RegexTool() {
 
   return (
     <div className="max-w-4xl mx-auto">
-      <div className="mb-4 sm:mb-6">
-        <h1 className="text-xl sm:text-2xl font-bold text-surface-900 dark:text-surface-100 flex items-center gap-2">
-          <Search className="w-5 h-5 sm:w-6 sm:h-6 text-primary-500" />
-          正则表达式测试
-        </h1>
-        <p className="text-surface-500 dark:text-surface-400 mt-1 text-xs sm:text-sm">
-          在线测试和验证正则表达式
-        </p>
-      </div>
+      <ToolHeader
+        icon={Search}
+        title="正则表达式测试"
+        description="在线测试和验证正则表达式"
+        iconColorClass="text-primary-500"
+      />
 
       {/* 常用模式 */}
       <div className="card p-4 sm:p-6 mb-4">

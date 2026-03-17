@@ -1,9 +1,9 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Download, QrCode, Image as ImageIcon, RefreshCw, AlertTriangle, Upload, X } from 'lucide-react';
+import { Download, Image as ImageIcon, RefreshCw, AlertTriangle, Upload, X } from 'lucide-react';
 import QRCodeLib from 'qrcode';
 import { AdFooter } from '../../../components/ads';
 import { ToolInfoAuto } from './ToolInfoSection';
-import { ColorPicker } from '../../../components/common';
+import { ColorPicker, ToolHeader } from '../../../components/common';
 import { CodeEditor } from '../../../components/CodeEditor';
 
 // 预设颜色
@@ -172,15 +172,10 @@ export function QrCodeTool() {
 
   return (
     <div className="max-w-4xl mx-auto">
-      <div className="mb-4 sm:mb-6">
-        <h1 className="text-xl sm:text-2xl font-bold text-surface-900 dark:text-surface-100 flex items-center gap-2">
-          <QrCode className="w-6 h-6 sm:w-7 sm:h-7 text-primary-500" />
-          二维码生成
-        </h1>
-        <p className="text-surface-500 dark:text-surface-400 mt-1">
-          生成自定义颜色和大小的二维码图片
-        </p>
-      </div>
+      <ToolHeader
+        title="二维码生成"
+        description="将文本或链接生成二维码图片"
+      />
 
       <div className="grid lg:grid-cols-2 gap-4 sm:gap-6">
         {/* 设置区域 */}

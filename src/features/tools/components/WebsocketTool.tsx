@@ -22,6 +22,7 @@ import { useClipboard } from '../../../hooks/useLocalStorage';
 import { AdFooter } from '../../../components/ads';
 import { ToolInfoAuto } from './ToolInfoSection';
 import { CodeEditor } from '../../../components/CodeEditor';
+import { ToolHeader } from '../../../components/common';
 
 interface Message {
   id: string;
@@ -298,20 +299,10 @@ export function WebsocketTool() {
 
   return (
     <div className="max-w-6xl mx-auto animate-fade-in">
-      {/* 标题 */}
-      <div className="tool-header">
-        <div className="tool-icon">
-          <Wifi className="w-5 h-5 sm:w-6 sm:h-6" />
-        </div>
-        <div className="flex-1">
-          <h1 className="text-xl font-semibold text-surface-900 dark:text-surface-100">
-            WebSocket 测试
-          </h1>
-          <p className="text-sm text-surface-500 mt-0.5">
-            在线 WebSocket 客户端，测试和调试 WebSocket 连接
-          </p>
-        </div>
-      </div>
+      <ToolHeader
+        title="WebSocket 测试"
+        description="在线 WebSocket 客户端测试工具"
+      />
 
       {/* 连接区域 */}
       <div className="card p-2.5 sm:p-4 mb-4 sm:mb-5 space-y-4">

@@ -175,7 +175,7 @@ export function CodeEditor({
             lineNumbers: showLineNumbers,
             highlightActiveLineGutter: showLineNumbers,
             highlightActiveLine: true,
-            foldGutter: false,
+            foldGutter: true,
             dropCursor: true,
             allowMultipleSelections: true,
             indentOnInput: true,

@@ -6,6 +6,7 @@ import { readFile } from '../../../utils/helpers';
 import { AdFooter } from '../../../components/ads';
 import { ToolInfoAuto } from './ToolInfoSection';
 import { CodeEditor } from '../../../components/CodeEditor';
+import { ToolHeader } from '../../../components/common';
 
 const algorithms = [
   { id: 'MD5', name: 'MD5', bit: 128 },
@@ -84,15 +85,12 @@ export function HashTool() {
 
   return (
     <div className="max-w-4xl mx-auto">
-      <div className="mb-4 sm:mb-6">
-        <h1 className="text-xl sm:text-2xl font-bold text-surface-900 dark:text-surface-100 flex items-center gap-2">
-          <Hash className="w-5 h-5 sm:w-6 sm:h-6 text-primary-500" />
-          哈希计算
-        </h1>
-        <p className="text-surface-500 dark:text-surface-400 mt-1">
-          MD5、SHA 系列哈希计算，支持 HMAC
-        </p>
-      </div>
+      <ToolHeader
+        icon={Hash}
+        title="哈希计算"
+        description="MD5、SHA 系列哈希计算，支持 HMAC"
+        iconColorClass="text-primary-500"
+      />
 
       <div className="card p-4 sm:p-6 mb-4 space-y-3 sm:space-y-4">
         <div>

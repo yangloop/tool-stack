@@ -3,6 +3,7 @@ import { Copy, Check, Clock, RefreshCw } from 'lucide-react';
 import { useClipboard } from '../../../hooks/useLocalStorage';
 import { AdFooter } from '../../../components/ads';
 import { ToolInfoAuto } from './ToolInfoSection';
+import { ToolHeader } from '../../../components/common';
 
 export function TimestampTool() {
   const [timestamp, setTimestamp] = useState(Math.floor(Date.now() / 1000).toString());
@@ -48,15 +49,12 @@ export function TimestampTool() {
 
   return (
     <div className="max-w-4xl mx-auto">
-      <div className="mb-4 sm:mb-6">
-        <h1 className="text-xl sm:text-2xl font-bold text-surface-900 dark:text-surface-100 flex items-center gap-2">
-          <Clock className="w-5 h-5 sm:w-6 sm:h-6 text-primary-500" />
-          时间戳转换
-        </h1>
-        <p className="text-surface-500 dark:text-surface-400 mt-1">
-          Unix 时间戳与日期时间互转
-        </p>
-      </div>
+      <ToolHeader
+        icon={Clock}
+        title="时间戳转换"
+        description="Unix 时间戳与日期时间互转"
+        iconColorClass="text-primary-500"
+      />
 
       {/* 当前时间 */}
       <div className="card p-4 sm:p-6 mb-4 bg-gradient-to-r from-primary-50 to-primary-100/50 dark:from-surface-800 dark:to-surface-900">

@@ -12,6 +12,7 @@ import {
 } from './http-request';
 import { AdFooter } from '../../../components/ads';
 import { ToolInfoAuto } from './ToolInfoSection';
+import { ToolHeader } from '../../../components/common';
 
 // 懒加载 CodeGenerator 组件以优化初始加载性能
 const CodeGenerator = lazy(() => import('./http-request/CodeGenerator').then(m => ({ 
@@ -337,21 +338,13 @@ export function HttpRequestTool() {
 
   return (
     <div className="max-w-5xl mx-auto animate-fade-in">
-      {/* 工具标题栏 */}
-      <div className="tool-header">
-        <div className="tool-icon">
-          <Globe className="w-5 h-5 sm:w-6 sm:h-6" />
-        </div>
-        <div className="flex-1">
-          <h1 className="text-xl font-semibold text-surface-900 dark:text-surface-100">
-            HTTP 请求
-          </h1>
-          <p className="text-sm text-surface-500 mt-0.5">
-            支持多种请求体格式的 API 测试工具
-          </p>
-        </div>
-        <CurlImporter onImport={handleCurlImport} />
-      </div>
+      <ToolHeader
+        icon={Globe}
+        title="HTTP 请求测试"
+        description="在线 HTTP 接口测试工具，支持 GET、POST 等多种请求方法"
+        compact
+        actions={<CurlImporter onImport={handleCurlImport} />}
+      />
 
       {/* URL 输入区域 */}
       <div className="card p-3 sm:p-4 mb-4 sm:mb-5">

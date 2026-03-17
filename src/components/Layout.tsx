@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { 
   Menu, X, Sun, Moon, Search, 
   AlignLeft, Code, Hash, Terminal, Wrench, Database, Clock, Globe, Send,
-  Maximize2, Minimize2, Home, ChevronDown, Shield, Sparkles
+  Minimize2, Home, ChevronDown, Shield, Sparkles
 } from 'lucide-react';
 import { tools, categories } from '../data/tools';
 
@@ -436,7 +436,7 @@ export function Layout({ children, activeToolId }: LayoutProps) {
         )}
 
         {/* 主内容区 */}
-        <main className={`flex-1 min-w-0 ${isFullscreen ? 'p-0 h-full overflow-auto' : 'lg:ml-4 pt-4'}`}>
+        <main className={`flex-1 min-w-0 ${isFullscreen ? 'p-0 h-full overflow-hidden' : 'lg:ml-4 pt-4'}`}>
           {/* 全屏模式顶部栏 - 优化样式 */}
           {isFullscreen && (
             <div className="sticky top-0 z-50 flex items-center justify-between px-4 sm:px-6 py-3 glass-card border-b-0 mx-0 sm:mx-4 mt-0 sm:mt-4">
@@ -466,22 +466,10 @@ export function Layout({ children, activeToolId }: LayoutProps) {
             </div>
           )}
           
-          <div className={`${isFullscreen ? 'p-4 sm:p-6' : 'bg-surface-0 dark:bg-surface-800 rounded-t-2xl sm:rounded-2xl border-t sm:border border-surface-200 dark:border-surface-700 shadow-soft min-h-[calc(100dvh-7rem)] sm:min-h-[calc(100vh-8rem)]'}`}>
-            {/* 卡片内工具栏 - 包含全屏按钮 */}
-            {activeToolId && !isFullscreen && (
-              <div className="flex justify-end mb-4 pt-2 px-4 sm:px-0">
-                <button
-                  onClick={toggleFullscreen}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-surface-500 hover:text-surface-700 dark:text-surface-400 dark:hover:text-surface-200 hover:bg-surface-100 dark:hover:bg-surface-700 transition-colors"
-                  title="全屏模式 (ESC 退出)"
-                >
-                  <Maximize2 className="w-3.5 h-3.5" />
-                  全屏使用
-                </button>
-              </div>
-            )}
+          <div className={`${isFullscreen ? 'p-0 h-full' : 'bg-surface-0 dark:bg-surface-800 rounded-t-2xl sm:rounded-2xl border-t sm:border border-surface-200 dark:border-surface-700 shadow-soft min-h-[calc(100dvh-7rem)] sm:min-h-[calc(100vh-8rem)]'}`}>
+
             
-            <div className={`${isFullscreen ? 'p-0 sm:p-6' : 'p-4 sm:p-6 pt-2'}`}>
+            <div className={`${isFullscreen ? 'p-0 h-full' : 'p-4 sm:p-6 pt-2'}`}>
               {children}
             </div>
           </div>

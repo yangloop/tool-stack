@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
 import { 
-  Link, Copy, Check, Globe, Search, 
+  Copy, Check, Globe, Search, 
   AlertCircle, ExternalLink, Code, Layers,
   FileJson, Eye, EyeOff
 } from 'lucide-react';
 import { useClipboard } from '../../../hooks/useLocalStorage';
 import { AdFooter } from '../../../components/ads';
 import { ToolInfoAuto } from './ToolInfoSection';
+import { ToolHeader } from '../../../components/common';
 
 interface ParsedURL {
   href: string;
@@ -206,15 +207,10 @@ export function UrlParserTool() {
   return (
     <div className="max-w-5xl mx-auto space-y-4 sm:space-y-6">
       {/* 标题 */}
-      <div className="mb-4 sm:mb-6">
-        <h1 className="text-xl sm:text-2xl font-bold text-surface-900 dark:text-surface-100 flex items-center gap-2">
-          <Link className="w-5 h-5 sm:w-7 sm:h-7 text-primary-500" />
-          URL 解析
-        </h1>
-        <p className="text-surface-500 dark:text-surface-400 mt-1 text-xs sm:text-sm">
-          解析 URL 结构，提取协议、主机、路径、查询参数等信息
-        </p>
-      </div>
+      <ToolHeader
+        title="URL 解析器"
+        description="解析 URL 各组成部分"
+      />
 
       {/* 输入区域 */}
       <div className="card p-4 sm:p-6 space-y-3">

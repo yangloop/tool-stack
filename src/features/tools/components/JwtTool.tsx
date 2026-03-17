@@ -4,6 +4,7 @@ import { useClipboard } from '../../../hooks/useLocalStorage';
 import { AdFooter } from '../../../components/ads';
 import { CodeEditor } from '../../../components/CodeEditor';
 import { ToolInfoAuto } from './ToolInfoSection';
+import { ToolHeader } from '../../../components/common';
 
 interface JwtPayload {
   header: object;
@@ -68,28 +69,22 @@ export function JwtTool() {
 
   return (
     <div className="max-w-4xl mx-auto animate-fade-in">
-      {/* 工具标题 */}
-      <div className="tool-header">
-        <div className="tool-icon w-9 h-9 sm:w-10 sm:h-10">
-          <Key className="w-5 h-5 sm:w-6 sm:h-6" />
-        </div>
-        <div className="flex-1 min-w-0">
-          <h1 className="text-lg sm:text-xl font-semibold text-surface-900 dark:text-surface-100">
-            JWT 解码
-          </h1>
-          <p className="text-xs sm:text-sm text-surface-500 dark:text-surface-400 mt-0.5">
-            解析和验证 JWT 令牌，查看 Header、Payload 和 Signature
-          </p>
-        </div>
-        <button
-          onClick={loadExample}
-          className="btn-secondary btn-tool"
-        >
-          <Sparkles className="w-3.5 h-3.5 flex-shrink-0" />
-          <span className="hidden sm:inline">加载示例</span>
-          <span className="sm:hidden">示例</span>
-        </button>
-      </div>
+      <ToolHeader
+        icon={Key}
+        title="JWT 解码"
+        description="解析和验证 JWT 令牌，查看 Header、Payload 和 Signature"
+        compact
+        actions={
+          <button
+            onClick={loadExample}
+            className="btn-secondary btn-tool"
+          >
+            <Sparkles className="w-3.5 h-3.5 flex-shrink-0" />
+            <span className="hidden sm:inline">加载示例</span>
+            <span className="sm:hidden">示例</span>
+          </button>
+        }
+      />
 
       {/* 输入区域 */}
       <div className="card p-4 sm:p-6 mb-4 sm:mb-5">

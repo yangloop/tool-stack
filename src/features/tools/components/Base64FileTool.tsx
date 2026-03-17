@@ -1,6 +1,5 @@
 import { useState, useRef, useCallback } from 'react';
 import { 
-  FileCode, 
   Upload, 
   Download, 
   Copy, 
@@ -20,6 +19,7 @@ import { useClipboard } from '../../../hooks/useLocalStorage';
 import { AdFooter } from '../../../components/ads';
 import { CodeEditor } from '../../../components/CodeEditor';
 import { ToolInfoAuto } from './ToolInfoSection';
+import { ToolHeader } from '../../../components/common';
 
 interface FileInfo {
   name: string;
@@ -243,19 +243,10 @@ export function Base64FileTool() {
   return (
     <div className="max-w-6xl mx-auto animate-fade-in">
       {/* 标题 */}
-      <div className="tool-header">
-        <div className="tool-icon">
-          <FileCode className="w-6 h-6" />
-        </div>
-        <div className="flex-1">
-          <h1 className="text-xl font-semibold text-surface-900 dark:text-surface-100">
-            Base64 文件转换
-          </h1>
-          <p className="text-sm text-surface-500 mt-0.5">
-            文件与 Base64 编码之间相互转换，支持图片预览和下载
-          </p>
-        </div>
-      </div>
+      <ToolHeader
+        title="Base64 文件转换"
+        description="文件与 Base64 编码之间相互转换，支持图片预览和下载"
+      />
 
       {/* Tab 切换 */}
       <div className="flex gap-1 border-b border-surface-200 dark:border-surface-700 mb-4 sm:mb-5">

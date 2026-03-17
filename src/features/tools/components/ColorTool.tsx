@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { Copy, Check, Palette } from 'lucide-react';
+import { Copy, Check } from 'lucide-react';
 import { useClipboard } from '../../../hooks/useLocalStorage';
 import { AdFooter } from '../../../components/ads';
 import { ToolInfoAuto } from './ToolInfoSection';
-import { ColorPicker, ColorSwatch } from '../../../components/common';
+import { ColorPicker, ColorSwatch, ToolHeader } from '../../../components/common';
 
 // 预设颜色
 const presetColors = [
@@ -113,15 +113,10 @@ export function ColorTool() {
 
   return (
     <div className="max-w-4xl mx-auto">
-      <div className="mb-4 sm:mb-6">
-        <h1 className="text-xl sm:text-2xl font-bold text-surface-900 dark:text-surface-100 flex items-center gap-2">
-          <Palette className="w-5 h-5 sm:w-6 sm:h-6 text-primary-500" />
-          颜色转换
-        </h1>
-        <p className="text-surface-500 dark:text-surface-400 mt-1 text-xs sm:text-sm">
-          HEX、RGB、HSL 颜色格式互转
-        </p>
-      </div>
+      <ToolHeader
+        title="颜色转换器"
+        description="HEX、RGB、HSL 等格式互转"
+      />
 
       {/* 颜色预览 */}
       <div className="card p-4 sm:p-6 mb-4">

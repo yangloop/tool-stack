@@ -187,6 +187,8 @@ npm run preview
 - **`pages/`** - 页面级组件，对应路由页面
 - **`features/tools/`** - 工具相关功能模块，按功能聚合（组件、Hooks、Workers）
 - **`components/`** - 通用 UI 组件，可在多个功能间复用
+  - `common/` - 公共组件库（Button、CopyButton、ToolHeader、ColorPicker 等）
+  - `CodeEditor.tsx` - 基于 CodeMirror 6 的代码编辑器
 - **`hooks/`** - 通用 Hooks，与具体功能无关
 - **`styles/`** - 全局样式和主题配置
 
@@ -231,7 +233,11 @@ export const tools: Tool[] = [
 
 - 使用 TypeScript 编写，确保类型安全
 - 工具组件使用统一的卡片样式（`card` 类）
-- 使用公共组件库快速构建工具页面（`ToolPageContainer`、`ToolHeader`、`ConvertToolLayout` 等）
+- 使用公共组件库快速构建工具页面：
+  - `ToolHeader` - 统一标题栏组件（标准/紧凑两种样式）
+  - `ToolPageContainer` - 工具页面容器
+  - `ConvertToolLayout` - 编解码工具布局
+  - `Button`、`CopyButton`、`ColorPicker` 等
 - 使用 `useLocalStorage` Hook 持久化数据
 - 使用 `CodeEditor` 组件统一代码编辑（支持 SQL/JSON/XML/HTML/YAML/JS/TS/CSS/Shell/Text）
 - 使用 `useClipboard` Hook 处理复制操作

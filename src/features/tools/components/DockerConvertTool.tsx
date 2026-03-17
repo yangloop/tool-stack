@@ -1,6 +1,5 @@
 import { useState, useCallback } from 'react';
 import { 
-  Container, 
   Copy, 
   Check, 
   ArrowRightLeft,
@@ -18,6 +17,7 @@ import {
 import { useClipboard } from '../../../hooks/useLocalStorage';
 import { AdFooter } from '../../../components/ads';
 import { ToolInfoAuto } from './ToolInfoSection';
+import { ToolHeader } from '../../../components/common';
 import { 
   useDockerConverter, 
   type DockerRunOptions 
@@ -105,20 +105,10 @@ export function DockerConvertTool() {
 
   return (
     <div className="max-w-6xl mx-auto animate-fade-in">
-      {/* 标题 */}
-      <div className="tool-header">
-        <div className="tool-icon">
-          <Container className="w-6 h-6" />
-        </div>
-        <div className="flex-1">
-          <h1 className="text-xl font-semibold text-surface-900 dark:text-surface-100">
-            Docker 转换
-          </h1>
-          <p className="text-sm text-surface-500 mt-0.5">
-            使用 composerize / decomposerize 库实现 docker run 与 docker-compose 互转
-          </p>
-        </div>
-      </div>
+      <ToolHeader
+        title="Docker 命令转换"
+        description="Docker run 命令与 Docker Compose 配置互转"
+      />
 
       {/* Tab 切换 */}
       <div className="flex gap-1 border-b border-surface-200 dark:border-surface-700 mb-4 sm:mb-5">
