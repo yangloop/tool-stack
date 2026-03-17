@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { 
-  Copy, Check, Download, Upload, Trash2, 
+  Copy, Check, 
   Minimize2, FileJson, Braces, Type, Hash, List, AlertCircle,
   Maximize2
 } from 'lucide-react';
@@ -10,6 +10,7 @@ import { AdInArticle, AdFooter } from '../../../components/ads';
 import { CodeEditor } from '../../../components/CodeEditor';
 import { ToolInfoAuto } from './ToolInfoSection';
 import { ToolHeader } from '../../../components/common';
+import { JsonToolbar } from './JsonToolbar';
 
 // JSON 统计信息
 function JsonStats({ json }: { json: string }) {
@@ -216,76 +217,6 @@ export function JsonTool() {
     setOutput('');
   }, []);
 
-  // 工具栏组件 - 使用 useMemo 避免不必要的重新渲染
-  const toolbar = useMemo(() => (
-    <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-4">
-      <div className="inline-flex bg-surface-100 dark:bg-surface-800 p-0.5 rounded-lg sm:rounded-xl">
-        <button onClick={handleFormat} className="btn-primary btn-tool">
-          <FileJson className="w-3.5 h-3.5 flex-shrink-0" />
-          <span>格式化</span>
-        </button>
-        <button onClick={handleCompress} className="btn-tool text-surface-700 dark:text-surface-300 hover:bg-white dark:hover:bg-surface-700">
-          <Minimize2 className="w-3.5 h-3.5 flex-shrink-0" />
-          <span>压缩</span>
-        </button>
-      </div>
-      <div className="inline-flex bg-surface-100 dark:bg-surface-800 p-0.5 rounded-lg sm:rounded-xl">
-        <button onClick={handleEscape} className="btn-tool text-surface-700 dark:text-surface-300 hover:bg-white dark:hover:bg-surface-700">转义</button>
-        <button onClick={handleUnescape} className="btn-tool text-surface-700 dark:text-surface-300 hover:bg-white dark:hover:bg-surface-700">去转</button>
-      </div>
-      <div className="inline-flex bg-surface-100 dark:bg-surface-800 p-0.5 rounded-lg sm:rounded-xl">
-        <label className="btn-tool text-surface-700 dark:text-surface-300 hover:bg-white dark:hover:bg-surface-700 cursor-pointer">
-          <Upload className="w-3.5 h-3.5 flex-shrink-0" />
-          <span>导入</span>
-          <input type="file" accept=".json,.txt" onChange={handleFileUpload} className="hidden" />
-        </label>
-        <button onClick={handleDownload} disabled={!output} className="btn-tool text-surface-700 dark:text-surface-300 hover:bg-white dark:hover:bg-surface-700 disabled:opacity-40">
-          <Download className="w-3.5 h-3.5 flex-shrink-0" />
-          <span>下载</span>
-        </button>
-      </div>
-      <button onClick={handleClear} className="btn-ghost-danger btn-tool">
-        <Trash2 className="w-3.5 h-3.5 flex-shrink-0" />
-        <span>清空</span>
-      </button>
-    </div>
-  ), [handleFormat, handleCompress, handleEscape, handleUnescape, handleFileUpload, handleDownload, handleClear, output]);
-
-  // 全屏工具栏
-  const fullscreenToolbar = useMemo(() => (
-    <div className="flex items-center gap-1.5 sm:gap-2 px-4 border-b border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-800/50 overflow-x-auto flex-shrink-0 box-border" style={{ height: '57px' }}>
-      <div className="inline-flex bg-surface-100 dark:bg-surface-800 p-0.5 rounded-lg">
-        <button onClick={handleFormat} className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium bg-primary-500 text-white hover:bg-primary-600 transition-colors">
-          <FileJson className="w-3.5 h-3.5" />
-          <span>格式化</span>
-        </button>
-        <button onClick={handleCompress} className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium text-surface-700 dark:text-surface-300 hover:bg-white dark:hover:bg-surface-700 transition-colors">
-          <Minimize2 className="w-3.5 h-3.5" />
-          <span>压缩</span>
-        </button>
-      </div>
-      <div className="inline-flex bg-surface-100 dark:bg-surface-800 p-0.5 rounded-lg">
-        <button onClick={handleEscape} className="px-3 py-1.5 rounded-md text-xs font-medium text-surface-700 dark:text-surface-300 hover:bg-white dark:hover:bg-surface-700 transition-colors">转义</button>
-        <button onClick={handleUnescape} className="px-3 py-1.5 rounded-md text-xs font-medium text-surface-700 dark:text-surface-300 hover:bg-white dark:hover:bg-surface-700 transition-colors">去转</button>
-      </div>
-      <div className="inline-flex bg-surface-100 dark:bg-surface-800 p-0.5 rounded-lg">
-        <label className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium text-surface-700 dark:text-surface-300 hover:bg-white dark:hover:bg-surface-700 cursor-pointer transition-colors">
-          <Upload className="w-3.5 h-3.5" />
-          <span>导入</span>
-          <input type="file" accept=".json,.txt" onChange={handleFileUpload} className="hidden" />
-        </label>
-        <button onClick={handleDownload} disabled={!output} className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium text-surface-700 dark:text-surface-300 hover:bg-white dark:hover:bg-surface-700 disabled:opacity-40 transition-colors">
-          <Download className="w-3.5 h-3.5" />
-          <span>下载</span>
-        </button>
-      </div>
-      <button onClick={handleClear} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
-        <Trash2 className="w-3.5 h-3.5" />
-        <span>清空</span>
-      </button>
-    </div>
-  ), [handleFormat, handleCompress, handleEscape, handleUnescape, handleFileUpload, handleDownload, handleClear, output]);
-
   // 非全屏输入面板
   const inputPanel = useMemo(() => (
     <div className="card p-4 sm:p-6 min-w-0">
@@ -372,17 +303,26 @@ export function JsonTool() {
             actions={
               <button 
                 onClick={() => setIsFullscreen(true)}
-                className="btn-tool btn-ghost flex-shrink-0"
+                className="btn-tool-sm sm:btn-tool btn-ghost flex-shrink-0"
                 title="全屏使用"
               >
-                <Maximize2 className="w-4 h-4" />
+                <Maximize2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 <span className="hidden sm:inline">全屏使用</span>
               </button>
             }
           />
 
           {/* 工具栏 */}
-          {toolbar}
+          <JsonToolbar
+            onFormat={handleFormat}
+            onCompress={handleCompress}
+            onEscape={handleEscape}
+            onUnescape={handleUnescape}
+            onFileUpload={handleFileUpload}
+            onDownload={handleDownload}
+            onClear={handleClear}
+            canDownload={!!output}
+          />
 
           {/* 错误提示 */}
           {error && (
@@ -428,15 +368,26 @@ export function JsonTool() {
             </div>
             <button
               onClick={() => setIsFullscreen(false)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-surface-100 dark:bg-surface-700 text-surface-700 dark:text-surface-300 hover:bg-surface-200 dark:hover:bg-surface-600 transition-colors"
+              className="btn-tool-sm sm:btn-tool btn-ghost flex-shrink-0"
+              title="退出全屏"
             >
-              <Minimize2 className="w-3.5 h-3.5" />
-              退出全屏
+              <Minimize2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <span className="hidden sm:inline">退出全屏</span>
             </button>
           </div>
           
           {/* 全屏工具栏 */}
-          {fullscreenToolbar}
+          <JsonToolbar
+            onFormat={handleFormat}
+            onCompress={handleCompress}
+            onEscape={handleEscape}
+            onUnescape={handleUnescape}
+            onFileUpload={handleFileUpload}
+            onDownload={handleDownload}
+            onClear={handleClear}
+            canDownload={!!output}
+            variant="fullscreen"
+          />
 
           {/* 错误提示 */}
           {error && (
