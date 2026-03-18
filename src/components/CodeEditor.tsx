@@ -1,15 +1,5 @@
-import { useMemo, useEffect, useState } from 'react';
-import CodeMirror from '@uiw/react-codemirror';
-import { json } from '@codemirror/lang-json';
-import { sql } from '@codemirror/lang-sql';
-import { xml } from '@codemirror/lang-xml';
-import { html } from '@codemirror/lang-html';
-import { yaml } from '@codemirror/lang-yaml';
-import { EditorView } from '@codemirror/view';
-import { StreamLanguage } from '@codemirror/language';
+import { useMemo, useEffect, useState, Suspense, lazy } from 'react';
 import type { Extension } from '@codemirror/state';
-import { shell } from '@codemirror/legacy-modes/mode/shell';
-import { lightTheme, darkTheme } from '../styles/codemirror-theme';
 
 // 支持的语言类型
 type Language = 'sql' | 'xml' | 'json' | 'html' | 'yaml' | 'shell' | 'text';
@@ -43,25 +33,36 @@ interface CodeEditorProps {
   extensions?: Extension[];
 }
 
-// 获取语言扩展
-const getLanguageExtension = (language: Language): Extension => {
-  switch (language) {
-    case 'json':
-      return json();
-    case 'sql':
-      return sql();
-    case 'xml':
-      return xml();
-    case 'html':
-      return html();
-    case 'yaml':
-      return yaml();
-    case 'shell':
-      return StreamLanguage.define(shell);
-    default:
-      return [];
-  }
-};
+
+
+// 动态导入 CodeMirror 组件
+const LazyCodeMirrorEditor = lazy(() => import('./CodeEditorInner'));
+
+// 简单的加载占位符
+function EditorSkeleton({ height, variant }: { height: string; variant: string }) {
+  const containerClasses = useMemo(() => {
+    const baseClasses = 'overflow-hidden';
+    switch (variant) {
+      case 'minimal':
+        return `${baseClasses} rounded-lg`;
+      case 'embedded':
+        return `${baseClasses} rounded-xl border bg-surface-50 dark:bg-surface-900/50 border-surface-200 dark:border-surface-700`;
+      default:
+        return `${baseClasses} rounded-2xl border-2 shadow-soft border-surface-300 dark:border-surface-600 bg-surface-50 dark:bg-surface-900`;
+    }
+  }, [variant]);
+
+  return (
+    <div className={containerClasses} style={{ height }}>
+      <div className="w-full h-full flex items-center justify-center text-surface-400">
+        <div className="flex items-center gap-2">
+          <div className="w-4 h-4 border-2 border-primary-500 border-t-transparent rounded-full animate-spin" />
+          <span className="text-sm">加载编辑器...</span>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export function CodeEditor({
   id,
@@ -81,23 +82,18 @@ export function CodeEditor({
 }: CodeEditorProps) {
   const [isDark, setIsDark] = useState(false);
 
-  // 监听深色模式变化 - 使用防抖优化性能
+  // 监听深色模式变化
   useEffect(() => {
     const checkDarkMode = () => {
-      const isDarkMode = document.documentElement.classList.contains('dark');
-      setIsDark(isDarkMode);
+      setIsDark(document.documentElement.classList.contains('dark'));
     };
     
     checkDarkMode();
     
-    // 使用 requestAnimationFrame 防抖优化 MutationObserver 回调
     let rafId: number | null = null;
     const observer = new MutationObserver(() => {
       if (rafId) cancelAnimationFrame(rafId);
-      rafId = requestAnimationFrame(() => {
-        checkDarkMode();
-        rafId = null;
-      });
+      rafId = requestAnimationFrame(checkDarkMode);
     });
     
     observer.observe(document.documentElement, {
@@ -111,83 +107,29 @@ export function CodeEditor({
     };
   }, []);
 
-  // 计算高度
   const heightStyle = useMemo(() => {
-    if (typeof height === 'number') {
-      return `${height}px`;
-    }
-    return height;
+    return typeof height === 'number' ? `${height}px` : height;
   }, [height]);
-
-  // 组合扩展 - 使用更稳定的主题切换方式
-  const extensions = useMemo(() => {
-    const base: Extension[] = [
-      getLanguageExtension(language),
-      EditorView.lineWrapping,
-      // 自定义字体大小和主题
-      EditorView.theme({
-        '.cm-content': { 
-          fontSize,
-          ...(padding !== undefined && { padding: `${padding}px` }),
-        },
-        '.cm-gutters': { fontSize },
-      }),
-      // 动态主题扩展
-      isDark ? darkTheme : lightTheme,
-      ...customExtensions,
-    ];
-
-    return base;
-  }, [isDark, language, fontSize, padding, customExtensions]);
-
-  // 根据变体确定容器样式
-  const containerClasses = useMemo(() => {
-    const baseClasses = 'overflow-hidden';
-    
-    switch (variant) {
-      case 'minimal':
-        return `${baseClasses} rounded-lg`;
-      case 'embedded':
-        return `${baseClasses} rounded-xl border ${isDark ? 'bg-surface-900/50 border-surface-700' : 'bg-surface-50 border-surface-200'}`;
-      case 'default':
-      default:
-        return `${baseClasses} rounded-2xl border-2 shadow-soft transition-all hover:shadow-lg ${
-          isDark 
-            ? 'border-surface-600 bg-surface-900 hover:border-surface-500' 
-            : 'border-surface-300 bg-surface-50 hover:border-surface-400'
-        }`;
-    }
-  }, [variant, isDark]);
 
   return (
     <div id={id} className={`code-editor-wrapper ${wrapperClassName}`}>
-      <div className={containerClasses}>
-        <CodeMirror
+      <Suspense fallback={<EditorSkeleton height={heightStyle} variant={variant} />}>
+        <LazyCodeMirrorEditor
           value={value}
-          height={heightStyle}
-          placeholder={placeholder}
-          editable={!readOnly}
-          readOnly={readOnly}
-          extensions={extensions}
           onChange={onChange}
-          className={`code-editor-content ${className}`}
-          basicSetup={{
-            lineNumbers: showLineNumbers,
-            highlightActiveLineGutter: showLineNumbers,
-            highlightActiveLine: true,
-            foldGutter: true,
-            dropCursor: true,
-            allowMultipleSelections: true,
-            indentOnInput: true,
-            bracketMatching: true,
-            closeBrackets: true,
-            autocompletion: true,
-            highlightSelectionMatches: true,
-            searchKeymap: true,
-            tabSize: 2,
-          }}
+          language={language}
+          placeholder={placeholder}
+          height={heightStyle}
+          className={className}
+          readOnly={readOnly}
+          fontSize={fontSize}
+          variant={variant}
+          showLineNumbers={showLineNumbers}
+          customExtensions={customExtensions}
+          padding={padding}
+          isDark={isDark}
         />
-      </div>
+      </Suspense>
     </div>
   );
 }

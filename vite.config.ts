@@ -31,22 +31,16 @@ export default defineConfig({
           'vendor-core': ['react', 'react-dom', 'react-router-dom'],
           // UI 组件
           'vendor-ui': ['lucide-react', 'react-colorful'],
-          // CodeMirror 编辑器核心（不含语言包）
-          'vendor-codemirror': ['@codemirror/state', '@codemirror/view', '@codemirror/language', '@uiw/react-codemirror'],
-          // CodeMirror 语言包（按需加载）
-          'vendor-codemirror-langs': ['@codemirror/lang-json', '@codemirror/lang-sql', '@codemirror/lang-xml', '@codemirror/lang-html', '@codemirror/lang-yaml'],
-          // 语法高亮 - 改为懒加载，不再打包到 vendor
-          // 'vendor-highlight': ['react-syntax-highlighter'],
           // Docker 工具（大）
           'vendor-docker': ['composerize', 'decomposerize'],
           // JSON 查看器（大）
           'vendor-json': ['react-json-view'],
-          // SQL 格式化器 (sql-formatter 现在只在 Web Worker 中使用，不打包到主 bundle)
-          // 'vendor-sql': ['sql-formatter'],
           // 加密相关
           'vendor-crypto': ['jsencrypt', 'crypto-js', 'otpauth'],
           // 其他工具
           'vendor-utils': ['axios', 'qrcode'],
+          // CodeMirror 改为按需动态导入，不再打包到 vendor
+          // 语言包会通过动态 import 单独分割
         },
         // 静态资源命名
         assetFileNames: (assetInfo) => {
