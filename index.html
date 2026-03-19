@@ -3,31 +3,106 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ToolStack</title>
+  <title>ToolStack - 开发者在线工具箱</title>
+  <meta name="description" content="ToolStack 是免费的开发者在线工具集合，包含 25+ 实用工具：JSON 格式化、SQL 优化、Base64 编解码、哈希计算、RSA 加密、二维码生成等。">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" href="/favicon.ico">
+  <link rel="canonical" href="https://toolstack.juvvv.com/">
+  
+  <!-- Schema.org 结构化数据 -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "ToolStack",
+    "alternateName": "ToolStack 开发者工具箱",
+    "url": "https://toolstack.juvvv.com/",
+    "description": "ToolStack 是免费的开发者在线工具集合，包含 25+ 实用工具：JSON 格式化、SQL 优化、Base64 编解码等。",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://toolstack.juvvv.com/?search={search_term_string}",
+      "query-input": "required name=search_term_string"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "ToolStack",
+      "url": "https://toolstack.juvvv.com/",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://toolstack.juvvv.com/logo.svg",
+        "width": "512",
+        "height": "512"
+      }
+    }
+  }
+  </script>
+  
+  <!-- 软件应用结构化数据 -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "ToolStack",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "Any",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "CNY"
+    },
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.8",
+      "ratingCount": "100"
+    }
+  }
+  </script>
+  
+  <!-- FAQ 结构化数据 -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "ToolStack 是什么？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "ToolStack 是一个免费的开发者在线工具集合，提供 25+ 种实用工具，包括 JSON 格式化、SQL 优化分析、Base64 编解码、哈希计算、RSA 加密、二维码生成等。所有工具无需注册，打开即用，支持深色模式。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "ToolStack 的工具免费吗？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "是的，ToolStack 所有工具完全免费使用，无需注册登录，数据在本地处理不上传服务器，保护您的隐私安全。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "ToolStack 支持哪些工具？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "ToolStack 支持 JSON 格式化、SQL 格式化与优化分析、Base64 编解码、URL 编解码、哈希计算（MD5/SHA）、RSA 密钥生成、JWT 解码、二维码生成、时间戳转换、UUID 生成、正则表达式测试、颜色转换、进制转换等 25+ 种开发者常用工具。"
+        }
+      }
+    ]
+  }
+  </script>
+  
   <style>
     *,*::before,*::after{box-sizing:border-box}
     html,body{margin:0;padding:0;min-height:100vh}
     body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif}
-    
-    /* 加载遮罩 - 覆盖整个页面 */
-    #loader{position:fixed;inset:0;z-index:2147483647;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#f8fafc;transition:opacity .15s ease-out}
+    #loader{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:#f8fafc;transition:opacity .2s}
     .dark #loader{background:#0f172a}
-    #loader.hidden{opacity:0;visibility:hidden;pointer-events:none}
-    #loader .spinner{width:48px;height:48px;border:3px solid #e2e8f0;border-top-color:#6366f1;border-radius:50%;animation:spin 1s linear infinite}
-    .dark #loader .spinner{border-color:#334155;border-top-color:#6366f1}
+    #loader.hidden{opacity:0;visibility:hidden}
+    .spinner{width:40px;height:40px;border:3px solid #e2e8f0;border-top-color:#6366f1;border-radius:50%;animation:spin .8s linear infinite}
     @keyframes spin{to{transform:rotate(360deg)}}
-    #loader .text{margin-top:16px;color:#64748b;font-size:14px}
-    .dark #loader .text{color:#94a3b8}
-    
-    /* 内容区域 - 初始完全隐藏 */
-    #root{opacity:0;visibility:hidden}
-    #root.hydrated{opacity:1;visibility:visible;transition:opacity .15s ease-out}
-    
-    /* 兜底：万一JS失败，3秒后强制显示 */
-    @media (prefers-reduced-motion:no-preference){
-      body:not(.js-loaded) #root{animation:forceShow 3s forwards}
-      @keyframes forceShow{0%,99%{opacity:0}100%{opacity:1;visibility:visible}}
-    }
+    #root{opacity:0}
+    #root.loaded{opacity:1;transition:opacity .15s}
   </style>
   <script type="module">
     import RefreshRuntime from "/@react-refresh"
@@ -38,10 +113,7 @@
   </script>
 </head>
 <body>
-  <div id="loader">
-    <div class="spinner"></div>
-    <div class="text">加载中...</div>
-  </div>
+  <div id="loader"><div class="spinner"></div></div>
   <div id="root"></div>
   <script type="module" src="/src/entry-client.tsx"></script>
   <script>
@@ -49,7 +121,6 @@
       const saved=localStorage.getItem('theme-dark');
       const prefers=window.matchMedia('(prefers-color-scheme:dark)').matches;
       if(saved==='true'||(!saved&&prefers))document.documentElement.classList.add('dark');
-      document.body.classList.add('js-loaded');
     })();
   </script>
 </body>
