@@ -5,6 +5,7 @@ import express, { type Request, type Response, type NextFunction } from 'express
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const isProduction = process.env.NODE_ENV === 'production'
+const DOMAIN = process.env.DOMAIN || 'https://toolstack.juvvv.com'
 
 async function createServer() {
   const app = express()
@@ -39,11 +40,14 @@ async function createServer() {
 
       const { html: appHtml } = render(url)
       
-      // 注入 SSR 内容 - 初始隐藏，水合后显示
-      const finalHtml = template.replace(
-        '<div id="root"></div>',
-        `<div id="root">${appHtml}</div>`
-      )
+      // 生成 canonical URL
+      const canonicalUrl = `${DOMAIN}${url === '/' ? '/' : url.split('?')[0]}`
+      const canonicalTag = `<link rel="canonical" href="${canonicalUrl}">`
+      
+      // 注入 SSR 内容和 canonical 标签
+      let finalHtml = template
+        .replace('<!-- CANONICAL_PLACEHOLDER -->', canonicalTag)
+        .replace('<div id="root"></div>', `<div id="root">${appHtml}</div>`)
 
       res.status(200).set({ 'Content-Type': 'text/html' }).end(finalHtml)
     } catch (e) {

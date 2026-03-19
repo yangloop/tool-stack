@@ -688,12 +688,15 @@ Object.entries(toolsConfig).forEach(([toolId, config]) => {
   const toolUrl = `${domain}/tool/${toolId}`;
   const { metaTags } = generateSeoMeta(config, toolUrl);
   
+  // 生成 canonical 标签
+  const canonicalTag = `<link rel="canonical" href="${toolUrl}">`;
+  
   // 替换 HTML 中的占位符
   let toolHtml = indexHtml
+    .replace('<!-- CANONICAL_PLACEHOLDER -->', canonicalTag)
     .replace('<!-- TITLE_PLACEHOLDER -->', '')
     .replace('<!-- DESC_PLACEHOLDER -->', '')
     .replace('<!-- KEYWORDS_PLACEHOLDER -->', '')
-    .replace('<!-- CANONICAL_PLACEHOLDER -->', '')
     .replace('<!-- OG_PLACEHOLDER -->', '')
     .replace('<!-- TWITTER_PLACEHOLDER -->', '')
     .replace('<!-- JSONLD_PLACEHOLDER -->', '');
@@ -770,11 +773,13 @@ ${JSON.stringify(homeJsonLd, null, 2)}
     </script>
 `;
 
+const homeCanonicalTag = `<link rel="canonical" href="${domain}/">`;
+
 let homeHtml = indexHtml
+  .replace('<!-- CANONICAL_PLACEHOLDER -->', homeCanonicalTag)
   .replace('<!-- TITLE_PLACEHOLDER -->', '')
   .replace('<!-- DESC_PLACEHOLDER -->', '')
   .replace('<!-- KEYWORDS_PLACEHOLDER -->', '')
-  .replace('<!-- CANONICAL_PLACEHOLDER -->', '')
   .replace('<!-- OG_PLACEHOLDER -->', '')
   .replace('<!-- TWITTER_PLACEHOLDER -->', '')
   .replace('<!-- JSONLD_PLACEHOLDER -->', '');
