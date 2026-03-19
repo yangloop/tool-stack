@@ -1,5 +1,5 @@
 // Home.tsx - 现代化首页仪表盘组件
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { 
   FileJson, Code, Hash, Clock,
   Fingerprint, QrCode, Lock, Search, Palette, Key,
@@ -11,7 +11,6 @@ import {
 } from 'lucide-react';
 import type { Tool } from '../types';
 import { tools, categories } from '../data/tools';
-import { useLocalStorage } from '../hooks/useLocalStorage';
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   FileJson, Code, Hash, Clock, 
@@ -26,8 +25,38 @@ interface HomeProps {
 }
 
 export function Home({ onToolSelect }: HomeProps) {
-  const [recentTools, setRecentTools] = useLocalStorage<string[]>('recent-tools', []);
-  const [favoriteTools, setFavoriteTools] = useLocalStorage<string[]>('favorite-tools', []);
+  // SSR 友好的状态管理 - 初始用空数组，客户端再读取
+  const [recentTools, setRecentTools] = useState<string[]>([]);
+  const [favoriteTools, setFavoriteTools] = useState<string[]>([]);
+  const [isClient, setIsClient] = useState(false);
+
+  // 客户端挂载后读取 localStorage
+  useEffect(() => {
+    setIsClient(true);
+    try {
+      const savedRecent = localStorage.getItem('recent-tools');
+      const savedFavorites = localStorage.getItem('favorite-tools');
+      if (savedRecent) setRecentTools(JSON.parse(savedRecent));
+      if (savedFavorites) setFavoriteTools(JSON.parse(savedFavorites));
+    } catch {
+      // 忽略 localStorage 错误
+    }
+  }, []);
+
+  // 保存到 localStorage
+  useEffect(() => {
+    if (!isClient) return;
+    try {
+      localStorage.setItem('recent-tools', JSON.stringify(recentTools));
+    } catch {}
+  }, [recentTools, isClient]);
+
+  useEffect(() => {
+    if (!isClient) return;
+    try {
+      localStorage.setItem('favorite-tools', JSON.stringify(favoriteTools));
+    } catch {}
+  }, [favoriteTools, isClient]);
 
   // 使用 useMemo 缓存工具列表计算
   const recentToolsList = useMemo(() => 
@@ -108,8 +137,8 @@ export function Home({ onToolSelect }: HomeProps) {
 
       {/* 快捷功能区：最近使用 + 我的收藏 + 热门推荐 */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {/* 最近使用 */}
-        {recentToolsList.length > 0 && (
+        {/* 最近使用 - 只在客户端显示 */}
+        {isClient && recentToolsList.length > 0 && (
           <section className="card">
             <div className="flex items-center gap-2 mb-4">
               <div className="w-8 h-8 bg-primary-50 dark:bg-primary-900/20 rounded-lg flex items-center justify-center">
@@ -125,8 +154,8 @@ export function Home({ onToolSelect }: HomeProps) {
           </section>
         )}
 
-        {/* 我的收藏 */}
-        {favoriteToolsList.length > 0 && (
+        {/* 我的收藏 - 只在客户端显示 */}
+        {isClient && favoriteToolsList.length > 0 && (
           <section className="card">
             <div className="flex items-center gap-2 mb-4">
               <div className="w-8 h-8 bg-amber-50 dark:bg-amber-900/20 rounded-lg flex items-center justify-center">
@@ -143,7 +172,7 @@ export function Home({ onToolSelect }: HomeProps) {
         )}
 
         {/* 热门推荐 */}
-        <section className={`card ${recentToolsList.length === 0 && favoriteToolsList.length === 0 ? 'lg:col-span-3' : recentToolsList.length === 0 || favoriteToolsList.length === 0 ? 'lg:col-span-2' : ''}`}>
+        <section className={`card ${!isClient || (recentToolsList.length === 0 && favoriteToolsList.length === 0) ? 'lg:col-span-3' : recentToolsList.length === 0 || favoriteToolsList.length === 0 ? 'lg:col-span-2' : ''}`}>
           <div className="flex items-center gap-2 mb-4">
             <div className="w-8 h-8 bg-orange-50 dark:bg-orange-900/20 rounded-lg flex items-center justify-center">
               <TrendingUp className="w-4 h-4 text-orange-500" />

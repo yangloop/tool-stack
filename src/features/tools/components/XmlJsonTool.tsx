@@ -9,30 +9,9 @@ import { AdInArticle, AdFooter } from '../../../components/ads';
 import { ToolInfoAuto } from './ToolInfoSection';
 import { ToolHeader } from '../../../components/common';
 import { downloadFile, readFile } from '../../../utils/helpers';
-import ReactJson from 'react-json-view';
 import { CodeEditor } from '../../../components/CodeEditor';
 
 type ConversionMode = 'xml-to-json' | 'json-to-xml';
-
-// 自定义 slate 主题 - 匹配项目 dark 主题
-const slateTheme = {
-  base00: '#0f172a', // 背景 slate-900
-  base01: '#1e293b', // 对象/数组背景 slate-800
-  base02: '#334155', // 边框/分隔线 slate-700
-  base03: '#64748b', // 次要文字 slate-500
-  base04: '#94a3b8', // 括号等 slate-400
-  base05: '#e2e8f0', // 主要文字 slate-200
-  base06: '#f1f5f9', // 高亮 slate-100
-  base07: '#ffffff', // 最亮文字
-  base08: '#38bdf8', // key颜色 (sky-400) - 蓝色系
-  base09: '#a5f3fc', // 字符串 (cyan-200) - 青色系
-  base0A: '#fde047', // 数字 (yellow-300) - 黄色系
-  base0B: '#4ade80', // 布尔值 true (green-400) - 绿色系
-  base0C: '#94a3b8', // null (slate-400) - 灰色
-  base0D: '#60a5fa', // 折叠图标 (blue-400)
-  base0E: '#c084fc', // 数组索引 (purple-400)
-  base0F: '#f472b6', // 特殊字符 (pink-400)
-};
 
 // XML 格式化
 function formatXml(xml: string): string {
@@ -51,7 +30,7 @@ function formatXml(xml: string): string {
     
     formatted += PADDING.repeat(Math.max(0, indent)) + token + '\n';
     
-    if (token.match(/^<\w[^>]*[^\/]>$/) && !token.match(/<\?xml/) && !token.match(/<\!/) && !token.match(/<\/\w/)) {
+    if (token.match(/^<\w[^>]*[^\/]>$/) && !token.match(/<\?xml/) && !token.match(/<!/) && !token.match(/<\/\w/)) {
       indent++;
     }
   });
@@ -65,21 +44,7 @@ export function XmlJsonTool() {
   const [mode, setMode] = useState<ConversionMode>('xml-to-json');
   const [error, setError] = useState('');
   const [viewMode, setViewMode] = useState<'formatted' | 'compressed'>('formatted');
-  const [isDark, setIsDark] = useState(false);
   const { copied, copy } = useClipboard();
-
-  // 监听主题变化
-  useEffect(() => {
-    const checkDarkMode = () => {
-      setIsDark(document.documentElement.classList.contains('dark'));
-    };
-    checkDarkMode();
-    
-    const observer = new MutationObserver(checkDarkMode);
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
-    
-    return () => observer.disconnect();
-  }, []);
 
   // 执行转换
   const convert = (inputValue: string, currentMode: ConversionMode): string => {
@@ -265,18 +230,6 @@ export function XmlJsonTool() {
     await copy(contentToCopy);
   };
 
-  // 解析 JSON 用于可视化展示
-  const parsedJsonData = (() => {
-    if (mode === 'xml-to-json' && output) {
-      try {
-        return JSON.parse(output);
-      } catch {
-        return null;
-      }
-    }
-    return null;
-  })();
-
   return (
     <div className="max-w-7xl mx-auto">
       {/* 标题 */}
@@ -431,41 +384,15 @@ export function XmlJsonTool() {
             )}
           </div>
           
-          {mode === 'xml-to-json' && viewMode === 'formatted' && parsedJsonData ? (
-            // XML → JSON 格式化视图使用 ReactJson
-            <div className="h-[400px] border border-surface-200 dark:border-surface-700 rounded-lg overflow-auto bg-[#fafafa] dark:bg-[#282c34] min-w-0">
-              <div className="p-2 sm:p-4 min-w-0" style={{ maxWidth: '100%' }}>
-                <ReactJson
-                  src={parsedJsonData}
-                  theme={isDark ? slateTheme : 'rjv-default'}
-                  displayDataTypes={false}
-                  enableClipboard={true}
-                  collapsed={false}
-                  style={{
-                    background: 'transparent',
-                    fontSize: '13px',
-                    fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
-                    maxWidth: '100%',
-                    overflow: 'hidden',
-                  }}
-                  iconStyle="triangle"
-                  indentWidth={2}
-                  collapseStringsAfterLength={80}
-                />
-              </div>
-            </div>
-          ) : (
-            // 其他情况使用 CodeEditor
-            <CodeEditor
-              value={output}
-              onChange={() => {}}
-              language={mode === 'xml-to-json' ? 'json' : 'xml'}
-              placeholder="转换结果将显示在这里"
-              height="400px"
-              variant="embedded"
-              readOnly={true}
-            />
-          )}
+          <CodeEditor
+            value={output}
+            onChange={() => {}}
+            language={mode === 'xml-to-json' ? 'json' : 'xml'}
+            placeholder="转换结果将显示在这里"
+            height="400px"
+            variant="embedded"
+            readOnly={true}
+          />
         </div>
       </div>
 

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Copy, Check, RefreshCw, Key, Download, Shield, Lock, Unlock, Sparkles, Loader2, Zap } from 'lucide-react';
-import { JSEncrypt } from 'jsencrypt';
+import JSEncrypt from 'jsencrypt';
 import { useClipboard } from '../../../hooks/useLocalStorage';
 import { downloadFile } from '../../../utils/helpers';
 import { AdFooter } from '../../../components/ads';

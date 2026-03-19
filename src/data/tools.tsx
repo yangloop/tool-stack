@@ -1,37 +1,34 @@
 import type { Tool } from '../types';
-import { lazy } from 'react';
 
-// 使用 React.lazy 进行动态导入，实现代码分割
-// 每个工具组件只有在被访问时才会加载
-
-const JsonTool = lazy(() => import('../features/tools/components/JsonTool').then(m => ({ default: m.JsonTool })));
-const Base64Tool = lazy(() => import('../features/tools/components/Base64Tool').then(m => ({ default: m.Base64Tool })));
-const UrlTool = lazy(() => import('../features/tools/components/UrlTool').then(m => ({ default: m.UrlTool })));
-const HtmlEntityTool = lazy(() => import('../features/tools/components/HtmlEntityTool').then(m => ({ default: m.HtmlEntityTool })));
-const HashTool = lazy(() => import('../features/tools/components/HashTool').then(m => ({ default: m.HashTool })));
-const TimestampTool = lazy(() => import('../features/tools/components/TimestampTool').then(m => ({ default: m.TimestampTool })));
-const UuidTool = lazy(() => import('../features/tools/components/UuidTool').then(m => ({ default: m.UuidTool })));
-const QrCodeTool = lazy(() => import('../features/tools/components/QrCodeTool').then(m => ({ default: m.QrCodeTool })));
-const PasswordTool = lazy(() => import('../features/tools/components/PasswordTool').then(m => ({ default: m.PasswordTool })));
-const RegexTool = lazy(() => import('../features/tools/components/RegexTool').then(m => ({ default: m.RegexTool })));
-const ColorTool = lazy(() => import('../features/tools/components/ColorTool').then(m => ({ default: m.ColorTool })));
-const JwtTool = lazy(() => import('../features/tools/components/JwtTool').then(m => ({ default: m.JwtTool })));
-const RsaTool = lazy(() => import('../features/tools/components/RsaTool').then(m => ({ default: m.RsaTool })));
-const UaParserTool = lazy(() => import('../features/tools/components/UaParserTool').then(m => ({ default: m.UaParserTool })));
-const SqlTool = lazy(() => import('../features/tools/components/SqlTool').then(m => ({ default: m.SqlTool })));
-const SqlAdvisorTool = lazy(() => import('../features/tools/components/SqlAdvisorTool').then(m => ({ default: m.SqlAdvisorTool })));
-const CrontabTool = lazy(() => import('../features/tools/components/CrontabTool').then(m => ({ default: m.CrontabTool })));
-const UrlParserTool = lazy(() => import('../features/tools/components/UrlParserTool').then(m => ({ default: m.UrlParserTool })));
-const HttpRequestTool = lazy(() => import('../features/tools/components/HttpRequestTool').then(m => ({ default: m.HttpRequestTool })));
-const TextDiffTool = lazy(() => import('../features/tools/components/TextDiffTool').then(m => ({ default: m.TextDiffTool })));
-const OtpTool = lazy(() => import('../features/tools/components/OtpTool').then(m => ({ default: m.OtpTool })));
-const ChmodTool = lazy(() => import('../features/tools/components/ChmodTool').then(m => ({ default: m.ChmodTool })));
-const WebsocketTool = lazy(() => import('../features/tools/components/WebsocketTool').then(m => ({ default: m.WebsocketTool })));
-const Base64FileTool = lazy(() => import('../features/tools/components/Base64FileTool').then(m => ({ default: m.Base64FileTool })));
-const TextTemplateTool = lazy(() => import('../features/tools/components/TextTemplateTool').then(m => ({ default: m.TextTemplateTool })));
-const DockerConvertTool = lazy(() => import('../features/tools/components/DockerConvertTool').then(m => ({ default: m.DockerConvertTool })));
-const XmlJsonTool = lazy(() => import('../features/tools/components/XmlJsonTool').then(m => ({ default: m.XmlJsonTool })));
-const NumberBaseTool = lazy(() => import('../features/tools/components/NumberBaseTool').then(m => ({ default: m.NumberBaseTool })));
+// 同步导入所有工具组件
+import { JsonTool } from '../features/tools/components/JsonTool';
+import { Base64Tool } from '../features/tools/components/Base64Tool';
+import { UrlTool } from '../features/tools/components/UrlTool';
+import { HtmlEntityTool } from '../features/tools/components/HtmlEntityTool';
+import { HashTool } from '../features/tools/components/HashTool';
+import { TimestampTool } from '../features/tools/components/TimestampTool';
+import { UuidTool } from '../features/tools/components/UuidTool';
+import { QrCodeTool } from '../features/tools/components/QrCodeTool';
+import { PasswordTool } from '../features/tools/components/PasswordTool';
+import { RegexTool } from '../features/tools/components/RegexTool';
+import { ColorTool } from '../features/tools/components/ColorTool';
+import { JwtTool } from '../features/tools/components/JwtTool';
+import { RsaTool } from '../features/tools/components/RsaTool';
+import { UaParserTool } from '../features/tools/components/UaParserTool';
+import { SqlTool } from '../features/tools/components/SqlTool';
+import { SqlAdvisorTool } from '../features/tools/components/SqlAdvisorTool';
+import { CrontabTool } from '../features/tools/components/CrontabTool';
+import { UrlParserTool } from '../features/tools/components/UrlParserTool';
+import { HttpRequestTool } from '../features/tools/components/HttpRequestTool';
+import { TextDiffTool } from '../features/tools/components/TextDiffTool';
+import { OtpTool } from '../features/tools/components/OtpTool';
+import { ChmodTool } from '../features/tools/components/ChmodTool';
+import { WebsocketTool } from '../features/tools/components/WebsocketTool';
+import { Base64FileTool } from '../features/tools/components/Base64FileTool';
+import { TextTemplateTool } from '../features/tools/components/TextTemplateTool';
+import { DockerConvertTool } from '../features/tools/components/DockerConvertTool';
+import { XmlJsonTool } from '../features/tools/components/XmlJsonTool';
+import { NumberBaseTool } from '../features/tools/components/NumberBaseTool';
 
 export const tools: Tool[] = [
   // ==================== 格式化工具 ====================

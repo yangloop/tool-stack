@@ -4,21 +4,30 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build && node scripts/prerender.cjs",
-    "preview": "vite preview"
+    "dev": "tsx server.ts",
+    "dev:spa": "vite",
+    "build": "npm run build:client && npm run build:server && node scripts/prerender-ssr.cjs",
+    "build:client": "vite build --outDir dist/client",
+    "build:server": "vite build --ssr src/entry-server.tsx --outDir dist/server",
+    "preview": "cross-env NODE_ENV=production tsx server.ts",
+    "start": "cross-env NODE_ENV=production tsx server.ts",
+    "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
     "@types/diff": "^7.0.0",
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.11.0",
     "@types/prismjs": "^1.26.6",
     "@types/qrcode": "^1.5.6",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.4",
     "autoprefixer": "^10.4.27",
+    "cross-env": "^7.0.3",
     "postcss": "^8.5.8",
     "tailwindcss": "^3.4.17",
     "terser": "^5.46.0",
+    "tsx": "^4.7.0",
     "typescript": "^5.9.3",
     "vite": "^7.3.1"
   },
@@ -39,6 +48,7 @@
     "crypto-js": "^4.2.0",
     "decomposerize": "^1.4.4",
     "diff": "^7.0.0",
+    "express": "^4.18.2",
     "fast-xml-parser": "^5.5.4",
     "js-base64": "^3.7.8",
     "jsencrypt": "^3.5.4",
@@ -50,7 +60,7 @@
     "react": "^19.2.4",
     "react-colorful": "^5.6.1",
     "react-dom": "^19.2.4",
-    "react-json-view": "^1.21.3",
+    "react-router": "^7.13.1",
     "react-router-dom": "^7.13.1",
     "sql-formatter": "^15.7.2"
   }

@@ -1,81 +1,56 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, minimum-scale=1.0, user-scalable=yes, viewport-fit=cover" />
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ToolStack</title>
+  <style>
+    *,*::before,*::after{box-sizing:border-box}
+    html,body{margin:0;padding:0;min-height:100vh}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif}
     
-    <!-- 移动端优化 -->
-    <meta name="format-detection" content="telephone=no" />
-    <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-    <meta name="apple-mobile-web-app-title" content="ToolStack" />
+    /* 加载遮罩 - 覆盖整个页面 */
+    #loader{position:fixed;inset:0;z-index:2147483647;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#f8fafc;transition:opacity .15s ease-out}
+    .dark #loader{background:#0f172a}
+    #loader.hidden{opacity:0;visibility:hidden;pointer-events:none}
+    #loader .spinner{width:48px;height:48px;border:3px solid #e2e8f0;border-top-color:#6366f1;border-radius:50%;animation:spin 1s linear infinite}
+    .dark #loader .spinner{border-color:#334155;border-top-color:#6366f1}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    #loader .text{margin-top:16px;color:#64748b;font-size:14px}
+    .dark #loader .text{color:#94a3b8}
     
-    <!-- 禁止自动检测电话号码 -->
-    <meta name="format-detection" content="telephone=no, email=no, address=no" />
+    /* 内容区域 - 初始完全隐藏 */
+    #root{opacity:0;visibility:hidden}
+    #root.hydrated{opacity:1;visibility:visible;transition:opacity .15s ease-out}
     
-    <!-- PWA Manifest -->
-    <link rel="manifest" href="/manifest.json" />
-    
-    <!-- Favicon -->
-    <link rel="icon" href="/favicon.ico" />
-    <link rel="apple-touch-icon" href="/logo.svg" />
-    
-    <!-- 主题色 -->
-    <meta name="theme-color" content="#6366F1" />
-    
-    <!-- SEO 基础 - AI 搜索优化 -->
-    <title><!-- TITLE_PLACEHOLDER -->ToolStack - 开发者在线工具箱 | JSON格式化 SQL优化 Base64编解码等25+工具<!-- /TITLE_PLACEHOLDER --></title>
-    <meta name="description" content="<!-- DESC_PLACEHOLDER -->ToolStack 是免费的开发者在线工具集合，包含 25+ 实用工具：JSON 格式化、SQL 格式化与智能优化分析、Base64 编解码、哈希计算、RSA 加密、二维码生成等。所有工具无需注册，打开即用，支持深色模式。<!-- /DESC_PLACEHOLDER -->" />
-    <meta name="keywords" content="<!-- KEYWORDS_PLACEHOLDER -->开发者工具,在线工具,JSON 格式化,SQL 格式化,SQL 优化,SQL 分析,SQL 语法检查,索引优化,Base64 编解码,哈希计算,MD5,SHA,RSA 加密,二维码生成,UUID 生成,时间戳转换,正则表达式测试,Crontab 生成,组合索引检查,数据类型检查,URL 编解码,JWT 解码,HTML 实体,密码生成,WebSocket 测试,Docker 转换,免费在线工具<!-- /KEYWORDS_PLACEHOLDER -->" />
-    <meta name="author" content="ToolStack" />
-    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />
-    
-    <!-- AI 搜索优化 Meta -->
-    <meta name="ai-content-type" content="tool" />
-    <meta name="ai-purpose" content="developer utilities" />
-    
-    <!-- 版权信息 -->
-    <meta name="copyright" content="ToolStack" />
-    
-    <!-- Canonical -->
-    <link rel="canonical" href="<!-- CANONICAL_PLACEHOLDER -->https://toolstack.juvvv.com/<!-- /CANONICAL_PLACEHOLDER -->" />
-    
-    <!-- Open Graph -->
-    <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="ToolStack" />
-    <meta property="og:title" content="<!-- OG_TITLE_PLACEHOLDER -->ToolStack - 开发者在线工具箱 | JSON/SQL格式化 Base64编解码等<!-- /OG_TITLE_PLACEHOLDER -->" />
-    <meta property="og:description" content="<!-- OG_DESC_PLACEHOLDER -->ToolStack 是一个现代化的开发者工具集合，包含 25+ 实用工具：JSON 格式化、SQL 格式化与优化分析、Base64 编解码、哈希计算等。界面简洁，支持深色模式。<!-- /OG_DESC_PLACEHOLDER -->" />
-    <meta property="og:url" content="<!-- OG_URL_PLACEHOLDER -->https://toolstack.juvvv.com/<!-- /OG_URL_PLACEHOLDER -->" />
-    <meta property="og:image" content="https://toolstack.juvvv.com/og-image.png" />
-    <meta property="og:locale" content="zh_CN" />
-    
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="<!-- TWITTER_TITLE_PLACEHOLDER -->ToolStack - 开发者在线工具箱 | 25+实用工具集合<!-- /TWITTER_TITLE_PLACEHOLDER -->" />
-    <meta name="twitter:description" content="<!-- TWITTER_DESC_PLACEHOLDER -->ToolStack 是一个现代化的开发者工具集合，包含 25+ 实用工具：JSON格式化、SQL格式化与优化分析、Base64编解码等。<!-- /TWITTER_DESC_PLACEHOLDER -->" />
-    <meta name="twitter:image" content="https://toolstack.juvvv.com/og-image.png" />
-    
-    <!-- 结构化数据 -->
-    <script type="application/ld+json">
-<!-- JSONLD_PLACEHOLDER -->
-{
-  "@context": "https://schema.org",
-  "@type": "WebSite",
-  "name": "ToolStack",
-  "description": "开发者工具集合",
-  "url": "https://toolstack.juvvv.com/",
-  "potentialAction": {
-    "@type": "SearchAction",
-    "target": "https://toolstack.juvvv.com/?search={search_term_string}",
-    "query-input": "required name=search_term_string"
-  }
-}
-<!-- /JSONLD_PLACEHOLDER -->
-    </script>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+    /* 兜底：万一JS失败，3秒后强制显示 */
+    @media (prefers-reduced-motion:no-preference){
+      body:not(.js-loaded) #root{animation:forceShow 3s forwards}
+      @keyframes forceShow{0%,99%{opacity:0}100%{opacity:1;visibility:visible}}
+    }
+  </style>
+  <script type="module">
+    import RefreshRuntime from "/@react-refresh"
+    RefreshRuntime.injectIntoGlobalHook(window)
+    window.$RefreshReg$ = () => {}
+    window.$RefreshSig$ = () => (type) => type
+    window.__vite_plugin_react_preamble_installed__ = true
+  </script>
+</head>
+<body>
+  <div id="loader">
+    <div class="spinner"></div>
+    <div class="text">加载中...</div>
+  </div>
+  <div id="root"></div>
+  <script type="module" src="/src/entry-client.tsx"></script>
+  <script>
+    (function(){
+      const saved=localStorage.getItem('theme-dark');
+      const prefers=window.matchMedia('(prefers-color-scheme:dark)').matches;
+      if(saved==='true'||(!saved&&prefers))document.documentElement.classList.add('dark');
+      document.body.classList.add('js-loaded');
+    })();
+  </script>
+</body>
 </html>

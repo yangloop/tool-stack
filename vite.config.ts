@@ -2,47 +2,30 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { resolve } from 'path'
 
-// https://vite.dev/config/
-export default defineConfig({
+export default defineConfig(({ mode, isSsrBuild }) => ({
   plugins: [
     react({
-      // 优化 JSX 转换
       jsxRuntime: 'automatic',
+      include: '**/*.{jsx,tsx}',
     }),
   ],
   
-  // 构建优化
   build: {
-    // 输出目录
-    outDir: 'dist',
-    
-    // 生产环境不生成 sourcemap，减少体积
+    outDir: isSsrBuild ? 'dist/server' : 'dist/client',
     sourcemap: false,
     
-    // 代码分割策略
-    rollupOptions: {
-      input: {
-        main: resolve(__dirname, 'index.html'),
-      },
+    // SSR 构建时不使用 manualChunks
+    rollupOptions: isSsrBuild ? {
+      input: '/src/entry-server.tsx',
+    } : {
       output: {
-        // 代码分割 - 静态配置避免循环依赖
         manualChunks: {
-          // 核心框架
           'vendor-core': ['react', 'react-dom', 'react-router-dom'],
-          // UI 组件
           'vendor-ui': ['lucide-react', 'react-colorful'],
-          // Docker 工具（大）
           'vendor-docker': ['composerize', 'decomposerize'],
-          // JSON 查看器（大）
-          'vendor-json': ['react-json-view'],
-          // 加密相关
           'vendor-crypto': ['jsencrypt', 'crypto-js', 'otpauth'],
-          // 其他工具
           'vendor-utils': ['axios', 'qrcode'],
-          // CodeMirror 改为按需动态导入，不再打包到 vendor
-          // 语言包会通过动态 import 单独分割
         },
-        // 静态资源命名
         assetFileNames: (assetInfo) => {
           const info = assetInfo.name.split('.')
           const ext = info[info.length - 1]
@@ -51,42 +34,33 @@ export default defineConfig({
           }
           return `assets/[name]-[hash][extname]`
         },
-        // JS 文件命名
         chunkFileNames: 'assets/js/[name]-[hash].js',
-        // 入口文件命名
         entryFileNames: 'assets/js/[name]-[hash].js',
       },
     },
     
-    // 压缩选项
-    minify: 'terser',
-    terserOptions: {
+    minify: isSsrBuild ? false : 'terser',
+    terserOptions: isSsrBuild ? undefined : {
       compress: {
         drop_console: true,
         drop_debugger: true,
       },
     },
     
-    // 目标浏览器
     target: 'es2015',
-    
-    // 调整 chunk 大小警告阈值（第三方库较大是正常的）
-    chunkSizeWarningLimit: 700,
-    
-    // 启用 gzip 压缩报告
-    reportCompressedSize: true,
-    
-    // CSS 优化
-    cssMinify: true,
+    chunkSizeWarningLimit: 1500,
+    reportCompressedSize: !isSsrBuild,
+    cssMinify: !isSsrBuild,
   },
   
-  // 开发服务器配置
   server: {
     port: 5173,
     host: true,
+    hmr: mode === 'development' ? {
+      overlay: false,
+    } : false,
   },
   
-  // 路径别名
   resolve: {
     alias: {
       '@': resolve(__dirname, 'src'),
@@ -97,19 +71,38 @@ export default defineConfig({
     },
   },
   
-  // Worker 配置
   worker: {
     format: 'es',
   },
   
-  // CSS 配置
   css: {
     devSourcemap: true,
   },
   
-  // 预览配置
   preview: {
     port: 4173,
     host: true,
   },
-})
+  
+  optimizeDeps: {
+    include: [
+      'react', 
+      'react-dom', 
+      'react-router-dom',
+      '@codemirror/lang-json',
+      '@codemirror/lang-sql',
+      '@codemirror/lang-xml',
+      '@codemirror/lang-html',
+      '@codemirror/lang-yaml',
+      '@codemirror/legacy-modes/mode/shell',
+    ],
+    esbuildOptions: {
+      target: 'es2020',
+    },
+  },
+  
+  esbuild: {
+    jsx: 'automatic',
+    target: 'es2020',
+  },
+}))

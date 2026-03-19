@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { useLocalStorage } from '../hooks/useLocalStorage';
 import { Link, useNavigate } from 'react-router-dom';
 import { 
   Menu, X, Sun, Moon, Search, 
@@ -18,16 +17,46 @@ interface LayoutProps {
 }
 
 export function Layout({ children, activeToolId }: LayoutProps) {
-  const [isDark, setIsDark] = useLocalStorage('theme-dark', false);
+  // SSR 友好的状态管理
+  const [isDark, setIsDark] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [expandedCategories, setExpandedCategories] = useLocalStorage<string[]>('sidebar-expanded-cats', ['format', 'codec', 'security', 'dev', 'util']);
+  const [expandedCategories, setExpandedCategories] = useState<string[]>(['format', 'codec', 'security', 'dev', 'util']);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isClient, setIsClient] = useState(false);
   
   const navigate = useNavigate();
   const sidebarRef = useRef<HTMLElement>(null);
   const touchStartX = useRef<number>(0);
+
+  // 客户端挂载后读取 localStorage
+  useEffect(() => {
+    setIsClient(true);
+    try {
+      const savedTheme = localStorage.getItem('theme-dark');
+      const savedExpanded = localStorage.getItem('sidebar-expanded-cats');
+      if (savedTheme) setIsDark(JSON.parse(savedTheme));
+      if (savedExpanded) setExpandedCategories(JSON.parse(savedExpanded));
+    } catch {
+      // 忽略 localStorage 错误
+    }
+  }, []);
+
+  // 保存到 localStorage
+  useEffect(() => {
+    if (!isClient) return;
+    try {
+      localStorage.setItem('theme-dark', JSON.stringify(isDark));
+    } catch {}
+  }, [isDark, isClient]);
+
+  useEffect(() => {
+    if (!isClient) return;
+    try {
+      localStorage.setItem('sidebar-expanded-cats', JSON.stringify(expandedCategories));
+    } catch {}
+  }, [expandedCategories, isClient]);
 
   // 同步暗黑模式状态到 document.documentElement
   useEffect(() => {
@@ -149,8 +178,8 @@ export function Layout({ children, activeToolId }: LayoutProps) {
                   <div className={`absolute inset-0 rounded-xl bg-primary-500/10 transition-all duration-300 ${isMobileMenuOpen ? 'scale-100 opacity-100' : 'scale-0 opacity-0'}`} />
                   <div className="relative flex items-center justify-center w-10 h-10 rounded-xl text-surface-600 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-700 transition-all duration-200">
                     <div className="relative w-5 h-5">
-                      <Menu className={`absolute inset-0 w-5 h-5 transition-all duration-300 ${isMobileMenuOpen ? 'rotate-90 opacity-0' : 'rotate-0 opacity-100'}`} />
-                      <X className={`absolute inset-0 w-5 h-5 transition-all duration-300 ${isMobileMenuOpen ? 'rotate-0 opacity-100' : '-rotate-90 opacity-0'}`} />
+                      <Menu className={`absolute inset-0 w-5 h-5 transition-all duration-300 ${isMobileMenuOpen ? 'rotate-90 opacity-0' : 'rotate-0 opacity-100'}`} style={{ width: '20px', height: '20px' }} />
+                      <X className={`absolute inset-0 w-5 h-5 transition-all duration-300 ${isMobileMenuOpen ? 'rotate-0 opacity-100' : '-rotate-90 opacity-0'}`} style={{ width: '20px', height: '20px' }} />
                     </div>
                   </div>
                 </button>
@@ -166,13 +195,14 @@ export function Layout({ children, activeToolId }: LayoutProps) {
                       src="/logo.svg" 
                       alt="ToolStack" 
                       className="relative w-8 h-8 sm:w-9 sm:h-9 rounded-xl shadow-lg shadow-primary-500/20"
+                      style={{ width: '32px', height: '32px' }}
                     />
                   </div>
                   <div className="flex items-center gap-1.5">
                     <span className="text-lg sm:text-xl font-bold text-gradient">
                       ToolStack
                     </span>
-                    <Sparkles className="hidden sm:block w-3.5 h-3.5 text-primary-400 animate-pulse" />
+                    <Sparkles className="hidden sm:block w-3.5 h-3.5 text-primary-400 animate-pulse" style={{ width: '14px', height: '14px' }} />
                   </div>
                 </Link>
               </div>
@@ -181,7 +211,7 @@ export function Layout({ children, activeToolId }: LayoutProps) {
               <div className="hidden md:flex flex-1 max-w-md mx-4 lg:mx-8">
                 <div className="relative w-full group">
                   <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                    <Search className="w-4 h-4 text-surface-400 group-focus-within:text-primary-500 transition-colors duration-200" />
+                    <Search className="w-4 h-4 text-surface-400 group-focus-within:text-primary-500 transition-colors duration-200" style={{ width: '16px', height: '16px' }} />
                   </div>
                   <input
                     type="text"
@@ -210,8 +240,8 @@ export function Layout({ children, activeToolId }: LayoutProps) {
                   aria-label="切换主题"
                 >
                   <div className="relative w-5 h-5">
-                    <Sun className={`absolute inset-0 w-5 h-5 transition-all duration-500 ${isDark ? 'rotate-0 scale-100 opacity-100' : 'rotate-90 scale-0 opacity-0'}`} />
-                    <Moon className={`absolute inset-0 w-5 h-5 transition-all duration-500 ${isDark ? '-rotate-90 scale-0 opacity-0' : 'rotate-0 scale-100 opacity-100'}`} />
+                    <Sun className={`absolute inset-0 w-5 h-5 transition-all duration-500 ${isDark ? 'rotate-0 scale-100 opacity-100' : 'rotate-90 scale-0 opacity-0'}`} style={{ width: '20px', height: '20px' }} />
+                    <Moon className={`absolute inset-0 w-5 h-5 transition-all duration-500 ${isDark ? '-rotate-90 scale-0 opacity-0' : 'rotate-0 scale-100 opacity-100'}`} style={{ width: '20px', height: '20px' }} />
                   </div>
                 </button>
                 
@@ -223,7 +253,7 @@ export function Layout({ children, activeToolId }: LayoutProps) {
                   className="hidden sm:flex items-center justify-center w-10 h-10 rounded-xl text-surface-600 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-700 hover:text-primary-500 dark:hover:text-primary-400 transition-all duration-200"
                   title="Gitee"
                 >
-                  <svg className="w-5 h-5" viewBox="0 0 1024 1024" fill="currentColor">
+                  <svg className="w-5 h-5" viewBox="0 0 1024 1024" fill="currentColor" style={{ width: '20px', height: '20px' }}>
                     <path d="M512 1024q-104 0-199-40-92-39-163-110T40 711Q0 616 0 512t40-199Q79 221 150 150T313 40q95-40 199-40t199 40q92 39 163 110t110 163q40 95 40 199t-40 199q-39 92-110 163T711 984q-95 40-199 40z m259-569H480q-10 0-17.5 7.5T455 480v64q0 10 7.5 17.5T480 569h177q11 0 18.5 7.5T683 594v13q0 31-22.5 53.5T607 683H367q-11 0-18.5-7.5T341 657V417q0-31 22.5-53.5T417 341h354q11 0 18-7t7-18v-63q0-11-7-18t-18-7H417q-38 0-72.5 14T283 283q-27 27-41 61.5T228 417v354q0 11 7 18t18 7h373q46 0 85.5-22.5t62-62Q796 672 796 626V480q0-10-7-17.5t-18-7.5z"/>
                   </svg>
                 </a>
@@ -236,7 +266,7 @@ export function Layout({ children, activeToolId }: LayoutProps) {
                   className="hidden sm:flex items-center justify-center w-10 h-10 rounded-xl text-surface-600 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-700 hover:text-primary-500 dark:hover:text-primary-400 transition-all duration-200"
                   title="GitHub"
                 >
-                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor" style={{ width: '20px', height: '20px' }}>
                     <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
                   </svg>
                 </a>
@@ -276,7 +306,7 @@ export function Layout({ children, activeToolId }: LayoutProps) {
               <div className="lg:hidden flex items-center justify-between px-3 py-3 mb-2">
                 <div className="flex items-center gap-2">
                   <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center shadow-lg shadow-primary-500/25">
-                    <img src="/logo.svg" alt="" className="w-5 h-5" />
+                    <img src="/logo.svg" alt="" className="w-5 h-5" style={{ width: '20px', height: '20px' }} />
                   </div>
                   <span className="font-semibold text-surface-900 dark:text-surface-100">ToolStack</span>
                 </div>
@@ -284,7 +314,7 @@ export function Layout({ children, activeToolId }: LayoutProps) {
                   onClick={() => setIsMobileMenuOpen(false)}
                   className="flex items-center justify-center w-8 h-8 rounded-lg text-surface-500 hover:text-surface-700 dark:hover:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-700 transition-colors"
                 >
-                  <X className="w-4 h-4" />
+                  <X className="w-4 h-4" style={{ width: '16px', height: '16px' }} />
                 </button>
               </div>
               
@@ -298,7 +328,7 @@ export function Layout({ children, activeToolId }: LayoutProps) {
                 `}
               >
                 <div className={`flex items-center justify-center w-8 h-8 rounded-lg transition-colors ${!activeToolId ? 'bg-primary-500/10 text-primary-600 dark:text-primary-400' : 'bg-surface-100 dark:bg-surface-700 text-surface-500 group-hover:text-primary-500'}`}>
-                  <Home className="w-4 h-4" />
+                  <Home className="w-4 h-4" style={{ width: '16px', height: '16px' }} />
                 </div>
                 <span className="font-medium">首页</span>
               </Link>
@@ -308,7 +338,7 @@ export function Layout({ children, activeToolId }: LayoutProps) {
               {/* 移动端搜索 - 优化样式 */}
               <div id="mobile-search" className="md:hidden mb-3">
                 <div className="relative group">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-400 group-focus-within:text-primary-500 transition-colors" />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-400 group-focus-within:text-primary-500 transition-colors" style={{ width: '16px', height: '16px' }} />
                   <input
                     type="text"
                     id="mobile-tool-search"
@@ -340,12 +370,12 @@ export function Layout({ children, activeToolId }: LayoutProps) {
                       className="group w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm text-surface-700 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-700 text-left transition-all duration-200 hover:translate-x-0.5"
                     >
                       <span className="font-medium">{tool.name}</span>
-                      <Search className="w-3.5 h-3.5 text-surface-300 group-hover:text-primary-400 transition-colors" />
+                      <Search className="w-3.5 h-3.5 text-surface-300 group-hover:text-primary-400 transition-colors" style={{ width: '14px', height: '14px' }} />
                     </button>
                   ))}
                   {filteredTools.length === 0 && (
                     <div className="flex flex-col items-center justify-center px-3 py-8 text-surface-400">
-                      <Search className="w-8 h-8 mb-2 opacity-30" />
+                      <Search className="w-8 h-8 mb-2 opacity-30" style={{ width: '32px', height: '32px' }} />
                       <span className="text-sm">未找到相关工具</span>
                     </div>
                   )}
@@ -372,12 +402,13 @@ export function Layout({ children, activeToolId }: LayoutProps) {
                       >
                         <div className="flex items-center gap-3">
                           <div className={`flex items-center justify-center w-7 h-7 rounded-lg ${hasActiveTool ? 'bg-primary-500/10' : 'bg-surface-100 dark:bg-surface-700'}`}>
-                            <Icon className="w-3.5 h-3.5" />
+                            <Icon className="w-3.5 h-3.5" style={{ width: '14px', height: '14px' }} />
                           </div>
                           <span>{cat.name}</span>
                         </div>
                         <ChevronDown 
-                          className={`w-4 h-4 text-surface-400 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`} 
+                          className={`w-4 h-4 text-surface-400 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}
+                          style={{ width: '16px', height: '16px' }}
                         />
                       </button>
                       
@@ -442,7 +473,7 @@ export function Layout({ children, activeToolId }: LayoutProps) {
             <div className="sticky top-0 z-50 flex items-center justify-between px-4 sm:px-6 py-3 glass-card border-b-0 mx-0 sm:mx-4 mt-0 sm:mt-4">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center shadow-lg shadow-primary-500/25">
-                  <img src="/logo.svg" alt="" className="w-5 h-5" />
+                  <img src="/logo.svg" alt="" className="w-5 h-5" style={{ width: '20px', height: '20px' }} />
                 </div>
                 <span className="font-semibold text-surface-900 dark:text-surface-100">
                   {activeTool?.name || 'ToolStack'}
@@ -453,13 +484,13 @@ export function Layout({ children, activeToolId }: LayoutProps) {
                   onClick={toggleTheme}
                   className="flex items-center justify-center w-9 h-9 rounded-xl text-surface-600 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-700 transition-colors"
                 >
-                  {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+                  {isDark ? <Sun className="w-4 h-4" style={{ width: '16px', height: '16px' }} /> : <Moon className="w-4 h-4" style={{ width: '16px', height: '16px' }} />}
                 </button>
                 <button
                   onClick={toggleFullscreen}
                   className="flex items-center gap-2 px-3 py-2 rounded-xl bg-gradient-to-r from-primary-500 to-primary-600 text-white text-sm font-medium shadow-lg shadow-primary-500/25 hover:shadow-primary-500/40 transition-all"
                 >
-                  <Minimize2 className="w-4 h-4" />
+                  <Minimize2 className="w-4 h-4" style={{ width: '16px', height: '16px' }} />
                   <span className="hidden sm:inline">退出全屏</span>
                 </button>
               </div>
