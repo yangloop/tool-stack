@@ -9,44 +9,93 @@
   <link rel="manifest" href="/manifest.json">
   <link rel="icon" href="/favicon.ico">
   
-  <!-- Schema.org 结构化数据 -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    "name": "ToolStack",
-    "alternateName": "ToolStack 开发者工具箱",
-    "url": "https://toolstack.juvvv.com/",
-    "description": "ToolStack 是免费的开发者在线工具集合，包含 25+ 实用工具：JSON 格式化、SQL 优化、Base64 编解码等。",
-    "potentialAction": {
-      "@type": "SearchAction",
-      "target": "https://toolstack.juvvv.com/?search={search_term_string}",
-      "query-input": "required name=search_term_string"
-    },
-    "publisher": {
-      "@type": "Organization",
-      "name": "ToolStack",
-      "url": "https://toolstack.juvvv.com/",
-      "logo": {
-        "@type": "ImageObject",
-        "url": "https://toolstack.juvvv.com/logo.svg",
-        "width": "512",
-        "height": "512"
-      }
-    }
-  }
-  </script>
-  
+  <!-- 关键 CSS - 防止闪烁 -->
   <style>
-    *,*::before,*::after{box-sizing:border-box}
-    html,body{margin:0;padding:0;min-height:100vh}
-    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html,body{min-height:100vh;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif}
+    body{background:#f8fafc;color:#0f172a}
+    .dark body{background:#0f172a;color:#f1f5f9}
+    
+    /* 布局 */
+    .min-h-screen{min-height:100vh}
+    .flex{display:flex}
+    .flex-col{flex-direction:column}
+    .items-center{align-items:center}
+    .justify-center{justify-content:center}
+    .flex-1{flex:1}
+    .gap-2{gap:0.5rem}
+    .gap-3{gap:0.75rem}
+    .gap-4{gap:1rem}
+    
+    /* 尺寸 */
+    .w-5{width:1.25rem}.w-8{width:2rem}.w-10{width:2.5rem}
+    .h-5{height:1.25rem}.h-8{height:2rem}.h-10{height:2.5rem}
+    .h-14{height:3.5rem}
+    
+    /* 定位 */
+    .fixed{position:fixed}.sticky{position:sticky}
+    .top-0{top:0}.left-0{left:0}.right-0{right:0}
+    .z-50{z-index:50}.z-40{z-index:40}
+    
+    /* 背景 */
+    .bg-white{background:#fff}
+    .bg-surface-50{background:#f8fafc}
+    .bg-surface-100{background:#f1f5f9}
+    .bg-primary-500{background:#6366f1}
+    .dark .bg-surface-50{background:#0f172a}
+    .dark .bg-surface-100{background:#1e293b}
+    .dark .bg-white{background:#1e293b}
+    
+    /* 文字 */
+    .text-white{color:#fff}
+    .text-surface-500{color:#64748b}
+    .text-surface-600{color:#475569}
+    .text-surface-900{color:#0f172a}
+    .dark .text-surface-100{color:#f1f5f9}
+    .dark .text-surface-300{color:#cbd5e1}
+    .dark .text-surface-900{color:#f1f5f9}
+    .text-sm{font-size:0.875rem}
+    .text-lg{font-size:1.125rem}
+    .font-bold{font-weight:700}
+    .font-semibold{font-weight:600}
+    
+    /* 边框 */
+    .border-b{border-bottom:1px solid}
+    .border-surface-200{border-color:#e2e8f0}
+    .dark .border-surface-700{border-color:#334155}
+    
+    /* 圆角 */
+    .rounded-lg{border-radius:0.5rem}
+    .rounded-xl{border-radius:0.75rem}
+    
+    /* 阴影 */
+    .shadow-lg{box-shadow:0 10px 15px -3px rgba(0,0,0,0.1)}
+    
+    /* 布局 */
+    .max-w-\[1600px\]{max-width:1600px}
+    .mx-auto{margin-left:auto;margin-right:auto}
+    .px-4{padding-left:1rem;padding-right:1rem}
+    .p-4{padding:1rem}
+    .p-3{padding:0.75rem}
+    .py-2{padding-top:0.5rem;padding-bottom:0.5rem}
+    .space-y-1>*+*{margin-top:0.25rem}
+    
+    /* 侧边栏 */
+    .sidebar{width:280px;height:calc(100vh - 3.5rem);overflow-y:auto}
+    .main-content{margin-left:280px;padding-top:3.5rem}
+    
+    /* 加载遮罩 */
     #loader{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:#f8fafc;transition:opacity .2s}
     .dark #loader{background:#0f172a}
     #loader.hidden{opacity:0;visibility:hidden}
     .spinner{width:40px;height:40px;border:3px solid #e2e8f0;border-top-color:#6366f1;border-radius:50%;animation:spin .8s linear infinite}
     @keyframes spin{to{transform:rotate(360deg)}}
+    
+    /* 内容隐藏到加载完成 */
+    #root{opacity:0}
+    #root.loaded{opacity:1;transition:opacity .15s}
   </style>
+  
   <script type="module">
     import RefreshRuntime from "/@react-refresh"
     RefreshRuntime.injectIntoGlobalHook(window)

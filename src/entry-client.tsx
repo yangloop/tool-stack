@@ -4,19 +4,20 @@ import { BrowserRouter } from 'react-router-dom'
 import App from './App.tsx'
 import './style.css'
 
+const rootElement = document.getElementById('root')!
 const loaderElement = document.getElementById('loader')
 
-// 水合完成后移除加载遮罩
-function hideLoader() {
-  if (loaderElement) {
-    loaderElement.classList.add('hidden')
-    setTimeout(() => loaderElement.remove(), 200)
-  }
+// 水合完成后显示内容
+function showContent() {
+  rootElement.classList.add('loaded')
+  setTimeout(() => {
+    loaderElement?.classList.add('hidden')
+    setTimeout(() => loaderElement?.remove(), 200)
+  }, 50)
 }
 
-// 开始水合
 hydrateRoot(
-  document.getElementById('root')!,
+  rootElement,
   <StrictMode>
     <BrowserRouter>
       <App />
@@ -24,5 +25,9 @@ hydrateRoot(
   </StrictMode>,
 )
 
-// 立即隐藏加载器（SSR内容已经可见）
-hideLoader()
+// 确保水合完成后显示
+if ('requestIdleCallback' in window) {
+  requestIdleCallback(showContent, { timeout: 300 })
+} else {
+  setTimeout(showContent, 100)
+}
