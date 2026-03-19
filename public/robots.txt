@@ -1,0 +1,38 @@
+# 通用爬虫规则
+User-agent: *
+Allow: /
+Disallow: /api/
+
+# AI 爬虫规则 - 允许主流 AI 搜索引擎抓取
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: BingPreview
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+User-agent: Baiduspider
+Allow: /
+
+# 抓取频率限制
+Crawl-delay: 1
+
+# 站点地图
+Sitemap: https://toolstack.juvvv.com/sitemap.xml
