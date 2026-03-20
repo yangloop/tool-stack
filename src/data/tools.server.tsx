@@ -12,7 +12,6 @@ import { PasswordTool } from '../features/tools/components/PasswordTool';
 import { RegexTool } from '../features/tools/components/RegexTool';
 import { ColorTool } from '../features/tools/components/ColorTool';
 import { JwtTool } from '../features/tools/components/JwtTool';
-import { RsaTool } from '../features/tools/components/RsaTool';
 import { UaParserTool } from '../features/tools/components/UaParserTool';
 import { SqlTool } from '../features/tools/components/SqlTool';
 import { SqlAdvisorTool } from '../features/tools/components/SqlAdvisorTool';
@@ -28,6 +27,17 @@ import { TextTemplateTool } from '../features/tools/components/TextTemplateTool'
 import { DockerConvertTool } from '../features/tools/components/DockerConvertTool';
 import { XmlJsonTool } from '../features/tools/components/XmlJsonTool';
 import { NumberBaseTool } from '../features/tools/components/NumberBaseTool';
+import { SsrSafeToolPlaceholder } from '../features/tools/components/SsrSafeToolPlaceholder';
+
+function RsaToolSsrPlaceholder() {
+  return (
+    <SsrSafeToolPlaceholder
+      toolId="rsa"
+      title="RSA 密钥生成"
+      description="生成RSA公钥私钥对，支持加解密测试"
+    />
+  );
+}
 
 export const tools: Tool[] = [
   { id: 'json', name: 'JSON工具', description: 'JSON格式化、压缩、验证和转换', icon: 'Braces', category: 'format', component: JsonTool, hot: true },
@@ -42,7 +52,7 @@ export const tools: Tool[] = [
   { id: 'html', name: 'HTML 实体', description: 'HTML实体编码和解码', icon: 'FileCode', category: 'codec', component: HtmlEntityTool },
   { id: 'jwt', name: 'JWT 解码', description: 'JWT令牌解析和验证', icon: 'Key', category: 'codec', component: JwtTool, new: true },
   { id: 'hash', name: '哈希计算', description: 'MD5、SHA系列哈希计算', icon: 'Hash', category: 'security', component: HashTool, hot: true },
-  { id: 'rsa', name: 'RSA 密钥生成', description: '生成RSA公钥私钥对，支持加解密测试', icon: 'Key', category: 'security', component: RsaTool, hot: true, new: true },
+  { id: 'rsa', name: 'RSA 密钥生成', description: '生成RSA公钥私钥对，支持加解密测试', icon: 'Key', category: 'security', component: RsaToolSsrPlaceholder, hot: true, new: true },
   { id: 'otp', name: 'OTP 生成', description: '生成 TOTP 双因素认证验证码，支持 Google Authenticator', icon: 'Shield', category: 'security', component: OtpTool, new: true },
   { id: 'password', name: '密码生成', description: '生成安全随机密码', icon: 'Lock', category: 'security', component: PasswordTool },
   { id: 'timestamp', name: '时间戳转换', description: 'Unix时间戳和日期互转', icon: 'Clock', category: 'dev', component: TimestampTool, hot: true },
