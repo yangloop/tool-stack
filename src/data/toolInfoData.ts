@@ -71,10 +71,10 @@ export const toolInfoData: Record<string, ToolInfoData> = {
   'text-diff': {
     description: {
       items: [
-        '对比两段文本的差异',
-        '支持行内字符级高亮',
-        '支持显示/隐藏相同行',
-        '支持复制差异结果',
+        '基于 Monaco Diff Editor 的 VS Code 风格对比视图',
+        '支持双栏和行内差异对比、差异统计与快速定位',
+        '支持 JSON、SQL、TS/JS、HTML、XML、CSS、YAML 等代码对比',
+        '支持一键格式化和 JSON 键名重排',
       ],
     },
     legend: {

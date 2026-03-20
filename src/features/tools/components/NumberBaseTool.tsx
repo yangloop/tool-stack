@@ -162,50 +162,83 @@ export function NumberBaseTool() {
           {baseConfigs.map((config) => (
             <div
               key={config.id}
-              className={`relative rounded-lg border transition-colors ${
+              className={`relative overflow-hidden rounded-xl border transition-all duration-200 ${
                 lastEdited === config.id
-                  ? 'border-primary-500 bg-primary-50/30 dark:bg-primary-900/10'
-                  : 'border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-900'
+                  ? 'border-primary-400 bg-primary-50/40 shadow-soft ring-1 ring-primary-200 dark:border-primary-500/70 dark:bg-primary-900/15 dark:ring-primary-500/20'
+                  : 'border-surface-200 bg-surface-50/80 hover:border-surface-300 hover:bg-surface-50 dark:border-surface-700 dark:bg-surface-900/70 dark:hover:border-surface-600 dark:hover:bg-surface-900'
               }`}
             >
-              <div className="flex items-center gap-3 p-3">
-                <label
-                  htmlFor={`base-${config.id}`}
-                  className="w-16 sm:w-20 text-sm font-medium text-surface-700 dark:text-surface-300 shrink-0"
-                >
-                  {config.name}
-                </label>
-                <div className="flex-1 relative">
-                  <input
-                    type="text"
-                    id={`base-${config.id}`}
-                    name={`base-${config.id}`}
-                    value={getDisplayValue(config.id, values[config.id])}
-                    onChange={(e) => handleValueChange(config.id, e.target.value)}
-                    placeholder={config.placeholder}
-                    className="w-full px-3 py-2 text-sm sm:text-base bg-transparent border-0 focus:ring-0 dark:text-white font-mono"
-                    spellCheck={false}
-                    autoComplete="off"
-                  />
+              <div className="flex flex-col gap-3 p-3.5 sm:flex-row sm:items-center sm:gap-4 sm:p-4">
+                <div className="flex w-full items-center justify-between gap-3 sm:w-32 sm:flex-col sm:items-start sm:justify-center">
+                  <label
+                    htmlFor={`base-${config.id}`}
+                    className="text-base font-semibold tracking-tight text-surface-800 dark:text-surface-100 sm:text-lg"
+                  >
+                    {config.name}
+                  </label>
+                  <div className="flex items-center gap-2">
+                    {config.prefix ? (
+                      <span className="rounded-full bg-surface-100 px-2 py-0.5 text-[10px] font-medium text-surface-500 dark:bg-surface-800 dark:text-surface-400">
+                        前缀 {config.prefix}
+                      </span>
+                    ) : (
+                      <span className="rounded-full bg-surface-100 px-2 py-0.5 text-[10px] font-medium text-surface-500 dark:bg-surface-800 dark:text-surface-400">
+                        无前缀
+                      </span>
+                    )}
+                    {lastEdited === config.id && (
+                      <span className="rounded-full bg-primary-500/10 px-2 py-0.5 text-[10px] font-medium text-primary-600 dark:bg-primary-500/20 dark:text-primary-300">
+                        当前输入
+                      </span>
+                    )}
+                  </div>
                 </div>
-                <button
-                  onClick={() => copyWithPrefix(config.id, values[config.id])}
-                  disabled={!values[config.id]}
-                  className="btn-secondary btn-sm p-2 disabled:opacity-40"
-                  title={`复制 ${config.name} 值`}
+
+                <div
+                  className={`flex min-w-0 flex-1 items-center gap-3 rounded-lg border px-3 py-2.5 shadow-sm transition-all sm:px-3.5 ${
+                    lastEdited === config.id
+                      ? 'border-primary-300 bg-surface-0 ring-2 ring-primary-100 dark:border-primary-500/60 dark:bg-surface-950/80 dark:ring-primary-500/10'
+                      : 'border-surface-200 bg-surface-0 dark:border-surface-700 dark:bg-surface-950/60'
+                  }`}
                 >
-                  {copied ? (
-                    <Check className="w-4 h-4 text-green-500" />
-                  ) : (
-                    <Copy className="w-4 h-4" />
+                  {config.prefix && (
+                    <div className="hidden shrink-0 rounded-md border border-surface-200 bg-surface-50 px-2 py-1 font-mono text-xs font-semibold text-surface-500 dark:border-surface-700 dark:bg-surface-900 dark:text-surface-400 sm:block">
+                      {config.prefix}
+                    </div>
                   )}
-                </button>
-              </div>
-              {config.prefix && (
-                <div className="absolute right-14 bottom-1 text-[10px] text-surface-400 dark:text-surface-600 pointer-events-none">
-                  前缀: {config.prefix}
+
+                  <div className="min-w-0 flex-1">
+                    <input
+                      type="text"
+                      id={`base-${config.id}`}
+                      name={`base-${config.id}`}
+                      value={getDisplayValue(config.id, values[config.id])}
+                      onChange={(e) => handleValueChange(config.id, e.target.value)}
+                      onFocus={() => setLastEdited(config.id)}
+                      placeholder={config.placeholder}
+                      className="w-full border-0 bg-transparent px-0 py-0 text-lg font-semibold tracking-wide text-surface-900 placeholder:text-surface-300 focus:ring-0 dark:text-surface-100 dark:placeholder:text-surface-600 sm:text-2xl font-mono"
+                      spellCheck={false}
+                      autoComplete="off"
+                    />
+                    <div className="mt-1 text-[10px] text-surface-400 dark:text-surface-500">
+                      示例：{config.example}
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => copyWithPrefix(config.id, values[config.id])}
+                    disabled={!values[config.id]}
+                    className="btn-secondary btn-sm shrink-0 p-2.5 disabled:opacity-40"
+                    title={`复制 ${config.name} 值`}
+                  >
+                    {copied ? (
+                      <Check className="w-4 h-4 text-green-500" />
+                    ) : (
+                      <Copy className="w-4 h-4" />
+                    )}
+                  </button>
                 </div>
-              )}
+              </div>
             </div>
           ))}
         </div>

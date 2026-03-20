@@ -1,11 +1,11 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useState, useEffect, useCallback, useRef, useMemo, useDeferredValue } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { 
   Menu, X, Sun, Moon, Search, 
   AlignLeft, Code, Hash, Terminal, Wrench, Database, Clock, Globe, Send,
   Minimize2, Home, ChevronDown, Shield, Sparkles
 } from 'lucide-react';
-import { tools, categories } from '../data/tools';
+import { tools, categories } from '@tools-data';
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   AlignLeft, Code, Hash, Terminal, Wrench, Home, Database, Clock, Globe, Send, Shield,
@@ -16,19 +16,44 @@ interface LayoutProps {
   activeToolId?: string;
 }
 
+function getInitialDarkMode() {
+  if (typeof document !== 'undefined') {
+    return document.documentElement.classList.contains('dark');
+  }
+
+  return false;
+}
+
+function getStoredExpandedCategories() {
+  if (typeof window === 'undefined') {
+    return ['format', 'codec', 'security', 'dev', 'util'];
+  }
+
+  try {
+    const savedExpanded = localStorage.getItem('sidebar-expanded-cats');
+    return savedExpanded ? JSON.parse(savedExpanded) : ['format', 'codec', 'security', 'dev', 'util'];
+  } catch {
+    return ['format', 'codec', 'security', 'dev', 'util'];
+  }
+}
+
 export function Layout({ children, activeToolId }: LayoutProps) {
   // SSR 友好的状态管理
-  const [isDark, setIsDark] = useState(false);
+  const [isDark, setIsDark] = useState(getInitialDarkMode);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [expandedCategories, setExpandedCategories] = useState<string[]>(['format', 'codec', 'security', 'dev', 'util']);
+  const [expandedCategories, setExpandedCategories] = useState<string[]>(getStoredExpandedCategories);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isClient, setIsClient] = useState(false);
+  const [isClient, setIsClient] = useState(() => typeof window !== 'undefined');
   
   const navigate = useNavigate();
+  const location = useLocation();
   const sidebarRef = useRef<HTMLElement>(null);
   const touchStartX = useRef<number>(0);
+  const desktopSearchRef = useRef<HTMLInputElement>(null);
+  const mobileSearchRef = useRef<HTMLInputElement>(null);
+  const deferredSearchQuery = useDeferredValue(searchQuery);
 
   // 客户端挂载后读取 localStorage
   useEffect(() => {
@@ -36,7 +61,11 @@ export function Layout({ children, activeToolId }: LayoutProps) {
     try {
       const savedTheme = localStorage.getItem('theme-dark');
       const savedExpanded = localStorage.getItem('sidebar-expanded-cats');
-      if (savedTheme) setIsDark(JSON.parse(savedTheme));
+      if (savedTheme) {
+        setIsDark(JSON.parse(savedTheme));
+      } else {
+        setIsDark(getInitialDarkMode());
+      }
       if (savedExpanded) setExpandedCategories(JSON.parse(savedExpanded));
     } catch {
       // 忽略 localStorage 错误
@@ -75,12 +104,27 @@ export function Layout({ children, activeToolId }: LayoutProps) {
     setIsFullscreen(!isFullscreen);
   };
 
-  const filteredTools = searchQuery
-    ? tools.filter(t => 
-        t.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        t.description.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-    : [];
+  const normalizedSearchQuery = deferredSearchQuery.trim().toLowerCase();
+
+  const filteredTools = useMemo(() => {
+    if (!normalizedSearchQuery) {
+      return [];
+    }
+
+    return tools.filter((tool) =>
+      tool.name.toLowerCase().includes(normalizedSearchQuery) ||
+      tool.description.toLowerCase().includes(normalizedSearchQuery)
+    );
+  }, [normalizedSearchQuery]);
+
+  const categorizedTools = useMemo(
+    () =>
+      categories.map((category) => ({
+        ...category,
+        tools: tools.filter((tool) => tool.category === category.id),
+      })),
+    []
+  );
 
   // 切换分类展开/折叠状态
   const toggleCategory = (catId: string) => {
@@ -123,8 +167,12 @@ export function Layout({ children, activeToolId }: LayoutProps) {
       // CMD/Ctrl + K 打开搜索
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
         e.preventDefault();
-        const searchInput = document.querySelector('input[type="text"]') as HTMLInputElement;
-        searchInput?.focus();
+        if (window.innerWidth >= 768) {
+          desktopSearchRef.current?.focus();
+        } else {
+          setIsMobileMenuOpen(true);
+          requestAnimationFrame(() => mobileSearchRef.current?.focus());
+        }
       }
       // ESC 关闭移动端菜单或退出全屏
       if (e.key === 'Escape') {
@@ -139,7 +187,15 @@ export function Layout({ children, activeToolId }: LayoutProps) {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isMobileMenuOpen, isFullscreen]);
 
-  const activeTool = tools.find(t => t.id === activeToolId);
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+    setSearchQuery('');
+  }, [location.pathname]);
+
+  const activeTool = useMemo(
+    () => tools.find((tool) => tool.id === activeToolId),
+    [activeToolId]
+  );
 
   // 处理工具选择
   const handleToolSelect = (toolId: string) => {
@@ -153,7 +209,7 @@ export function Layout({ children, activeToolId }: LayoutProps) {
   };
 
   return (
-    <div className={`min-h-screen bg-surface-50 dark:bg-surface-900 transition-colors duration-300 ${isDark ? 'dark' : ''}`}>
+    <div className="min-h-screen bg-surface-50 transition-colors duration-300 dark:bg-surface-900">
       {/* 顶部导航 - 全屏时隐藏 */}
       {!isFullscreen && (
         <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'safe-area-top' : ''}`}>
@@ -214,6 +270,7 @@ export function Layout({ children, activeToolId }: LayoutProps) {
                     <Search className="w-4 h-4 text-surface-400 group-focus-within:text-primary-500 transition-colors duration-200" style={{ width: '16px', height: '16px' }} />
                   </div>
                   <input
+                    ref={desktopSearchRef}
                     type="text"
                     id="tool-search"
                     name="tool-search"
@@ -240,8 +297,14 @@ export function Layout({ children, activeToolId }: LayoutProps) {
                   aria-label="切换主题"
                 >
                   <div className="relative w-5 h-5">
-                    <Sun className={`absolute inset-0 w-5 h-5 transition-all duration-500 ${isDark ? 'rotate-0 scale-100 opacity-100' : 'rotate-90 scale-0 opacity-0'}`} style={{ width: '20px', height: '20px' }} />
-                    <Moon className={`absolute inset-0 w-5 h-5 transition-all duration-500 ${isDark ? '-rotate-90 scale-0 opacity-0' : 'rotate-0 scale-100 opacity-100'}`} style={{ width: '20px', height: '20px' }} />
+                    <Sun
+                      className="absolute inset-0 w-5 h-5 rotate-90 scale-0 opacity-0 transition-all duration-500 dark:rotate-0 dark:scale-100 dark:opacity-100"
+                      style={{ width: '20px', height: '20px' }}
+                    />
+                    <Moon
+                      className="absolute inset-0 w-5 h-5 rotate-0 scale-100 opacity-100 transition-all duration-500 dark:-rotate-90 dark:scale-0 dark:opacity-0"
+                      style={{ width: '20px', height: '20px' }}
+                    />
                   </div>
                 </button>
                 
@@ -340,6 +403,7 @@ export function Layout({ children, activeToolId }: LayoutProps) {
                 <div className="relative group">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-400 group-focus-within:text-primary-500 transition-colors" style={{ width: '16px', height: '16px' }} />
                   <input
+                    ref={mobileSearchRef}
                     type="text"
                     id="mobile-tool-search"
                     name="mobile-tool-search"
@@ -382,11 +446,10 @@ export function Layout({ children, activeToolId }: LayoutProps) {
                 </div>
               ) : (
                 /* 分类折叠菜单 */
-                categories.map(cat => {
+                categorizedTools.map(cat => {
                   const Icon = iconMap[cat.icon] || Wrench;
-                  const catTools = tools.filter(t => t.category === cat.id);
                   const isExpanded = expandedCategories.includes(cat.id);
-                  const hasActiveTool = catTools.some(t => t.id === activeToolId);
+                  const hasActiveTool = cat.tools.some((tool) => tool.id === activeToolId);
                   
                   return (
                     <div key={cat.id}>
@@ -416,7 +479,7 @@ export function Layout({ children, activeToolId }: LayoutProps) {
                         ml-4 mt-1 space-y-0.5 transition-all duration-300 ease-out
                         ${isExpanded ? 'max-h-none opacity-100' : 'max-h-0 opacity-0 overflow-hidden'}
                       `}>
-                        {catTools.map(tool => (
+                        {cat.tools.map(tool => (
                           <Link
                             key={tool.id}
                             to={`/tool/${tool.id}`}
@@ -483,7 +546,16 @@ export function Layout({ children, activeToolId }: LayoutProps) {
                   onClick={toggleTheme}
                   className="flex items-center justify-center w-9 h-9 rounded-xl text-surface-600 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-700 transition-colors"
                 >
-                  {isDark ? <Sun className="w-4 h-4" style={{ width: '16px', height: '16px' }} /> : <Moon className="w-4 h-4" style={{ width: '16px', height: '16px' }} />}
+                  <div className="relative h-4 w-4">
+                    <Sun
+                      className="absolute inset-0 h-4 w-4 rotate-90 scale-0 opacity-0 transition-all duration-500 dark:rotate-0 dark:scale-100 dark:opacity-100"
+                      style={{ width: '16px', height: '16px' }}
+                    />
+                    <Moon
+                      className="absolute inset-0 h-4 w-4 rotate-0 scale-100 opacity-100 transition-all duration-500 dark:-rotate-90 dark:scale-0 dark:opacity-0"
+                      style={{ width: '16px', height: '16px' }}
+                    />
+                  </div>
                 </button>
                 <button
                   onClick={toggleFullscreen}

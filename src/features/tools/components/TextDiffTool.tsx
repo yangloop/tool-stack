@@ -1,412 +1,688 @@
-import { useState, useMemo } from 'react';
-import { CodeEditor } from '../../../components/CodeEditor';
-import { GitCompare, Trash2, ArrowLeftRight, Copy, Check, FileText } from 'lucide-react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import type * as Monaco from 'monaco-editor';
+import {
+  ArrowLeftRight,
+  Check,
+  ChevronsDownUp,
+  ChevronsUpDown,
+  Copy,
+  FileJson,
+  GitCompare,
+  Maximize2,
+  Minimize2,
+  RefreshCcw,
+  Sparkles,
+  Trash2,
+  WrapText,
+} from 'lucide-react';
 import { ToolHeader } from '../../../components/common';
-import * as Diff from 'diff';
-import { useClipboard } from '../../../hooks/useLocalStorage';
+import { MonacoDiffEditor } from '../../../components/MonacoDiffEditor';
 import { AdFooter } from '../../../components/ads';
+import { useClipboard } from '../../../hooks/useLocalStorage';
 import { ToolInfoAuto } from './ToolInfoSection';
+import {
+  canFormatLanguage,
+  canReorderJson,
+  formatContent,
+  reorderJsonContent,
+  type DiffLanguage,
+} from '../../../utils/codeFormatters';
 
-interface DiffLine {
-  type: 'equal' | 'insert' | 'delete' | 'modify';
-  leftLineNum: number | null;
-  rightLineNum: number | null;
-  leftContent: string;
-  rightContent: string;
+interface DiffStats {
+  addedLines: number;
+  removedLines: number;
+  modifiedLines: number;
+  changedBlocks: number;
+  inlineChanges: number;
 }
 
-// 使用 diff 库计算字符级别差异
-function computeCharDiff(oldStr: string, newStr: string): Diff.Change[] {
-  return Diff.diffChars(oldStr, newStr);
+const languageOptions: Array<{ label: string; value: DiffLanguage }> = [
+  { label: '纯文本', value: 'text' },
+  { label: 'JSON', value: 'json' },
+  { label: 'TypeScript', value: 'typescript' },
+  { label: 'JavaScript', value: 'javascript' },
+  { label: 'SQL', value: 'sql' },
+  { label: 'HTML', value: 'html' },
+  { label: 'XML', value: 'xml' },
+  { label: 'CSS', value: 'css' },
+  { label: 'YAML', value: 'yaml' },
+  { label: 'Markdown', value: 'markdown' },
+];
+
+const examples: Record<DiffLanguage, { original: string; modified: string }> = {
+  text: {
+    original: `部署清单
+- 配置环境变量
+- 初始化数据库
+- 启动 API 服务
+- 通知测试团队`,
+    modified: `部署清单
+- 配置环境变量
+- 初始化数据库
+- 启动 API 服务
+- 预热缓存
+- 通知 QA 团队`,
+  },
+  json: {
+    original: `{"name":"ToolStack","version":"1.0.0","features":["json","sql"],"flags":{"darkMode":false,"diff":false}}`,
+    modified: `{"version":"1.1.0","name":"ToolStack","features":["json","sql","diff"],"flags":{"diff":true,"darkMode":true},"seo":{"enabled":true}}`,
+  },
+  typescript: {
+    original: `export function sum(a:number,b:number){return a+b}
+
+export function formatUser(name:string){
+return name.trim()
+}`,
+    modified: `export function sum(a: number, b: number) {
+  return a + b;
 }
 
-// 行内差异高亮组件
-function InlineDiff({ oldStr, newStr, side }: { oldStr: string; newStr: string; side: 'left' | 'right' }) {
-  const diffs = useMemo(() => computeCharDiff(oldStr, newStr), [oldStr, newStr]);
-  
-  if (diffs.length === 0) {
-    return <span>{side === 'left' ? oldStr : newStr}</span>;
+export function formatUser(name: string) {
+  return name.trim().toUpperCase();
+}`,
+  },
+  javascript: {
+    original: `const users=[{id:1,name:"alice"},{id:2,name:"bob"}]
+export const names=users.map(user=>user.name)`,
+    modified: `const users = [{ id: 1, name: 'alice' }, { id: 2, name: 'bob' }];
+
+export const names = users.map((user) => user.name.toUpperCase());`,
+  },
+  sql: {
+    original: `select u.id,u.name,o.total from users u left join orders o on u.id=o.user_id where o.status='paid' order by o.created_at desc;`,
+    modified: `SELECT
+  u.id,
+  u.name,
+  o.total,
+  o.currency
+FROM users u
+LEFT JOIN orders o
+  ON u.id = o.user_id
+WHERE o.status = 'paid'
+ORDER BY o.created_at DESC;`,
+  },
+  html: {
+    original: `<section><h1>ToolStack</h1><p>Diff preview</p></section>`,
+    modified: `<section class="hero">
+  <h1>ToolStack</h1>
+  <p>Monaco diff preview</p>
+</section>`,
+  },
+  xml: {
+    original: `<config><feature name="diff" enabled="false"/><theme>light</theme></config>`,
+    modified: `<config>
+  <feature name="diff" enabled="true" />
+  <theme>dark</theme>
+</config>`,
+  },
+  css: {
+    original: `.panel{display:flex;gap:8px;color:#334155}`,
+    modified: `.panel {
+  display: grid;
+  gap: 12px;
+  color: #0f172a;
+}`,
+  },
+  yaml: {
+    original: `services:
+  web:
+    image: nginx
+    ports: ["80:80"]`,
+    modified: `services:
+  web:
+    image: nginx:stable
+    ports:
+      - "80:80"
+    restart: unless-stopped`,
+  },
+  markdown: {
+    original: `# 更新说明
+
+- 新增基础对比
+- 支持复制结果`,
+    modified: `# 更新说明
+
+- 新增 Monaco Diff
+- 支持格式化与差异导航`,
+  },
+};
+
+function createEmptyStats(): DiffStats {
+  return {
+    addedLines: 0,
+    removedLines: 0,
+    modifiedLines: 0,
+    changedBlocks: 0,
+    inlineChanges: 0,
+  };
+}
+
+function getDiffStats(lineChanges: readonly Monaco.editor.ILineChange[] | null): DiffStats {
+  if (!lineChanges?.length) {
+    return createEmptyStats();
   }
-  
-  return (
-    <span className="font-mono">
-      {diffs.map((diff, index) => {
-        const key = `${diff.added}-${diff.removed}-${index}`;
-        
-        // 左侧只显示删除和相同
-        if (side === 'left') {
-          if (diff.added) return null;
-          if (diff.removed) {
-            return (
-              <mark 
-                key={key} 
-                className="bg-red-200 dark:bg-red-800/60 text-red-900 dark:text-red-100 px-0.5 rounded"
-              >
-                {diff.value}
-              </mark>
-            );
-          }
-          return <span key={key}>{diff.value}</span>;
-        }
-        
-        // 右侧只显示新增和相同
-        if (side === 'right') {
-          if (diff.removed) return null;
-          if (diff.added) {
-            return (
-              <mark 
-                key={key} 
-                className="bg-emerald-200 dark:bg-emerald-800/60 text-emerald-900 dark:text-emerald-100 px-0.5 rounded"
-              >
-                {diff.value}
-              </mark>
-            );
-          }
-          return <span key={key}>{diff.value}</span>;
-        }
-        
-        return null;
-      })}
-    </span>
-  );
+
+  return lineChanges.reduce<DiffStats>((stats, change) => {
+    const originalLines =
+      change.originalEndLineNumber === 0
+        ? 0
+        : change.originalEndLineNumber - change.originalStartLineNumber + 1;
+    const modifiedLines =
+      change.modifiedEndLineNumber === 0
+        ? 0
+        : change.modifiedEndLineNumber - change.modifiedStartLineNumber + 1;
+
+    stats.changedBlocks += 1;
+    stats.addedLines += Math.max(0, modifiedLines - originalLines);
+    stats.removedLines += Math.max(0, originalLines - modifiedLines);
+    stats.modifiedLines += Math.min(originalLines, modifiedLines);
+    stats.inlineChanges += change.charChanges?.length ?? 0;
+
+    return stats;
+  }, createEmptyStats());
+}
+
+function getEditorValue(editor: Monaco.editor.IStandaloneCodeEditor) {
+  return editor.getModel()?.getValue() ?? '';
 }
 
 export function TextDiffTool() {
-  const [leftText, setLeftText] = useState('');
-  const [rightText, setRightText] = useState('');
+  const [original, setOriginal] = useState(examples.text.original);
+  const [modified, setModified] = useState(examples.text.modified);
+  const [language, setLanguage] = useState<DiffLanguage>('text');
+  const [renderSideBySide, setRenderSideBySide] = useState(true);
+  const [ignoreTrimWhitespace, setIgnoreTrimWhitespace] = useState(false);
+  const [wordWrap, setWordWrap] = useState<'off' | 'on'>('off');
+  const [stats, setStats] = useState<DiffStats>(createEmptyStats);
+  const [diffCount, setDiffCount] = useState(0);
+  const [activeDiffIndex, setActiveDiffIndex] = useState(0);
+  const [error, setError] = useState('');
+  const [isBusy, setIsBusy] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [contentVersion, setContentVersion] = useState(0);
   const { copied, copy } = useClipboard();
-  const [showEqualLines, setShowEqualLines] = useState(true);
-  const [showInlineDiff, setShowInlineDiff] = useState(true);
 
-  // 使用 diff 库的 diffLines 算法进行行级对比
-  const diffResult = useMemo((): DiffLine[] => {
-    const changes = Diff.diffLines(leftText, rightText);
-    const result: DiffLine[] = [];
-    
-    let leftLineNum = 1;
-    let rightLineNum = 1;
+  const diffEditorRef = useRef<Monaco.editor.IStandaloneDiffEditor | null>(null);
+  const diffChangesRef = useRef<readonly Monaco.editor.ILineChange[]>([]);
 
-    for (const change of changes) {
-      const lines = change.value.replace(/\n$/, '').split('\n');
-      // 如果原始文本以换行符结尾，最后一个空行会被 split 忽略，需要加回来
-      if (change.value.endsWith('\n') && change.value.length > 0) {
-        lines.push('');
+  const updateDiffStats = useCallback(() => {
+    const editor = diffEditorRef.current;
+    const lineChanges = editor?.getLineChanges() ?? [];
+
+    diffChangesRef.current = lineChanges;
+    setStats(getDiffStats(lineChanges));
+    setDiffCount(lineChanges.length);
+
+    setActiveDiffIndex((currentIndex) => {
+      if (lineChanges.length === 0) {
+        return 0;
       }
-      
-      for (const line of lines) {
-        if (!change.added && !change.removed) {
-          // 相同行
-          result.push({
-            type: 'equal',
-            leftLineNum: leftLineNum++,
-            rightLineNum: rightLineNum++,
-            leftContent: line,
-            rightContent: line,
-          });
-        } else if (change.added) {
-          // 新增行
-          result.push({
-            type: 'insert',
-            leftLineNum: null,
-            rightLineNum: rightLineNum++,
-            leftContent: '',
-            rightContent: line,
-          });
-        } else if (change.removed) {
-          // 删除行
-          result.push({
-            type: 'delete',
-            leftLineNum: leftLineNum++,
-            rightLineNum: null,
-            leftContent: line,
-            rightContent: '',
-          });
+
+      return Math.min(Math.max(currentIndex, 1), lineChanges.length);
+    });
+  }, []);
+
+  const handleMount = useCallback(
+    (editor: Monaco.editor.IStandaloneDiffEditor, _monaco: typeof Monaco) => {
+      diffEditorRef.current = editor;
+
+      const originalEditor = editor.getOriginalEditor();
+      const modifiedEditor = editor.getModifiedEditor();
+
+      originalEditor.onDidChangeModelContent(() => {
+        setOriginal(getEditorValue(originalEditor));
+      });
+
+      modifiedEditor.onDidChangeModelContent(() => {
+        setModified(getEditorValue(modifiedEditor));
+      });
+
+      editor.onDidUpdateDiff(() => {
+        updateDiffStats();
+      });
+
+      updateDiffStats();
+    },
+    [updateDiffStats]
+  );
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && isFullscreen) {
+        setIsFullscreen(false);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isFullscreen]);
+
+  useEffect(() => {
+    if (isFullscreen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isFullscreen]);
+
+  const applyEditorValues = useCallback((nextOriginal: string, nextModified: string) => {
+    setOriginal(nextOriginal);
+    setModified(nextModified);
+    setContentVersion((currentValue) => currentValue + 1);
+    setError('');
+  }, []);
+
+  const handleSwap = useCallback(() => {
+    applyEditorValues(modified, original);
+  }, [applyEditorValues, modified, original]);
+
+  const handleClear = useCallback(() => {
+    applyEditorValues('', '');
+    setActiveDiffIndex(0);
+  }, [applyEditorValues]);
+
+  const handleLoadExample = useCallback(() => {
+    const example = examples[language];
+    applyEditorValues(example.original, example.modified);
+  }, [applyEditorValues, language]);
+
+  const runFormatter = useCallback(
+    async (target: 'original' | 'modified' | 'both') => {
+      if (!canFormatLanguage(language)) {
+        return;
+      }
+
+      setIsBusy(true);
+      setError('');
+
+      try {
+        if (target === 'original') {
+          setOriginal(await formatContent(original, language));
+        } else if (target === 'modified') {
+          setModified(await formatContent(modified, language));
+        } else {
+          const [nextOriginal, nextModified] = await Promise.all([
+            formatContent(original, language),
+            formatContent(modified, language),
+          ]);
+          applyEditorValues(nextOriginal, nextModified);
         }
+      } catch (formatterError) {
+        setError(formatterError instanceof Error ? formatterError.message : '格式化失败');
+      } finally {
+        setIsBusy(false);
       }
+    },
+    [applyEditorValues, language, modified, original]
+  );
+
+  const runJsonReorder = useCallback(
+    (target: 'original' | 'modified' | 'both') => {
+      if (!canReorderJson(language)) {
+        return;
+      }
+
+      try {
+        if (target === 'original') {
+          setOriginal(reorderJsonContent(original));
+        } else if (target === 'modified') {
+          setModified(reorderJsonContent(modified));
+        } else {
+          applyEditorValues(reorderJsonContent(original), reorderJsonContent(modified));
+        }
+        setError('');
+      } catch (reorderError) {
+        setError(reorderError instanceof Error ? reorderError.message : 'JSON 重排失败');
+      }
+    },
+    [applyEditorValues, language, modified, original]
+  );
+
+  const navigateDiff = useCallback((direction: 'next' | 'previous') => {
+    const editor = diffEditorRef.current;
+    const changes = diffChangesRef.current;
+
+    if (!editor || changes.length === 0) {
+      return;
     }
 
-    // 处理修改行的配对（简化处理：连续的删除和插入视为修改）
-    const optimizedResult: DiffLine[] = [];
-    let i = 0;
-    while (i < result.length) {
-      const current = result[i];
-      const next = result[i + 1];
-      
-      // 如果当前是删除，下一个是插入，则合并为修改
-      if (current.type === 'delete' && next && next.type === 'insert') {
-        optimizedResult.push({
-          type: 'modify',
-          leftLineNum: current.leftLineNum,
-          rightLineNum: next.rightLineNum,
-          leftContent: current.leftContent,
-          rightContent: next.rightContent,
-        });
-        i += 2;
-      } else {
-        optimizedResult.push(current);
-        i++;
-      }
-    }
+    const nextIndex =
+      direction === 'next'
+        ? activeDiffIndex >= changes.length
+          ? 1
+          : activeDiffIndex + 1
+        : activeDiffIndex <= 1
+          ? changes.length
+          : activeDiffIndex - 1;
 
-    return optimizedResult;
-  }, [leftText, rightText]);
+    const targetChange = changes[nextIndex - 1];
+    const targetLine = targetChange.modifiedStartLineNumber || targetChange.originalStartLineNumber || 1;
 
-  // 统计信息
-  const stats = useMemo(() => {
-    const insertCount = diffResult.filter(l => l.type === 'insert').length;
-    const deleteCount = diffResult.filter(l => l.type === 'delete').length;
-    const modifyCount = diffResult.filter(l => l.type === 'modify').length;
-    const equalCount = diffResult.filter(l => l.type === 'equal').length;
-    return { insertCount, deleteCount, modifyCount, equalCount };
-  }, [diffResult]);
+    editor.revealLineInCenter(targetLine);
+    editor.getModifiedEditor().setPosition({ lineNumber: Math.max(targetLine, 1), column: 1 });
+    editor.focus();
+    setActiveDiffIndex(nextIndex);
+  }, [activeDiffIndex]);
 
-  // 过滤后的结果
-  const filteredResult = useMemo(() => {
-    if (showEqualLines) return diffResult;
-    return diffResult.filter(line => line.type !== 'equal');
-  }, [diffResult, showEqualLines]);
+  const handleCopyModified = useCallback(async () => {
+    await copy(modified);
+  }, [copy, modified]);
 
-  const handleClear = () => {
-    setLeftText('');
-    setRightText('');
-  };
+  const changedLineTotal = useMemo(
+    () => stats.addedLines + stats.removedLines + stats.modifiedLines,
+    [stats.addedLines, stats.modifiedLines, stats.removedLines]
+  );
 
-  const handleSwap = () => {
-    setLeftText(rightText);
-    setRightText(leftText);
-  };
+  const statsBadges = (
+    <div className="flex flex-wrap items-center gap-2 text-xs">
+      <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300">
+        +{stats.addedLines}
+      </span>
+      <span className="rounded-full bg-red-50 px-2.5 py-1 text-red-700 dark:bg-red-950/40 dark:text-red-300">
+        -{stats.removedLines}
+      </span>
+      <span className="rounded-full bg-amber-50 px-2.5 py-1 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300">
+        ~{stats.modifiedLines}
+      </span>
+      <span className="rounded-full bg-primary-50 px-2.5 py-1 text-primary-700 dark:bg-primary-950/40 dark:text-primary-300">
+        {stats.changedBlocks} 处差异
+      </span>
+    </div>
+  );
 
-  const handleCopyDiff = () => {
-    const diffText = diffResult
-      .filter(line => line.type !== 'equal')
-      .map(line => {
-        const prefix = line.type === 'insert' ? '+' : line.type === 'delete' ? '-' : '~';
-        const content = line.type === 'insert' ? line.rightContent : line.leftContent;
-        return `${prefix} ${content}`;
-      })
-      .join('\n');
-    copy(diffText);
-  };
+  const toolbar = (
+    <div className="mb-3 rounded-2xl border border-surface-200 bg-surface-0 px-3 py-2 shadow-soft dark:border-surface-700 dark:bg-surface-800">
+      <div className="flex flex-wrap items-center gap-2">
+        <select
+          value={language}
+          onChange={(event) => setLanguage(event.target.value as DiffLanguage)}
+          className="select min-w-[120px] flex-1 py-2 text-sm sm:max-w-[180px] sm:flex-none"
+        >
+          {languageOptions.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+
+        <button onClick={handleLoadExample} className="btn-secondary btn-tool">
+          <Sparkles className="h-3.5 w-3.5 flex-shrink-0" />
+          示例
+        </button>
+
+        <button
+          onClick={() => runFormatter('both')}
+          className="btn-primary btn-tool"
+          disabled={!canFormatLanguage(language) || (!original && !modified) || isBusy}
+        >
+          <RefreshCcw className={`h-3.5 w-3.5 flex-shrink-0 ${isBusy ? 'animate-spin' : ''}`} />
+          一键格式化
+        </button>
+
+        <button
+          onClick={() => runJsonReorder('both')}
+          className="btn-secondary btn-tool"
+          disabled={!canReorderJson(language) || (!original && !modified)}
+        >
+          <FileJson className="h-3.5 w-3.5 flex-shrink-0" />
+          JSON 重排
+        </button>
+
+        <button onClick={handleSwap} className="btn-secondary btn-tool" disabled={!original && !modified}>
+          <ArrowLeftRight className="h-3.5 w-3.5 flex-shrink-0" />
+          交换
+        </button>
+
+        <button onClick={handleClear} className="btn-ghost-danger btn-tool" disabled={!original && !modified}>
+          <Trash2 className="h-3.5 w-3.5 flex-shrink-0" />
+          清空
+        </button>
+
+        <button
+          onClick={handleCopyModified}
+          className={`btn-tool ${copied ? 'btn-ghost-success' : 'btn-ghost'}`}
+          disabled={!modified}
+        >
+          {copied ? <Check className="h-3.5 w-3.5 flex-shrink-0" /> : <Copy className="h-3.5 w-3.5 flex-shrink-0" />}
+          {copied ? '已复制' : '复制右侧'}
+        </button>
+
+        <label className="flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1.5 text-xs text-surface-500 hover:bg-surface-100 dark:text-surface-400 dark:hover:bg-surface-700/60">
+          <input
+            type="checkbox"
+            checked={renderSideBySide}
+            onChange={(event) => setRenderSideBySide(event.target.checked)}
+            className="h-4 w-4 rounded border-surface-300 text-primary-500 focus:ring-primary-500"
+          />
+          <span className="inline-flex items-center gap-1">
+            {renderSideBySide ? <ChevronsUpDown className="h-3.5 w-3.5" /> : <ChevronsDownUp className="h-3.5 w-3.5" />}
+            双栏
+          </span>
+        </label>
+
+        <label className="flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1.5 text-xs text-surface-500 hover:bg-surface-100 dark:text-surface-400 dark:hover:bg-surface-700/60">
+          <input
+            type="checkbox"
+            checked={ignoreTrimWhitespace}
+            onChange={(event) => setIgnoreTrimWhitespace(event.target.checked)}
+            className="h-4 w-4 rounded border-surface-300 text-primary-500 focus:ring-primary-500"
+          />
+          忽略空白
+        </label>
+
+        <button
+          onClick={() => setWordWrap((currentValue) => (currentValue === 'on' ? 'off' : 'on'))}
+          className={`btn-tool ${wordWrap === 'on' ? 'btn-secondary' : 'btn-ghost'}`}
+        >
+          <WrapText className="h-3.5 w-3.5 flex-shrink-0" />
+          自动换行
+        </button>
+      </div>
+    </div>
+  );
 
   return (
-    <div className="max-w-7xl mx-auto animate-fade-in">
+    <div className="mx-auto max-w-[1600px] animate-fade-in">
       <ToolHeader
-        title="文本比对"
-        description="对比两段文本的差异"
+        icon={GitCompare}
+        title="文本对比"
+        description="基于 Monaco Diff Editor 的代码与文本差异对比，支持 VS Code 风格 diff、格式化、JSON 重排和差异定位。"
+        iconColorClass="text-primary-500"
+        actions={
+          <button onClick={() => setIsFullscreen(true)} className="btn-tool-sm sm:btn-tool btn-ghost flex-shrink-0" title="全屏使用">
+            <Maximize2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">全屏使用</span>
+          </button>
+        }
       />
 
-      {/* 输入区域 */}
-      <div className="grid lg:grid-cols-2 gap-3 sm:gap-4 mb-4 sm:mb-5">
-        {/* 左侧输入 */}
-        <div className="card p-4 sm:p-6">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-xs sm:text-sm font-medium text-surface-700 dark:text-surface-300">原文本</span>
-            <span className="text-xs text-surface-400">{leftText.length} 字符</span>
-          </div>
-          <CodeEditor
-            value={leftText}
-            onChange={setLeftText}
-            language="text"
-            height={240}
-            placeholder="在此粘贴原始文本..."
-            variant="embedded"
-          />
-        </div>
+      {!isFullscreen && toolbar}
 
-        {/* 右侧输入 */}
-        <div className="card p-4 sm:p-6">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-xs sm:text-sm font-medium text-surface-700 dark:text-surface-300">对比文本</span>
-            <span className="text-xs text-surface-400">{rightText.length} 字符</span>
-          </div>
-          <CodeEditor
-            value={rightText}
-            onChange={setRightText}
-            language="text"
-            height={240}
-            placeholder="在此粘贴对比文本..."
-            variant="embedded"
-          />
-        </div>
-      </div>
-
-      {/* 工具栏 */}
-      <div className="flex flex-wrap items-center justify-between gap-3 mb-4 sm:mb-5">
-        <div className="flex items-center gap-2">
-          <button
-            onClick={handleSwap}
-            className="btn-secondary btn-tool"
-            disabled={!leftText && !rightText}
-          >
-            <ArrowLeftRight className="w-3.5 h-3.5 flex-shrink-0" />
-            交换
-          </button>
-          <button
-            onClick={handleClear}
-            className="btn-ghost-danger btn-tool"
-            disabled={!leftText && !rightText}
-          >
-            <Trash2 className="w-3.5 h-3.5 flex-shrink-0" />
-            清空
-          </button>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-          <label className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-surface-600 dark:text-surface-400 cursor-pointer">
-            <input
-              type="checkbox"
-              id="show-inline-diff"
-              name="show-inline-diff"
-              checked={showInlineDiff}
-              onChange={(e) => setShowInlineDiff(e.target.checked)}
-              className="w-3.5 h-3.5 sm:w-4 sm:h-4 rounded border-surface-300 text-primary-500 focus:ring-primary-500"
-            />
-            <span className="hidden sm:inline">行内差异高亮</span>
-            <span className="sm:hidden">行内高亮</span>
-          </label>
-          <label className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-surface-600 dark:text-surface-400 cursor-pointer">
-            <input
-              type="checkbox"
-              id="show-equal-lines"
-              name="show-equal-lines"
-              checked={showEqualLines}
-              onChange={(e) => setShowEqualLines(e.target.checked)}
-              className="w-3.5 h-3.5 sm:w-4 sm:h-4 rounded border-surface-300 text-primary-500 focus:ring-primary-500"
-            />
-            显示相同行
-          </label>
-          <div className="h-4 w-px bg-surface-300 dark:bg-surface-600 hidden sm:block" />
-          <button
-            onClick={handleCopyDiff}
-            className={`btn-tool ${copied ? 'btn-ghost-success' : 'btn-secondary'}`}
-            disabled={stats.insertCount === 0 && stats.deleteCount === 0 && stats.modifyCount === 0}
-          >
-            {copied ? <Check className="w-3.5 h-3.5 flex-shrink-0" /> : <Copy className="w-3.5 h-3.5 flex-shrink-0" />}
-            {copied ? '已复制' : '复制差异'}
-          </button>
-        </div>
-      </div>
-
-      {/* 统计信息 */}
-      {(leftText || rightText) && (
-        <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-4 sm:mb-5">
-          <div className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 rounded-lg text-xs sm:text-sm">
-            <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-emerald-500 rounded-full" />
-            相同: {stats.equalCount} 行
-          </div>
-          <div className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded-lg text-xs sm:text-sm">
-            <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-red-500 rounded-full" />
-            删除: {stats.deleteCount} 行
-          </div>
-          <div className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-400 rounded-lg text-xs sm:text-sm">
-            <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-primary-500 rounded-full" />
-            新增: {stats.insertCount} 行
-          </div>
-          <div className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 rounded-lg text-xs sm:text-sm">
-            <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-amber-500 rounded-full" />
-            修改: {stats.modifyCount} 行
-          </div>
+      {error && (
+        <div className="mb-4 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600 dark:border-red-900/60 dark:bg-red-950/30 dark:text-red-300">
+          {error}
         </div>
       )}
 
-      {/* 对比结果 */}
-      {leftText && rightText && (
-        <div className="card overflow-hidden p-0">
-          {/* 结果头部 */}
-          <div className="flex items-center justify-between px-3 sm:px-5 py-2.5 sm:py-3 border-b border-surface-200 dark:border-surface-700 bg-surface-50/50 dark:bg-surface-800/50">
-            <div className="flex items-center gap-2">
-              <FileText className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-surface-500" />
-              <span className="text-xs sm:text-sm font-medium text-surface-700 dark:text-surface-300">
-                对比结果
-              </span>
-              {showInlineDiff && (
-                <span className="badge-primary text-[9px] sm:text-[10px]">行内高亮</span>
-              )}
+      {!isFullscreen && (
+        <div className="overflow-hidden rounded-2xl border border-surface-200 bg-surface-0 shadow-soft dark:border-surface-700 dark:bg-surface-800">
+          <div className="flex flex-col gap-2 border-b border-surface-200 bg-surface-50/80 px-4 py-3 dark:border-surface-700 dark:bg-surface-900/50 md:flex-row md:items-center md:justify-between">
+          <div>
+            <div className="text-sm font-medium text-surface-800 dark:text-surface-100">Diff 视图</div>
+            <div className="mt-1 text-xs text-surface-500 dark:text-surface-400">
+              当前语言: {languageOptions.find((option) => option.value === language)?.label} · 已定位 {diffCount === 0 ? 0 : activeDiffIndex}/{diffCount} · 变更行 {changedLineTotal}
             </div>
-            <span className="text-xs text-surface-400">
-              共 {filteredResult.length} 行
-            </span>
+            <div className="mt-2">{statsBadges}</div>
           </div>
 
+          <div className="flex flex-wrap items-center gap-2">
+            <button onClick={() => navigateDiff('previous')} className="btn-secondary btn-tool" disabled={diffCount === 0}>
+              上一个差异
+            </button>
+            <button onClick={() => navigateDiff('next')} className="btn-primary btn-tool" disabled={diffCount === 0}>
+              下一个差异
+            </button>
+          </div>
+          </div>
 
+          <MonacoDiffEditor
+            original={original}
+            modified={modified}
+            contentVersion={contentVersion}
+            language={language}
+            height={620}
+            sideBySide={renderSideBySide}
+            ignoreTrimWhitespace={ignoreTrimWhitespace}
+            wordWrap={wordWrap}
+            onMount={handleMount}
+          />
+        </div>
+      )}
 
-          {/* 对比表格 */}
-          <div className="overflow-auto max-h-[400px] sm:max-h-[600px]">
-            <table className="w-full text-xs sm:text-sm">
-              <tbody>
-                {filteredResult.map((line, index) => (
-                  <tr
-                    key={index}
-                    className={`
-                      ${line.type === 'delete' ? 'bg-red-50/50 dark:bg-red-900/10' : ''}
-                      ${line.type === 'insert' ? 'bg-primary-50/50 dark:bg-primary-900/10' : ''}
-                      ${line.type === 'modify' ? 'bg-amber-50/30 dark:bg-amber-900/5' : ''}
-                      ${line.type === 'equal' ? 'hover:bg-surface-50 dark:hover:bg-surface-800/50' : ''}
-                      transition-colors
-                    `}
-                  >
-                    {/* 左侧行号 */}
-                    <td className="w-10 sm:w-12 px-2 sm:px-3 py-1.5 text-right text-[10px] sm:text-xs text-surface-400 font-mono border-r border-surface-200 dark:border-surface-700 select-none">
-                      {line.leftLineNum ?? ''}
-                    </td>
-                    {/* 左侧内容 */}
-                    <td className="w-1/2 px-2 sm:px-4 py-1.5 font-mono text-[10px] sm:text-xs border-r border-surface-200 dark:border-surface-700">
-                      {line.leftContent !== '' && (
-                        <span className={`
-                          ${line.type === 'delete' ? 'text-red-700 dark:text-red-400' : 'text-surface-700 dark:text-surface-300'}
-                        `}>
-                          {line.type === 'delete' && <span className="text-red-500 mr-1 sm:mr-2">-</span>}
-                          {line.type === 'modify' && <span className="text-amber-500 mr-1 sm:mr-2">~</span>}
-                          {line.type === 'modify' && showInlineDiff ? (
-                            <InlineDiff oldStr={line.leftContent} newStr={line.rightContent} side="left" />
-                          ) : (
-                            line.leftContent || ' '
-                          )}
-                        </span>
-                      )}
-                    </td>
-                    {/* 右侧行号 */}
-                    <td className="w-10 sm:w-12 px-2 sm:px-3 py-1.5 text-right text-[10px] sm:text-xs text-surface-400 font-mono border-r border-surface-200 dark:border-surface-700 select-none">
-                      {line.rightLineNum ?? ''}
-                    </td>
-                    {/* 右侧内容 */}
-                    <td className="w-1/2 px-2 sm:px-4 py-1.5 font-mono text-[10px] sm:text-xs">
-                      {line.rightContent !== '' && (
-                        <span className={`
-                          ${line.type === 'insert' ? 'text-primary-700 dark:text-primary-400' : 'text-surface-700 dark:text-surface-300'}
-                        `}>
-                          {line.type === 'insert' && <span className="text-primary-500 mr-1 sm:mr-2">+</span>}
-                          {line.type === 'modify' && <span className="text-amber-500 mr-1 sm:mr-2">~</span>}
-                          {line.type === 'modify' && showInlineDiff ? (
-                            <InlineDiff oldStr={line.leftContent} newStr={line.rightContent} side="right" />
-                          ) : (
-                            line.rightContent || ' '
-                          )}
-                        </span>
-                      )}
-                    </td>
-                  </tr>
+      <div className="mt-4">
+        <ToolInfoAuto toolId="text-diff" />
+      </div>
+
+      <AdFooter />
+
+      {isFullscreen && (
+        <div className="fixed inset-0 z-50 flex flex-col overflow-hidden bg-surface-0 dark:bg-surface-900">
+          <div
+            className="flex h-14 flex-shrink-0 items-center justify-between border-b border-surface-200 bg-surface-0 px-4 dark:border-surface-700 dark:bg-surface-800"
+          >
+            <div className="flex items-center gap-3">
+              <GitCompare className="h-5 w-5 text-primary-500" />
+              <span className="font-medium text-surface-900 dark:text-surface-100">文本对比</span>
+              <span className="hidden text-xs text-surface-400 sm:inline">按 ESC 退出全屏</span>
+            </div>
+            <button onClick={() => setIsFullscreen(false)} className="btn-tool-sm sm:btn-tool btn-ghost flex-shrink-0" title="退出全屏">
+              <Minimize2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline">退出全屏</span>
+            </button>
+          </div>
+
+          <div className="border-b border-surface-200 bg-surface-50/90 px-3 py-2 dark:border-surface-700 dark:bg-surface-900/60">
+            <div className="flex flex-nowrap items-center gap-2 overflow-x-auto pb-1">
+              <select
+                value={language}
+                onChange={(event) => setLanguage(event.target.value as DiffLanguage)}
+                className="select w-[132px] flex-shrink-0 py-2 text-sm"
+              >
+                {languageOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
                 ))}
-              </tbody>
-            </table>
+              </select>
+
+              <button onClick={handleLoadExample} className="btn-secondary btn-tool flex-shrink-0">
+                <Sparkles className="h-3.5 w-3.5 flex-shrink-0" />
+                示例
+              </button>
+
+              <button
+                onClick={() => runFormatter('both')}
+                className="btn-primary btn-tool flex-shrink-0"
+                disabled={!canFormatLanguage(language) || (!original && !modified) || isBusy}
+              >
+                <RefreshCcw className={`h-3.5 w-3.5 flex-shrink-0 ${isBusy ? 'animate-spin' : ''}`} />
+                一键格式化
+              </button>
+
+              <button
+                onClick={() => runJsonReorder('both')}
+                className="btn-secondary btn-tool flex-shrink-0"
+                disabled={!canReorderJson(language) || (!original && !modified)}
+              >
+                <FileJson className="h-3.5 w-3.5 flex-shrink-0" />
+                JSON 重排
+              </button>
+
+              <button onClick={handleSwap} className="btn-secondary btn-tool flex-shrink-0" disabled={!original && !modified}>
+                <ArrowLeftRight className="h-3.5 w-3.5 flex-shrink-0" />
+                交换
+              </button>
+
+              <button onClick={handleClear} className="btn-ghost-danger btn-tool flex-shrink-0" disabled={!original && !modified}>
+                <Trash2 className="h-3.5 w-3.5 flex-shrink-0" />
+                清空
+              </button>
+
+              <button
+                onClick={handleCopyModified}
+                className={`btn-tool flex-shrink-0 ${copied ? 'btn-ghost-success' : 'btn-ghost'}`}
+                disabled={!modified}
+              >
+                {copied ? <Check className="h-3.5 w-3.5 flex-shrink-0" /> : <Copy className="h-3.5 w-3.5 flex-shrink-0" />}
+                {copied ? '已复制' : '复制右侧'}
+              </button>
+
+              <label className="flex flex-shrink-0 cursor-pointer items-center gap-2 rounded-lg px-2.5 py-2 text-xs text-surface-500 hover:bg-surface-100 dark:text-surface-400 dark:hover:bg-surface-700/60">
+                <input
+                  type="checkbox"
+                  checked={renderSideBySide}
+                  onChange={(event) => setRenderSideBySide(event.target.checked)}
+                  className="h-4 w-4 rounded border-surface-300 text-primary-500 focus:ring-primary-500"
+                />
+                <span className="inline-flex items-center gap-1">
+                  {renderSideBySide ? <ChevronsUpDown className="h-3.5 w-3.5" /> : <ChevronsDownUp className="h-3.5 w-3.5" />}
+                  双栏
+                </span>
+              </label>
+
+              <label className="flex flex-shrink-0 cursor-pointer items-center gap-2 rounded-lg px-2.5 py-2 text-xs text-surface-500 hover:bg-surface-100 dark:text-surface-400 dark:hover:bg-surface-700/60">
+                <input
+                  type="checkbox"
+                  checked={ignoreTrimWhitespace}
+                  onChange={(event) => setIgnoreTrimWhitespace(event.target.checked)}
+                  className="h-4 w-4 rounded border-surface-300 text-primary-500 focus:ring-primary-500"
+                />
+                忽略空白
+              </label>
+
+              <button
+                onClick={() => setWordWrap((currentValue) => (currentValue === 'on' ? 'off' : 'on'))}
+                className={`btn-tool flex-shrink-0 ${wordWrap === 'on' ? 'btn-secondary' : 'btn-ghost'}`}
+              >
+                <WrapText className="h-3.5 w-3.5 flex-shrink-0" />
+                自动换行
+              </button>
+
+              <button onClick={() => navigateDiff('previous')} className="btn-secondary btn-tool flex-shrink-0" disabled={diffCount === 0}>
+                上一个差异
+              </button>
+
+              <button onClick={() => navigateDiff('next')} className="btn-primary btn-tool flex-shrink-0" disabled={diffCount === 0}>
+                下一个差异
+              </button>
+            </div>
           </div>
 
-          {filteredResult.length === 0 && (
-            <div className="p-8 sm:p-12 text-center">
-              <div className="w-12 h-12 sm:w-16 sm:h-16 bg-surface-100 dark:bg-surface-800 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
-                <GitCompare className="w-6 h-6 sm:w-8 sm:h-8 text-surface-400" />
-              </div>
-              <p className="text-surface-500 text-sm">暂无差异</p>
-              <p className="text-xs sm:text-sm text-surface-400 mt-1">两段文本完全相同</p>
+          {error && (
+            <div className="border-b border-red-200 bg-red-50 px-4 py-2 text-sm text-red-600 dark:border-red-900/60 dark:bg-red-950/30 dark:text-red-300">
+              {error}
             </div>
           )}
+
+          <div className="min-h-0 flex-1 p-4">
+            <MonacoDiffEditor
+              original={original}
+              modified={modified}
+              contentVersion={contentVersion}
+              language={language}
+              height="100%"
+              sideBySide={renderSideBySide}
+              ignoreTrimWhitespace={ignoreTrimWhitespace}
+              wordWrap={wordWrap}
+              onMount={handleMount}
+            />
+          </div>
         </div>
       )}
-
-      <ToolInfoAuto toolId="text-diff" />
-
-      {/* 底部广告 */}
-      <AdFooter />
     </div>
   );
 }

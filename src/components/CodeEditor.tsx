@@ -1,5 +1,5 @@
-import { useMemo, useEffect, useState, Suspense, lazy } from 'react';
-import type { Extension } from '@codemirror/state';
+import { useMemo } from 'react';
+import { MonacoCodeEditor } from './MonacoCodeEditor';
 
 // 支持的语言类型
 type Language = 'sql' | 'xml' | 'json' | 'html' | 'yaml' | 'shell' | 'text';
@@ -30,36 +30,7 @@ interface CodeEditorProps {
   /**
    * 自定义扩展
    */
-  extensions?: Extension[];
-}
-
-// 动态导入 CodeMirror 组件
-const LazyCodeMirrorEditor = lazy(() => import('./CodeEditorInner'));
-
-// 简单的加载占位符
-function EditorSkeleton({ height, variant }: { height: string; variant: string }) {
-  const containerClasses = useMemo(() => {
-    const baseClasses = 'overflow-hidden';
-    switch (variant) {
-      case 'minimal':
-        return `${baseClasses} rounded-lg`;
-      case 'embedded':
-        return `${baseClasses} rounded-xl border bg-surface-50 dark:bg-surface-900/50 border-surface-200 dark:border-surface-700`;
-      default:
-        return `${baseClasses} rounded-2xl border-2 shadow-soft border-surface-300 dark:border-surface-600 bg-surface-50 dark:bg-surface-900`;
-    }
-  }, [variant]);
-
-  return (
-    <div className={containerClasses} style={{ height }}>
-      <div className="w-full h-full flex items-center justify-center text-surface-400">
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 border-2 border-primary-500 border-t-transparent rounded-full animate-spin" />
-          <span className="text-sm">加载编辑器...</span>
-        </div>
-      </div>
-    </div>
-  );
+  extensions?: unknown[];
 }
 
 export function CodeEditor({
@@ -75,71 +46,35 @@ export function CodeEditor({
   fontSize = '13px',
   variant = 'default',
   showLineNumbers = false,
-  extensions: customExtensions = [],
+  extensions: _customExtensions = [],
   padding,
 }: CodeEditorProps) {
-  const [isDark, setIsDark] = useState(false);
-  const [isClient, setIsClient] = useState(false);
-
-  // 监听深色模式变化
-  useEffect(() => {
-    setIsClient(true);
-    
-    const checkDarkMode = () => {
-      setIsDark(document.documentElement.classList.contains('dark'));
-    };
-    
-    checkDarkMode();
-    
-    let rafId: number | null = null;
-    const observer = new MutationObserver(() => {
-      if (rafId) cancelAnimationFrame(rafId);
-      rafId = requestAnimationFrame(checkDarkMode);
-    });
-    
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ['class'],
-    });
-    
-    return () => {
-      observer.disconnect();
-      if (rafId) cancelAnimationFrame(rafId);
-    };
-  }, []);
-
   const heightStyle = useMemo(() => {
     return typeof height === 'number' ? `${height}px` : height;
   }, [height]);
 
-  // 服务端渲染时直接返回骨架屏，避免 Suspense 问题
-  if (!isClient) {
-    return (
-      <div id={id} className={`code-editor-wrapper ${wrapperClassName}`}>
-        <EditorSkeleton height={heightStyle} variant={variant} />
-      </div>
-    );
-  }
+  const containerClasses = useMemo(() => {
+    const baseClasses = 'code-editor-wrapper';
+    const variantClass =
+      variant === 'minimal' ? 'rounded-lg' : variant === 'embedded' ? 'rounded-xl' : 'rounded-2xl';
+
+    return `${baseClasses} ${variantClass} ${wrapperClassName}`.trim();
+  }, [variant, wrapperClassName]);
 
   return (
-    <div id={id} className={`code-editor-wrapper ${wrapperClassName}`}>
-      <Suspense fallback={<EditorSkeleton height={heightStyle} variant={variant} />}>
-        <LazyCodeMirrorEditor
-          value={value}
-          onChange={onChange}
-          language={language}
-          placeholder={placeholder}
-          height={heightStyle}
-          className={className}
-          readOnly={readOnly}
-          fontSize={fontSize}
-          variant={variant}
-          showLineNumbers={showLineNumbers}
-          customExtensions={customExtensions}
-          padding={padding}
-          isDark={isDark}
-        />
-      </Suspense>
+    <div id={id} className={containerClasses}>
+      <MonacoCodeEditor
+        value={value}
+        onChange={onChange}
+        language={language}
+        placeholder={placeholder}
+        height={heightStyle}
+        className={className}
+        readOnly={readOnly}
+        fontSize={fontSize}
+        showLineNumbers={showLineNumbers}
+        padding={padding}
+      />
     </div>
   );
 }

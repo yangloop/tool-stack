@@ -6,14 +6,18 @@ import { ToolInfoAuto } from './ToolInfoSection';
 import { ToolHeader } from '../../../components/common';
 
 export function TimestampTool() {
-  const [timestamp, setTimestamp] = useState(Math.floor(Date.now() / 1000).toString());
+  const [timestamp, setTimestamp] = useState('');
   const [dateInput, setDateInput] = useState('');
   const [timeInput, setTimeInput] = useState('');
   const [unit, setUnit] = useState<'s' | 'ms'>('s');
-  const [currentTime, setCurrentTime] = useState(Date.now());
+  const [currentTime, setCurrentTime] = useState<number | null>(null);
   const { copied, copy } = useClipboard();
 
   useEffect(() => {
+    const now = Date.now();
+    setCurrentTime(now);
+    setTimestamp(Math.floor(now / 1000).toString());
+
     const timer = setInterval(() => setCurrentTime(Date.now()), 1000);
     return () => clearInterval(timer);
   }, []);
@@ -62,11 +66,11 @@ export function TimestampTool() {
           <div>
             <div className="text-xs sm:text-sm text-surface-500 dark:text-surface-400">当前时间戳</div>
             <div className="text-xl sm:text-2xl font-mono font-bold text-primary-600 dark:text-primary-400">
-              {Math.floor(currentTime / 1000)}
+              {currentTime === null ? '--' : Math.floor(currentTime / 1000)}
               <span className="text-xs sm:text-sm font-normal text-surface-400 ml-1">秒</span>
             </div>
             <div className="text-base sm:text-lg font-mono text-surface-600 dark:text-surface-300">
-              {currentTime}
+              {currentTime === null ? '--' : currentTime}
               <span className="text-xs sm:text-sm font-normal text-surface-400 ml-1">毫秒</span>
             </div>
           </div>

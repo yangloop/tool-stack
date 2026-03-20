@@ -4,44 +4,43 @@ export function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T 
   // 使用 ref 存储初始值，避免依赖数组变化导致无限循环
   const initialValueRef = useRef(initialValue);
   const initializedRef = useRef(false);
-  
-  const [storedValue, setStoredValue] = useState<T>(() => {
-    // 在初始化时直接读取 localStorage，避免闪烁
-    try {
-      const item = window.localStorage.getItem(key);
-      return item ? JSON.parse(item) : initialValueRef.current;
-    } catch {
-      return initialValueRef.current;
-    }
-  });
+  const [storedValue, setStoredValue] = useState<T>(initialValueRef.current);
 
   // 当 key 改变时重新读取
   useEffect(() => {
-    if (initializedRef.current) {
-      try {
-        const item = window.localStorage.getItem(key);
-        if (item) {
-          setStoredValue(JSON.parse(item));
-        } else {
-          setStoredValue(initialValueRef.current);
-        }
-      } catch (error) {
-        console.warn(`Error reading localStorage key "${key}":`, error);
-      }
-    } else {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    if (!initializedRef.current) {
       initializedRef.current = true;
+    }
+
+    try {
+      const item = window.localStorage.getItem(key);
+      if (item) {
+        setStoredValue(JSON.parse(item));
+      } else {
+        setStoredValue(initialValueRef.current);
+      }
+    } catch (error) {
+      console.warn(`Error reading localStorage key "${key}":`, error);
     }
   }, [key]); // 注意：不依赖 initialValue，使用 ref 存储
 
   const setValue = useCallback((value: T | ((val: T) => T)) => {
     try {
-      const valueToStore = value instanceof Function ? value(storedValue) : value;
-      setStoredValue(valueToStore);
-      window.localStorage.setItem(key, JSON.stringify(valueToStore));
+      setStoredValue((currentValue) => {
+        const valueToStore = value instanceof Function ? value(currentValue) : value;
+        if (typeof window !== 'undefined') {
+          window.localStorage.setItem(key, JSON.stringify(valueToStore));
+        }
+        return valueToStore;
+      });
     } catch (error) {
       console.warn(`Error setting localStorage key "${key}":`, error);
     }
-  }, [key, storedValue]);
+  }, [key]);
 
   return [storedValue, setValue];
 }

@@ -1,27 +1,33 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
-  <!-- 背景圆角矩形 -->
-  <rect x="5" y="5" width="90" height="90" rx="20" fill="url(#gradient)"/>
-  
-  <!-- 工具箱主体 -->
-  <rect x="20" y="35" width="60" height="45" rx="6" fill="white" fill-opacity="0.95"/>
-  
-  <!-- 工具箱提手 -->
-  <path d="M35 35V28C35 24.686 37.686 22 41 22H59C62.314 22 65 24.686 65 28V35" stroke="white" stroke-width="6" stroke-linecap="round"/>
-  
-  <!-- 锁扣 -->
-  <rect x="42" y="42" width="16" height="12" rx="2" fill="url(#gradient)"/>
-  <circle cx="50" cy="48" r="3" fill="white"/>
-  
-  <!-- 工具图标：扳手 -->
-  <path d="M28 65L32 61L36 65L32 69L28 65Z" fill="#6366F1"/>
-  <path d="M64 61L68 65L64 69L60 65L64 61Z" fill="#6366F1"/>
-  
-  <!-- 渐变定义 -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" fill="none">
   <defs>
-    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#6366F1"/>
-      <stop offset="50%" stop-color="#8B5CF6"/>
-      <stop offset="100%" stop-color="#EC4899"/>
+    <linearGradient id="bg" x1="18" y1="14" x2="110" y2="114" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0EA5E9"/>
+      <stop offset="0.48" stop-color="#2563EB"/>
+      <stop offset="1" stop-color="#D946EF"/>
     </linearGradient>
+    <linearGradient id="panel" x1="34" y1="40" x2="92" y2="92" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#F5F7FF"/>
+    </linearGradient>
+    <filter id="shadow" x="8" y="10" width="112" height="112" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="10" stdDeviation="10" flood-color="#1E3A8A" flood-opacity="0.22"/>
+    </filter>
   </defs>
+
+  <g filter="url(#shadow)">
+    <rect x="16" y="16" width="96" height="96" rx="28" fill="url(#bg)"/>
+    <path d="M31 48C31 42.477 35.477 38 41 38H87C92.523 38 97 42.477 97 48V84C97 89.523 92.523 94 87 94H41C35.477 94 31 89.523 31 84V48Z" fill="url(#panel)" fill-opacity="0.96"/>
+    <path d="M46 38V32C46 25.373 51.373 20 58 20H70C76.627 20 82 25.373 82 32V38" stroke="#F8FBFF" stroke-width="7" stroke-linecap="round"/>
+    <rect x="49" y="54" width="30" height="20" rx="8" fill="#EEF2FF"/>
+    <path d="M53 64H75" stroke="#8B5CF6" stroke-width="4.5" stroke-linecap="round"/>
+    <path d="M22 58C20.895 58 20 57.105 20 56V47C20 45.895 20.895 45 22 45H27C28.105 45 29 45.895 29 47V56C29 57.105 28.105 58 27 58H22Z" fill="#BAE6FD" fill-opacity="0.92"/>
+    <path d="M22 83C20.895 83 20 82.105 20 81V72C20 70.895 20.895 70 22 70H27C28.105 70 29 70.895 29 72V81C29 82.105 28.105 83 27 83H22Z" fill="#BAE6FD" fill-opacity="0.92"/>
+    <path d="M101 58C99.895 58 99 57.105 99 56V47C99 45.895 99.895 45 101 45H106C107.105 45 108 45.895 108 47V56C108 57.105 107.105 58 106 58H101Z" fill="#FBCFE8" fill-opacity="0.94"/>
+    <path d="M101 83C99.895 83 99 82.105 99 81V72C99 70.895 99.895 70 101 70H106C107.105 70 108 70.895 108 72V81C108 82.105 107.105 83 106 83H101Z" fill="#FBCFE8" fill-opacity="0.94"/>
+    <path d="M22 51.5H15.5M22 76.5H15.5M112.5 51.5H106M112.5 76.5H106" stroke="#F8FBFF" stroke-width="4.5" stroke-linecap="round" stroke-opacity="0.9"/>
+    <path d="M36 89L44 81" stroke="#0EA5E9" stroke-width="5" stroke-linecap="round"/>
+    <circle cx="34" cy="91" r="5" stroke="#0EA5E9" stroke-width="4"/>
+    <circle cx="46" cy="79" r="5" stroke="#0EA5E9" stroke-width="4"/>
+    <path d="M92 40L99 47M99 40L92 47" stroke="#FDF2F8" stroke-width="4.5" stroke-linecap="round"/>
+  </g>
 </svg>

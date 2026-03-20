@@ -11,6 +11,7 @@ import { CodeEditor } from '../../../components/CodeEditor';
 import { ToolInfoAuto } from './ToolInfoSection';
 import { ToolHeader } from '../../../components/common';
 import { JsonToolbar } from './JsonToolbar';
+import { useIsDarkMode } from '../../../hooks/useIsDarkMode';
 
 // JSON 统计信息
 function JsonStats({ json }: { json: string }) {
@@ -75,9 +76,9 @@ export function JsonTool() {
   const [output, setOutput] = useState('');
   const [error, setError] = useState('');
   const [viewMode, setViewMode] = useState<'formatted' | 'compressed'>('formatted');
-  const [isDark, setIsDark] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const { copied, copy } = useClipboard();
+  const { isDark } = useIsDarkMode();
 
   // ESC 退出全屏
   useEffect(() => {
@@ -101,17 +102,6 @@ export function JsonTool() {
       document.body.style.overflow = '';
     };
   }, [isFullscreen]);
-
-  // 监听主题变化
-  useEffect(() => {
-    const checkDarkMode = () => {
-      setIsDark(document.documentElement.classList.contains('dark'));
-    };
-    checkDarkMode();
-    const observer = new MutationObserver(checkDarkMode);
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
-    return () => observer.disconnect();
-  }, []);
 
   // 解析输入的 JSON
   const parseResult = useMemo(() => {
@@ -220,7 +210,7 @@ export function JsonTool() {
   // 非全屏输入面板
   const inputPanel = useMemo(() => (
     <div className="card p-4 sm:p-6 min-w-0">
-      <div className="flex items-center justify-between mb-2 sm:mb-3">
+      <div className="mb-2 flex h-11 items-center justify-between sm:mb-3">
         <div className="flex items-center gap-2">
           <span className="text-sm font-medium text-surface-700 dark:text-surface-300">输入</span>
           {input && <span className="text-xs text-surface-400">{input.length.toLocaleString()} 字符</span>}
@@ -240,7 +230,7 @@ export function JsonTool() {
   // 非全屏输出面板
   const outputPanel = useMemo(() => (
     <div className="card p-4 sm:p-6 min-w-0">
-      <div className="flex items-center justify-between mb-2 sm:mb-3">
+      <div className="mb-2 flex h-11 items-center justify-between sm:mb-3">
         <div className="flex items-center gap-2">
           <span className="text-sm font-medium text-surface-700 dark:text-surface-300">输出</span>
           {output && (

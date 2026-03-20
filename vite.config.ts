@@ -2,8 +2,107 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { resolve } from 'path'
 
+function getManualChunk(id: string) {
+  if (!id.includes('node_modules')) {
+    return undefined
+  }
+
+  if (id.includes('/react/') || id.includes('/react-dom/')) {
+    return 'vendor-react'
+  }
+
+  if (id.includes('/react-router-dom/') || id.includes('/react-router/')) {
+    return 'vendor-router'
+  }
+
+  if (id.includes('/lucide-react/')) {
+    return 'vendor-lucide'
+  }
+
+  if (id.includes('/react-colorful/')) {
+    return 'vendor-react-colorful'
+  }
+
+  if (id.includes('/axios/')) {
+    return 'vendor-axios'
+  }
+
+  if (id.includes('/qrcode/')) {
+    return 'vendor-qrcode'
+  }
+
+  if (id.includes('/jsencrypt/')) {
+    return 'vendor-jsencrypt'
+  }
+
+  if (id.includes('/crypto-js/')) {
+    return 'vendor-crypto-js'
+  }
+
+  if (id.includes('/otpauth/')) {
+    return 'vendor-otpauth'
+  }
+
+  if (id.includes('/composerize/')) {
+    return 'vendor-composerize'
+  }
+
+  if (id.includes('/decomposerize/')) {
+    return 'vendor-decomposerize'
+  }
+
+  if (id.includes('/sql-formatter/')) {
+    return 'vendor-sql-formatter'
+  }
+
+  if (id.includes('/prettier/standalone')) {
+    return 'vendor-prettier-core'
+  }
+
+  if (id.includes('/prettier/plugins/estree')) {
+    return 'vendor-prettier-estree'
+  }
+
+  if (id.includes('/prettier/plugins/babel')) {
+    return 'vendor-prettier-babel'
+  }
+
+  if (id.includes('/prettier/plugins/typescript')) {
+    return 'vendor-prettier-typescript'
+  }
+
+  if (id.includes('/prettier/plugins/html')) {
+    return 'vendor-prettier-html'
+  }
+
+  if (id.includes('/prettier/plugins/postcss')) {
+    return 'vendor-prettier-postcss'
+  }
+
+  if (id.includes('/prettier/plugins/yaml')) {
+    return 'vendor-prettier-yaml'
+  }
+
+  return undefined
+}
+
 export default defineConfig(({ mode, isSsrBuild }) => ({
   plugins: [
+    {
+      name: 'resolve-tools-data',
+      enforce: 'pre',
+      resolveId(id, importer, options) {
+        if (id !== '@tools-data') {
+          return null
+        }
+
+        const isSsrRequest = Boolean(options?.ssr)
+        return resolve(
+          __dirname,
+          isSsrRequest || isSsrBuild ? 'src/data/tools.server.tsx' : 'src/data/tools.client.tsx',
+        )
+      },
+    },
     react({
       jsxRuntime: 'automatic',
       include: '**/*.{jsx,tsx}',
@@ -19,13 +118,7 @@ export default defineConfig(({ mode, isSsrBuild }) => ({
       input: '/src/entry-server.tsx',
     } : {
       output: {
-        manualChunks: {
-          'vendor-core': ['react', 'react-dom', 'react-router-dom'],
-          'vendor-ui': ['lucide-react', 'react-colorful'],
-          'vendor-docker': ['composerize', 'decomposerize'],
-          'vendor-crypto': ['jsencrypt', 'crypto-js', 'otpauth'],
-          'vendor-utils': ['axios', 'qrcode'],
-        },
+        manualChunks: getManualChunk,
         assetFileNames: (assetInfo) => {
           const info = assetInfo.name.split('.')
           const ext = info[info.length - 1]
@@ -89,12 +182,6 @@ export default defineConfig(({ mode, isSsrBuild }) => ({
       'react', 
       'react-dom', 
       'react-router-dom',
-      '@codemirror/lang-json',
-      '@codemirror/lang-sql',
-      '@codemirror/lang-xml',
-      '@codemirror/lang-html',
-      '@codemirror/lang-yaml',
-      '@codemirror/legacy-modes/mode/shell',
     ],
     esbuildOptions: {
       target: 'es2020',

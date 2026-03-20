@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react';
-import { 
-  Copy, Check, ArrowRightLeft, FileCode, 
-  Upload, Download, Trash2, AlertCircle 
+import {
+  Copy, Check, ArrowRightLeft, FileCode,
+  Upload, Download, Trash2, AlertCircle, Maximize2, Minimize2
 } from 'lucide-react';
-import { XMLParser, XMLBuilder, XMLValidator } from 'fast-xml-parser';
 import { useClipboard } from '../../../hooks/useLocalStorage';
 import { AdInArticle, AdFooter } from '../../../components/ads';
 import { ToolInfoAuto } from './ToolInfoSection';
@@ -38,91 +37,114 @@ function formatXml(xml: string): string {
   return formatted.trim();
 }
 
+async function loadXmlTools() {
+  const { XMLParser, XMLBuilder, XMLValidator } = await import('fast-xml-parser');
+  return { XMLParser, XMLBuilder, XMLValidator };
+}
+
 export function XmlJsonTool() {
   const [input, setInput] = useState('');
   const [output, setOutput] = useState('');
   const [mode, setMode] = useState<ConversionMode>('xml-to-json');
   const [error, setError] = useState('');
   const [viewMode, setViewMode] = useState<'formatted' | 'compressed'>('formatted');
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const { copied, copy } = useClipboard();
 
   // 执行转换
-  const convert = (inputValue: string, currentMode: ConversionMode): string => {
+  const convert = async (inputValue: string, currentMode: ConversionMode): Promise<string> => {
     if (!inputValue.trim()) return '';
-    
-    try {
-      if (currentMode === 'xml-to-json') {
-        // 验证 XML
-        const validation = XMLValidator.validate(inputValue);
-        if (validation !== true) {
-          throw new Error(`XML 格式错误: ${validation.err.msg}`);
-        }
-        
-        const parser = new XMLParser({
-          ignoreAttributes: false,
-          attributeNamePrefix: '@_',
-          textNodeName: '#text',
-          parseAttributeValue: false,  // 保持属性值为字符串，避免 "1.0" 变成 1
-          parseTagValue: true,
-          trimValues: true,
-        });
-        
-        const result = parser.parse(inputValue);
-        
-        if (viewMode === 'compressed') {
-          return JSON.stringify(result);
-        }
-        return JSON.stringify(result, null, 2);
-      } else {
-        // JSON to XML
-        let jsonObj;
-        try {
-          jsonObj = JSON.parse(inputValue);
-        } catch {
-          throw new Error('无效的 JSON 格式');
-        }
-        
-        // 如果 JSON 不是对象或数组，或者有多个顶层字段，包装它
-        // XML 必须有且只有一个根元素
-        if (typeof jsonObj !== 'object' || jsonObj === null) {
-          jsonObj = { root: jsonObj };
-        } else if (!Array.isArray(jsonObj) && Object.keys(jsonObj).length > 1) {
-          // 普通对象且有多个顶层字段，需要包装
-          jsonObj = { root: jsonObj };
-        }
-        
-        const builder = new XMLBuilder({
-          ignoreAttributes: false,
-          attributeNamePrefix: '@_',
-          textNodeName: '#text',
-          format: viewMode === 'formatted',
-          indentBy: '  ',
-          suppressUnpairedNode: false,
-          suppressBooleanAttributes: false,
-        });
-        
-        const xml = builder.build(jsonObj);
-        
-        // 添加 XML 声明
-        const xmlDeclaration = '<?xml version="1.0" encoding="UTF-8"?>\n';
-        return xmlDeclaration + (viewMode === 'formatted' ? formatXml(xml) : xml);
+
+    if (currentMode === 'xml-to-json') {
+      const { XMLParser, XMLValidator } = await loadXmlTools();
+
+      const validation = XMLValidator.validate(inputValue);
+      if (validation !== true) {
+        throw new Error(`XML 格式错误: ${validation.err.msg}`);
       }
-    } catch (e) {
-      throw e;
+
+      const parser = new XMLParser({
+        ignoreAttributes: false,
+        attributeNamePrefix: '@_',
+        textNodeName: '#text',
+        parseAttributeValue: false,
+        parseTagValue: true,
+        trimValues: true,
+      });
+
+      const result = parser.parse(inputValue);
+
+      return viewMode === 'compressed'
+        ? JSON.stringify(result)
+        : JSON.stringify(result, null, 2);
     }
+
+    const { XMLBuilder } = await loadXmlTools();
+
+    let jsonObj;
+    try {
+      jsonObj = JSON.parse(inputValue);
+    } catch {
+      throw new Error('无效的 JSON 格式');
+    }
+
+    if (typeof jsonObj !== 'object' || jsonObj === null) {
+      jsonObj = { root: jsonObj };
+    } else if (!Array.isArray(jsonObj) && Object.keys(jsonObj).length > 1) {
+      jsonObj = { root: jsonObj };
+    }
+
+    const builder = new XMLBuilder({
+      ignoreAttributes: false,
+      attributeNamePrefix: '@_',
+      textNodeName: '#text',
+      format: viewMode === 'formatted',
+      indentBy: '  ',
+      suppressUnpairedNode: false,
+      suppressBooleanAttributes: false,
+    });
+
+    const xml = builder.build(jsonObj);
+    const xmlDeclaration = '<?xml version="1.0" encoding="UTF-8"?>\n';
+    return xmlDeclaration + (viewMode === 'formatted' ? formatXml(xml) : xml);
   };
 
   // 监听输入变化并实时转换
   useEffect(() => {
-    try {
-      const result = convert(input, mode);
-      setOutput(result);
-      setError('');
-    } catch (e) {
-      setError(e instanceof Error ? e.message : '转换失败');
-      setOutput('');
-    }
+    let cancelled = false;
+
+    const run = async () => {
+      try {
+        const result = await convert(input, mode);
+        if (cancelled) return;
+        setOutput(result);
+        setError('');
+      } catch (e) {
+        if (cancelled) return;
+        setError(e instanceof Error ? e.message : '转换失败');
+        setOutput('');
+      }
+    };
+
+    void run();
+
+    return () => {
+      cancelled = true;
+    };
   }, [input, mode, viewMode]);
+
+  useEffect(() => {
+    if (!isFullscreen) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setIsFullscreen(false);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isFullscreen]);
 
   // 切换模式时交换输入输出
   const switchMode = () => {
@@ -230,177 +252,281 @@ export function XmlJsonTool() {
     await copy(contentToCopy);
   };
 
+  const handleClear = () => {
+    setInput('');
+    setOutput('');
+    setError('');
+  };
+
+  const toolbar = (
+    <div className="flex flex-wrap items-center gap-2 mb-4">
+      <div className="inline-flex bg-surface-100 dark:bg-surface-800 p-1 rounded-lg">
+        <button
+          onClick={() => setMode('xml-to-json')}
+          className={`btn-group-item ${mode === 'xml-to-json' ? 'btn-group-item-active' : ''}`}
+        >
+          XML → JSON
+        </button>
+        <button
+          onClick={() => setMode('json-to-xml')}
+          className={`btn-group-item ${mode === 'json-to-xml' ? 'btn-group-item-active' : ''}`}
+        >
+          JSON → XML
+        </button>
+      </div>
+
+      <button
+        onClick={switchMode}
+        disabled={!output}
+        className="btn-icon"
+        title="交换输入输出"
+      >
+        <ArrowRightLeft className="w-5 h-5" />
+      </button>
+
+      <div className="inline-flex bg-surface-100 dark:bg-surface-800 p-1 rounded-lg">
+        <button
+          onClick={() => setViewMode('formatted')}
+          className={`btn-group-item ${viewMode === 'formatted' ? 'btn-group-item-active' : ''}`}
+        >
+          格式化
+        </button>
+        <button
+          onClick={() => setViewMode('compressed')}
+          className={`btn-group-item ${viewMode === 'compressed' ? 'btn-group-item-active' : ''}`}
+        >
+          压缩
+        </button>
+      </div>
+
+      <div className="inline-flex bg-surface-100 dark:bg-surface-800 p-1 rounded-lg">
+        <label className="btn-tool text-surface-700 dark:text-surface-300 hover:bg-white dark:hover:bg-surface-700 cursor-pointer">
+          <Upload className="w-3.5 h-3.5 flex-shrink-0" />
+          <span>导入</span>
+          <input type="file" accept=".xml,.json,.txt" onChange={handleFileUpload} className="hidden" />
+        </label>
+        <button
+          onClick={handleDownload}
+          disabled={!output}
+          className="btn-tool text-surface-700 dark:text-surface-300 hover:bg-white dark:hover:bg-surface-700 disabled:opacity-40"
+        >
+          <Download className="w-3.5 h-3.5 flex-shrink-0" />
+          <span>下载</span>
+        </button>
+      </div>
+
+      <button
+        onClick={loadExample}
+        className="btn-tool text-surface-700 dark:text-surface-300 hover:bg-white dark:hover:bg-surface-700"
+      >
+        加载示例
+      </button>
+
+      <button
+        onClick={handleClear}
+        className="btn-ghost-danger btn-tool"
+      >
+        <Trash2 className="w-3.5 h-3.5 flex-shrink-0" />
+        <span>清空</span>
+      </button>
+    </div>
+  );
+
   return (
     <div className="max-w-7xl mx-auto">
-      {/* 标题 */}
-      <ToolHeader
-        icon={FileCode}
-        title="XML / JSON 互转"
-        description="XML 与 JSON 格式互相转换，支持属性、格式化和高亮显示"
-        iconColorClass="text-primary-500"
-      />
+      {!isFullscreen && (
+        <>
+          <ToolHeader
+            icon={FileCode}
+            title="XML / JSON 互转"
+            description="XML 与 JSON 格式互相转换，支持属性、格式化和高亮显示"
+            iconColorClass="text-primary-500"
+            actions={
+              <button
+                onClick={() => setIsFullscreen(true)}
+                className="btn-tool-sm sm:btn-tool btn-ghost flex-shrink-0"
+                title="全屏使用"
+              >
+                <Maximize2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                <span className="hidden sm:inline">全屏使用</span>
+              </button>
+            }
+          />
 
-      {/* 工具栏 */}
-      <div className="flex flex-wrap items-center gap-2 mb-4">
-        {/* 模式切换 */}
-        <div className="inline-flex bg-surface-100 dark:bg-surface-800 p-1 rounded-lg">
-          <button
-            onClick={() => setMode('xml-to-json')}
-            className={`btn-group-item ${mode === 'xml-to-json' ? 'btn-group-item-active' : ''}`}
-          >
-            XML → JSON
-          </button>
-          <button
-            onClick={() => setMode('json-to-xml')}
-            className={`btn-group-item ${mode === 'json-to-xml' ? 'btn-group-item-active' : ''}`}
-          >
-            JSON → XML
-          </button>
-        </div>
+          {toolbar}
 
-        {/* 交换按钮 */}
-        <button
-          onClick={switchMode}
-          disabled={!output}
-          className="btn-icon"
-          title="交换输入输出"
-        >
-          <ArrowRightLeft className="w-5 h-5" />
-        </button>
+          {error && (
+            <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg flex items-center gap-2 text-red-600 dark:text-red-400 text-sm">
+              <AlertCircle className="w-4 h-4 flex-shrink-0" />
+              {error}
+            </div>
+          )}
 
-        {/* 视图模式 */}
-        <div className="inline-flex bg-surface-100 dark:bg-surface-800 p-1 rounded-lg">
-          <button
-            onClick={() => setViewMode('formatted')}
-            className={`btn-group-item ${viewMode === 'formatted' ? 'btn-group-item-active' : ''}`}
-          >
-            格式化
-          </button>
-          <button
-            onClick={() => setViewMode('compressed')}
-            className={`btn-group-item ${viewMode === 'compressed' ? 'btn-group-item-active' : ''}`}
-          >
-            压缩
-          </button>
-        </div>
+          <div className="grid lg:grid-cols-2 gap-3 sm:gap-4">
+            <div className="card p-4 sm:p-6 min-w-0">
+              <div className="flex items-center justify-between mb-2 sm:mb-3 min-h-[36px]">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-medium text-surface-700 dark:text-surface-300">
+                    {mode === 'xml-to-json' ? 'XML 输入' : 'JSON 输入'}
+                  </span>
+                  {input && (
+                    <span className="text-xs text-surface-400">
+                      {input.length.toLocaleString()} 字符
+                    </span>
+                  )}
+                </div>
+                <div className="invisible">
+                  <button className="btn-tool btn-ghost">
+                    <Copy className="w-3.5 h-3.5 flex-shrink-0" />
+                    复制
+                  </button>
+                </div>
+              </div>
+              <CodeEditor
+                value={input}
+                onChange={setInput}
+                language={mode === 'xml-to-json' ? 'xml' : 'json'}
+                placeholder={mode === 'xml-to-json' ? '在此粘贴 XML 数据...' : '在此粘贴 JSON 数据...'}
+                height="400px"
+                variant="embedded"
+              />
+            </div>
 
-        {/* 文件操作 */}
-        <div className="inline-flex bg-surface-100 dark:bg-surface-800 p-1 rounded-lg">
-          <label className="btn-tool text-surface-700 dark:text-surface-300 hover:bg-white dark:hover:bg-surface-700 cursor-pointer">
-            <Upload className="w-3.5 h-3.5 flex-shrink-0" />
-            <span>导入</span>
-            <input type="file" accept=".xml,.json,.txt" onChange={handleFileUpload} className="hidden" />
-          </label>
-          <button
-            onClick={handleDownload}
-            disabled={!output}
-            className="btn-tool text-surface-700 dark:text-surface-300 hover:bg-white dark:hover:bg-surface-700 disabled:opacity-40"
-          >
-            <Download className="w-3.5 h-3.5 flex-shrink-0" />
-            <span>下载</span>
-          </button>
-        </div>
+            <div className="card p-4 sm:p-6 min-w-0 overflow-hidden">
+              <div className="flex items-center justify-between mb-2 sm:mb-3 min-h-[36px]">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-medium text-surface-700 dark:text-surface-300">
+                    {mode === 'xml-to-json' ? 'JSON 输出' : 'XML 输出'}
+                  </span>
+                  {output && (
+                    <span className="text-xs text-surface-400">
+                      {output.length.toLocaleString()} 字符
+                    </span>
+                  )}
+                </div>
+                {output && (
+                  <button
+                    onClick={handleCopy}
+                    className={`btn-tool ${copied ? 'btn-ghost-success' : 'btn-ghost'}`}
+                  >
+                    {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                    {copied ? '已复制' : '复制'}
+                  </button>
+                )}
+              </div>
 
-        {/* 示例按钮 */}
-        <button
-          onClick={loadExample}
-          className="btn-tool text-surface-700 dark:text-surface-300 hover:bg-white dark:hover:bg-surface-700"
-        >
-          加载示例
-        </button>
+              <CodeEditor
+                value={output}
+                onChange={() => {}}
+                language={mode === 'xml-to-json' ? 'json' : 'xml'}
+                placeholder="转换结果将显示在这里"
+                height="400px"
+                variant="embedded"
+                readOnly={true}
+              />
+            </div>
+          </div>
 
-        {/* 清空 */}
-        <button
-          onClick={() => { setInput(''); setOutput(''); setError(''); }}
-          className="btn-ghost-danger btn-tool"
-        >
-          <Trash2 className="w-3.5 h-3.5 flex-shrink-0" />
-          <span>清空</span>
-        </button>
-      </div>
-
-      {/* 错误提示 */}
-      {error && (
-        <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg flex items-center gap-2 text-red-600 dark:text-red-400 text-sm">
-          <AlertCircle className="w-4 h-4 flex-shrink-0" />
-          {error}
-        </div>
+          <AdInArticle />
+          <ToolInfoAuto toolId="xml-json" />
+          <AdFooter />
+        </>
       )}
 
-      {/* 输入输出区域 */}
-      <div className="grid lg:grid-cols-2 gap-3 sm:gap-4">
-        {/* 输入区域 */}
-        <div className="card p-4 sm:p-6 min-w-0">
-          <div className="flex items-center justify-between mb-2 sm:mb-3 min-h-[36px]">
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-medium text-surface-700 dark:text-surface-300">
-                {mode === 'xml-to-json' ? 'XML 输入' : 'JSON 输入'}
-              </span>
-              {input && (
-                <span className="text-xs text-surface-400">
-                  {input.length.toLocaleString()} 字符
-                </span>
-              )}
+      {isFullscreen && (
+        <div className="fixed inset-0 z-50 flex flex-col overflow-hidden bg-surface-0 dark:bg-surface-900">
+          <div className="flex h-14 flex-shrink-0 items-center justify-between border-b border-surface-200 bg-surface-0 px-4 dark:border-surface-700 dark:bg-surface-800">
+            <div className="flex items-center gap-3">
+              <FileCode className="w-5 h-5 text-primary-500" />
+              <span className="font-medium text-surface-900 dark:text-surface-100">XML / JSON 互转</span>
+              <span className="text-xs text-surface-400">按 ESC 退出全屏</span>
             </div>
-            {/* 占位元素，保持与输出区域按钮高度一致 */}
-            <div className="invisible">
-              <button className="btn-tool btn-ghost">
-                <Copy className="w-3.5 h-3.5 flex-shrink-0" />
-                复制
-              </button>
+            <button
+              onClick={() => setIsFullscreen(false)}
+              className="btn-tool-sm sm:btn-tool btn-ghost flex-shrink-0"
+              title="退出全屏"
+            >
+              <Minimize2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <span className="hidden sm:inline">退出全屏</span>
+            </button>
+          </div>
+
+          <div className="flex-shrink-0 border-b border-surface-200 px-4 pt-4 dark:border-surface-700">
+            {toolbar}
+          </div>
+
+          {error && (
+            <div className="border-b border-red-200 bg-red-50 px-4 py-2 text-sm text-red-600 dark:border-red-800 dark:bg-red-900/20 dark:text-red-400">
+              <div className="flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                {error}
+              </div>
+            </div>
+          )}
+
+          <div className="grid flex-1 min-h-0 gap-0 lg:grid-cols-2">
+            <div className="flex min-h-0 flex-col border-b border-surface-200 bg-surface-0 dark:border-surface-700 dark:bg-surface-800 lg:border-b-0 lg:border-r">
+              <div className="flex h-12 flex-shrink-0 items-center justify-between border-b border-surface-200 px-4 dark:border-surface-700">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-medium text-surface-700 dark:text-surface-300">
+                    {mode === 'xml-to-json' ? 'XML 输入' : 'JSON 输入'}
+                  </span>
+                  {input && <span className="text-xs text-surface-400">{input.length.toLocaleString()} 字符</span>}
+                </div>
+                <div className="invisible">
+                  <button className="btn-tool btn-ghost">
+                    <Copy className="w-3.5 h-3.5 flex-shrink-0" />
+                    复制
+                  </button>
+                </div>
+              </div>
+              <div className="min-h-0 flex-1 p-4">
+                <CodeEditor
+                  value={input}
+                  onChange={setInput}
+                  language={mode === 'xml-to-json' ? 'xml' : 'json'}
+                  placeholder={mode === 'xml-to-json' ? '在此粘贴 XML 数据...' : '在此粘贴 JSON 数据...'}
+                  height="100%"
+                  variant="embedded"
+                  wrapperClassName="h-full"
+                />
+              </div>
+            </div>
+
+            <div className="flex min-h-0 flex-col bg-surface-0 dark:bg-surface-800">
+              <div className="flex h-12 flex-shrink-0 items-center justify-between border-b border-surface-200 px-4 dark:border-surface-700">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-medium text-surface-700 dark:text-surface-300">
+                    {mode === 'xml-to-json' ? 'JSON 输出' : 'XML 输出'}
+                  </span>
+                  {output && <span className="text-xs text-surface-400">{output.length.toLocaleString()} 字符</span>}
+                </div>
+                {output && (
+                  <button
+                    onClick={handleCopy}
+                    className={`btn-tool ${copied ? 'btn-ghost-success' : 'btn-ghost'}`}
+                  >
+                    {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                    {copied ? '已复制' : '复制'}
+                  </button>
+                )}
+              </div>
+              <div className="min-h-0 flex-1 p-4">
+                <CodeEditor
+                  value={output}
+                  onChange={() => {}}
+                  language={mode === 'xml-to-json' ? 'json' : 'xml'}
+                  placeholder="转换结果将显示在这里"
+                  height="100%"
+                  variant="embedded"
+                  readOnly={true}
+                  wrapperClassName="h-full"
+                />
+              </div>
             </div>
           </div>
-          <CodeEditor
-            value={input}
-            onChange={setInput}
-            language={mode === 'xml-to-json' ? 'xml' : 'json'}
-            placeholder={mode === 'xml-to-json' ? '在此粘贴 XML 数据...' : '在此粘贴 JSON 数据...'}
-            height="400px"
-            variant="embedded"
-          />
         </div>
-
-        {/* 输出区域 */}
-        <div className="card p-4 sm:p-6 min-w-0 overflow-hidden">
-          <div className="flex items-center justify-between mb-2 sm:mb-3 min-h-[36px]">
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-medium text-surface-700 dark:text-surface-300">
-                {mode === 'xml-to-json' ? 'JSON 输出' : 'XML 输出'}
-              </span>
-              {output && (
-                <span className="text-xs text-surface-400">
-                  {output.length.toLocaleString()} 字符
-                </span>
-              )}
-            </div>
-            {output && (
-              <button
-                onClick={handleCopy}
-                className={`btn-tool ${copied ? 'btn-ghost-success' : 'btn-ghost'}`}
-              >
-                {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-                {copied ? '已复制' : '复制'}
-              </button>
-            )}
-          </div>
-          
-          <CodeEditor
-            value={output}
-            onChange={() => {}}
-            language={mode === 'xml-to-json' ? 'json' : 'xml'}
-            placeholder="转换结果将显示在这里"
-            height="400px"
-            variant="embedded"
-            readOnly={true}
-          />
-        </div>
-      </div>
-
-      <AdInArticle />
-
-      <ToolInfoAuto toolId="xml-json" />
-
-      <AdFooter />
+      )}
     </div>
   );
 }

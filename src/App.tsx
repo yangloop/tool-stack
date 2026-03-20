@@ -1,8 +1,8 @@
 import { Routes, Route, useParams, useLocation, useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
+import { Suspense, useEffect, useMemo } from 'react';
 import { Layout } from './components/Layout';
 import { Home } from './pages/Home';
-import { tools } from './data/tools';
+import { tools } from '@tools-data';
 
 // 404 页面
 function NotFound() {
@@ -26,7 +26,7 @@ function NotFound() {
 // 工具页面组件
 function ToolPage() {
   const { toolId } = useParams<{ toolId: string }>();
-  const tool = tools.find(t => t.id === toolId);
+  const tool = useMemo(() => tools.find((item) => item.id === toolId), [toolId]);
   
   useEffect(() => {
     if (tool) {
@@ -43,22 +43,24 @@ function ToolPage() {
   
   return (
     <Layout activeToolId={tool.id}>
-      <ToolComponent />
+      <Suspense fallback={<ToolPageSkeleton title={tool.name} />}>
+        <ToolComponent />
+      </Suspense>
     </Layout>
   );
 }
 
 // 首页组件
 function HomePage() {
+  const navigate = useNavigate();
+
   useEffect(() => {
     document.title = 'ToolStack - 开发者在线工具箱 | JSON格式化 SQL优化 Base64编解码等25+工具';
   }, []);
   
   return (
     <Layout activeToolId="">
-      <Home onToolSelect={(id) => {
-        window.location.href = `/tool/${id}`;
-      }} />
+      <Home onToolSelect={(id) => navigate(`/tool/${id}`)} />
     </Layout>
   );
 }
@@ -86,6 +88,22 @@ function App() {
         <Route path="*" element={<NotFound />} />
       </Routes>
     </>
+  );
+}
+
+function ToolPageSkeleton({ title }: { title: string }) {
+  return (
+    <div className="space-y-4 animate-pulse">
+      <div className="card p-6">
+        <div className="h-7 w-52 rounded-lg bg-surface-200 dark:bg-surface-700" />
+        <div className="mt-3 h-4 w-full max-w-2xl rounded bg-surface-100 dark:bg-surface-700/70" />
+      </div>
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <div className="card h-[320px] rounded-2xl bg-surface-50 dark:bg-surface-900/40" />
+        <div className="card h-[320px] rounded-2xl bg-surface-50 dark:bg-surface-900/40" />
+      </div>
+      <p className="text-sm text-surface-500">正在加载 {title}...</p>
+    </div>
   );
 }
 

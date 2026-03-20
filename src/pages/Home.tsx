@@ -1,23 +1,21 @@
-// Home.tsx - 现代化首页仪表盘组件
 import { useMemo, useState, useEffect } from 'react';
 import { 
   FileJson, Code, Hash, Clock,
   Fingerprint, QrCode, Lock, Search, Palette, Key,
   Sparkles, History, Star, Zap,
   Terminal, Wrench, AlignLeft, Database, TrendingUp,
-  Shield, Globe, Cpu, ShieldCheck, Braces,
-  Link, FileCode, GitCompare, FileText, Wifi, Container,
-  FileLock, Rocket
+  Shield, Globe, Braces, Link, FileCode, GitCompare,
+  FileText, Wifi, Container, FileLock, Rocket, Binary
 } from 'lucide-react';
 import type { Tool } from '../types';
-import { tools, categories } from '../data/tools';
+import { tools, categories } from '@tools-data';
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   FileJson, Code, Hash, Clock, 
   Fingerprint, QrCode, Lock, Search, Palette, Key,
-  Terminal, Wrench, AlignLeft, Database, Shield, Globe, Cpu, ShieldCheck,
+  Terminal, Wrench, AlignLeft, Database, Shield, Globe,
   Braces, Link, FileCode, GitCompare, FileText, Wifi, Container, FileLock,
-  Sparkles, Rocket
+  Sparkles, Rocket, Binary
 };
 
 interface HomeProps {
@@ -58,22 +56,43 @@ export function Home({ onToolSelect }: HomeProps) {
     } catch {}
   }, [favoriteTools, isClient]);
 
-  // 使用 useMemo 缓存工具列表计算
-  const recentToolsList = useMemo(() => 
-    recentTools
-      .map(id => tools.find(t => t.id === id))
-      .filter((t): t is Tool => t !== undefined)
-      .slice(0, 6)
-  , [recentTools]);
+  const toolsById = useMemo(() => new Map(tools.map((tool) => [tool.id, tool])), []);
 
-  const favoriteToolsList = useMemo(() => 
-    favoriteTools
-      .map(id => tools.find(t => t.id === id))
-      .filter((t): t is Tool => t !== undefined)
-  , [favoriteTools]);
+  const toolsByCategory = useMemo(
+    () =>
+      categories.map((category) => ({
+        ...category,
+        tools: tools.filter((tool) => tool.category === category.id),
+      })),
+    []
+  );
+
+  const recentToolsList = useMemo(
+    () =>
+      recentTools
+        .map((id) => toolsById.get(id))
+        .filter((tool): tool is Tool => tool !== undefined)
+        .slice(0, 6),
+    [recentTools, toolsById]
+  );
+
+  const favoriteToolsList = useMemo(
+    () =>
+      favoriteTools
+        .map((id) => toolsById.get(id))
+        .filter((tool): tool is Tool => tool !== undefined),
+    [favoriteTools, toolsById]
+  );
 
   const hotTools = useMemo(() => tools.filter(t => t.hot).slice(0, 6), []);
   const newTools = useMemo(() => tools.filter(t => t.new).slice(0, 4), []);
+  const showRecent = isClient && recentToolsList.length > 0;
+  const showFavorites = isClient && favoriteToolsList.length > 0;
+  const featuredColumnClass = !showRecent && !showFavorites
+    ? 'lg:col-span-3'
+    : showRecent !== showFavorites
+      ? 'lg:col-span-2'
+      : '';
 
   // 添加工具到最近使用
   const handleToolClick = (toolId: string) => {
@@ -138,7 +157,7 @@ export function Home({ onToolSelect }: HomeProps) {
       {/* 快捷功能区：最近使用 + 我的收藏 + 热门推荐 */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* 最近使用 - 只在客户端显示 */}
-        {isClient && recentToolsList.length > 0 && (
+        {showRecent && (
           <section className="card">
             <div className="flex items-center gap-2 mb-4">
               <div className="w-8 h-8 bg-primary-50 dark:bg-primary-900/20 rounded-lg flex items-center justify-center">
@@ -155,7 +174,7 @@ export function Home({ onToolSelect }: HomeProps) {
         )}
 
         {/* 我的收藏 - 只在客户端显示 */}
-        {isClient && favoriteToolsList.length > 0 && (
+        {showFavorites && (
           <section className="card">
             <div className="flex items-center gap-2 mb-4">
               <div className="w-8 h-8 bg-amber-50 dark:bg-amber-900/20 rounded-lg flex items-center justify-center">
@@ -172,10 +191,10 @@ export function Home({ onToolSelect }: HomeProps) {
         )}
 
         {/* 热门推荐 */}
-        <section className={`card ${!isClient || (recentToolsList.length === 0 && favoriteToolsList.length === 0) ? 'lg:col-span-3' : recentToolsList.length === 0 || favoriteToolsList.length === 0 ? 'lg:col-span-2' : ''}`}>
+        <section className={`card ${featuredColumnClass}`}>
           <div className="flex items-center gap-2 mb-4">
-            <div className="w-8 h-8 bg-orange-50 dark:bg-orange-900/20 rounded-lg flex items-center justify-center">
-              <TrendingUp className="w-4 h-4 text-orange-500" />
+            <div className="w-8 h-8 bg-primary-50 dark:bg-primary-900/20 rounded-lg flex items-center justify-center">
+              <TrendingUp className="w-4 h-4 text-primary-500" />
             </div>
             <h2 className="font-semibold text-surface-900 dark:text-surface-100 text-sm">热门推荐</h2>
           </div>
@@ -199,23 +218,25 @@ export function Home({ onToolSelect }: HomeProps) {
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-          {categories.map(cat => {
+          {toolsByCategory.map(cat => {
             const Icon = iconMap[cat.icon] || Wrench;
-            const catTools = tools.filter(t => t.category === cat.id);
             
             return (
-              <section key={cat.id} className="card p-4">
+              <section
+                key={cat.id}
+                className="card p-4 border border-surface-200/80 dark:border-surface-700/80 bg-gradient-to-b from-surface-0 to-surface-50/60 dark:from-surface-800 dark:to-surface-800/70"
+              >
                 <div className="flex items-center gap-2 mb-3 pb-3 border-b border-surface-100 dark:border-surface-700">
                   <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-primary-600 rounded-lg flex items-center justify-center text-white shadow-sm">
                     <Icon className="w-4 h-4" />
                   </div>
                   <h3 className="font-semibold text-surface-900 dark:text-surface-100">{cat.name}</h3>
                   <span className="ml-auto text-xs text-surface-400 bg-surface-100 dark:bg-surface-700 px-2 py-0.5 rounded-full">
-                    {catTools.length}
+                    {cat.tools.length}
                   </span>
                 </div>
                 <div className="space-y-1">
-                  {catTools.map(tool => (
+                  {cat.tools.map(tool => (
                     <ToolRowSmall 
                       key={tool.id} 
                       tool={tool} 
@@ -248,8 +269,8 @@ export function Home({ onToolSelect }: HomeProps) {
         />
         <FeatureCard 
           icon={Rocket} 
-          iconBg="bg-purple-50 dark:bg-purple-900/20"
-          iconColor="text-purple-500"
+          iconBg="bg-rose-50 dark:bg-rose-900/20"
+          iconColor="text-rose-500"
           title="持续更新"
           description="不断优化功能体验"
         />
