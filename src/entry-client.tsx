@@ -1,6 +1,7 @@
 import { StrictMode } from 'react'
-import { hydrateRoot } from 'react-dom/client'
+import { createRoot, hydrateRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
+import { tools } from '@tools-data'
 import App from './App.tsx'
 import './style.css'
 
@@ -16,14 +17,38 @@ function showContent() {
   }, 50)
 }
 
-hydrateRoot(
-  rootElement,
-  <StrictMode>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
-  </StrictMode>,
-)
+async function preloadCurrentRoute() {
+  const match = window.location.pathname.match(/^\/tool\/([^/]+)/)
+  if (!match) {
+    return
+  }
+
+  const toolId = decodeURIComponent(match[1])
+  const tool = tools.find((item) => item.id === toolId)
+  await tool?.load?.()
+}
+
+async function bootstrap() {
+  await preloadCurrentRoute()
+
+  const app = (
+    <StrictMode>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </StrictMode>
+  )
+
+  if (import.meta.env.PROD) {
+    rootElement.innerHTML = ''
+    createRoot(rootElement).render(app)
+    return
+  }
+
+  hydrateRoot(rootElement, app)
+}
+
+void bootstrap()
 
 // 确保水合完成后显示
 if ('requestIdleCallback' in window) {
