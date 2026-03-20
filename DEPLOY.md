@@ -20,13 +20,13 @@ docker run -d \
 
 ```bash
 # 启动服务
-docker-compose up -d
+docker compose up -d --build
 
 # 查看日志
-docker-compose logs -f
+docker compose logs -f
 
 # 停止服务
-docker-compose down
+docker compose down
 ```
 
 ## 方式二：手动部署
@@ -159,6 +159,8 @@ NODE_ENV=production
 DOMAIN=https://your-domain.com
 ```
 
+`docker compose` 会自动读取项目根目录下的 `.env`，并将宿主机端口映射为 `${PORT}:3000`。
+
 ## 健康检查
 
 应用内置健康检查端点：
@@ -194,7 +196,7 @@ npm run build
 # 重启服务
 pm2 restart tool-stack
 # 或
-docker-compose up -d --build
+docker compose up -d --build
 ```
 
 ## 故障排查

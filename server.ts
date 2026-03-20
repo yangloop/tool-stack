@@ -1,11 +1,11 @@
 import fs from 'node:fs'
 import path from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { pathToFileURL } from 'node:url'
 import express, { type Request, type Response, type NextFunction } from 'express'
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const isProduction = process.env.NODE_ENV === 'production'
 const DOMAIN = process.env.DOMAIN || 'https://toolstack.juvvv.com'
+const rootDir = process.cwd()
 
 async function createServer() {
   const app = express()
@@ -20,8 +20,12 @@ async function createServer() {
     })
     app.use(vite.middlewares)
   } else {
-    app.use(express.static(path.resolve(__dirname, 'dist/client'), { index: false }))
+    app.use(express.static(path.resolve(rootDir, 'dist/client'), { index: false }))
   }
+
+  app.get('/health', (_req: Request, res: Response) => {
+    res.status(200).json({ status: 'ok' })
+  })
 
   app.use('*', async (req: Request, res: Response, next: NextFunction) => {
     const url = req.originalUrl
@@ -31,12 +35,12 @@ async function createServer() {
       let render: (url: string) => { html: string }
 
       if (!isProduction) {
-        template = fs.readFileSync(path.resolve(__dirname, 'index.html'), 'utf-8')
+        template = fs.readFileSync(path.resolve(rootDir, 'index.html'), 'utf-8')
         render = (await vite.ssrLoadModule('/src/entry-server.tsx')).render
       } else {
-        template = fs.readFileSync(path.resolve(__dirname, 'dist/client/index.html'), 'utf-8')
-        // @ts-expect-error - entry-server.js is generated during build
-        render = (await import('./dist/server/entry-server.js')).render
+        template = fs.readFileSync(path.resolve(rootDir, 'dist/client/index.html'), 'utf-8')
+        const serverEntryUrl = pathToFileURL(path.resolve(rootDir, 'dist/server/entry-server.js')).href
+        render = (await import(serverEntryUrl)).render
       }
 
       const { html: appHtml } = render(url)

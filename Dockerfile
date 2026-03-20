@@ -1,21 +1,28 @@
-# 构建阶段
-FROM node:20-alpine AS builder
+# syntax=docker/dockerfile:1.7
+
+FROM node:20-alpine AS deps
 
 WORKDIR /app
 
-# 复制依赖文件
 COPY package*.json ./
+RUN --mount=type=cache,target=/root/.npm npm ci
 
-# 安装所有依赖（包括 devDependencies）
-RUN npm ci
+FROM node:20-alpine AS build
 
-# 复制源代码
+WORKDIR /app
+
+COPY --from=deps /app/node_modules ./node_modules
+COPY package*.json ./
 COPY . .
+RUN npm run build
 
-# 构建客户端和服务端
-RUN npm run build:client && npm run build:server
+FROM node:20-alpine AS prod-deps
 
-# 生产阶段
+WORKDIR /app
+
+COPY package*.json ./
+RUN --mount=type=cache,target=/root/.npm npm ci --omit=dev && npm cache clean --force
+
 FROM node:20-alpine AS runner
 
 WORKDIR /app
@@ -23,21 +30,16 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV PORT=3000
 
-# 复制必要文件
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/package*.json ./
-COPY --from=builder /app/server.ts ./
-COPY --from=builder /app/tsconfig.json ./
+COPY --from=prod-deps /app/node_modules ./node_modules
+COPY --from=build /app/dist ./dist
+COPY --from=build /app/build ./build
+COPY --from=build /app/package*.json ./
 
-# 只安装生产依赖
-RUN npm ci --only=production && npm cache clean --force
-
-# 安装 tsx
-RUN npm install -g tsx
+USER node
 
 EXPOSE 3000
 
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
   CMD wget --no-verbose --tries=1 --spider http://localhost:3000/ || exit 1
 
-CMD ["tsx", "server.ts"]
+CMD ["node", "build/server.js"]

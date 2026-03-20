@@ -6,6 +6,7 @@ yarn-error.log*
 
 # Build output
 dist
+build
 *.tsbuildinfo
 
 # Logs
@@ -36,6 +37,7 @@ Thumbs.db
 README.md
 DEPLOY.md
 CHANGELOG.md
+AGENTS.md
 
 # Docker
 Dockerfile
