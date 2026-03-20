@@ -33,8 +33,6 @@ interface CodeEditorProps {
   extensions?: Extension[];
 }
 
-
-
 // 动态导入 CodeMirror 组件
 const LazyCodeMirrorEditor = lazy(() => import('./CodeEditorInner'));
 
@@ -81,9 +79,12 @@ export function CodeEditor({
   padding,
 }: CodeEditorProps) {
   const [isDark, setIsDark] = useState(false);
+  const [isClient, setIsClient] = useState(false);
 
   // 监听深色模式变化
   useEffect(() => {
+    setIsClient(true);
+    
     const checkDarkMode = () => {
       setIsDark(document.documentElement.classList.contains('dark'));
     };
@@ -110,6 +111,15 @@ export function CodeEditor({
   const heightStyle = useMemo(() => {
     return typeof height === 'number' ? `${height}px` : height;
   }, [height]);
+
+  // 服务端渲染时直接返回骨架屏，避免 Suspense 问题
+  if (!isClient) {
+    return (
+      <div id={id} className={`code-editor-wrapper ${wrapperClassName}`}>
+        <EditorSkeleton height={heightStyle} variant={variant} />
+      </div>
+    );
+  }
 
   return (
     <div id={id} className={`code-editor-wrapper ${wrapperClassName}`}>

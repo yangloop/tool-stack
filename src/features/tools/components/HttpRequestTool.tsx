@@ -1,4 +1,4 @@
-import { useState, useEffect, lazy, Suspense } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   Send, Globe, Copy, Check, AlertCircle, 
   Clock, Hash, Code, Type, Trash2, History
@@ -13,11 +13,7 @@ import {
 import { AdFooter } from '../../../components/ads';
 import { ToolInfoAuto } from './ToolInfoSection';
 import { ToolHeader } from '../../../components/common';
-
-// 懒加载 CodeGenerator 组件以优化初始加载性能
-const CodeGenerator = lazy(() => import('./http-request/CodeGenerator').then(m => ({ 
-  default: m.CodeGenerator 
-})));
+import { CodeGenerator } from './http-request/CodeGenerator';
 
 const httpMethods = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD', 'OPTIONS'] as const;
 type HttpMethod = typeof httpMethods[number];
@@ -480,21 +476,12 @@ export function HttpRequestTool() {
 
       {/* Code Generator */}
       <div className="mb-3 sm:mb-4">
-        <Suspense fallback={
-          <div className="bg-surface-0 dark:bg-surface-800 rounded-xl border border-surface-200 dark:border-surface-700 p-4">
-            <div className="flex items-center gap-2 text-surface-500">
-              <Code className="w-4 h-4" />
-              <span className="text-sm">代码生成器加载中...</span>
-            </div>
-          </div>
-        }>
-          <CodeGenerator
-            method={method}
-            url={fullUrl}
-            headers={headers.filter(h => h.enabled && h.key.trim()).reduce((acc, h) => ({ ...acc, [h.key]: h.value }), {})}
-            body={buildRequestBody(bodyType, jsonBody, xmlBody, rawBody, formData, urlEncodedData)}
-          />
-        </Suspense>
+        <CodeGenerator
+          method={method}
+          url={fullUrl}
+          headers={headers.filter(h => h.enabled && h.key.trim()).reduce((acc, h) => ({ ...acc, [h.key]: h.value }), {})}
+          body={buildRequestBody(bodyType, jsonBody, xmlBody, rawBody, formData, urlEncodedData)}
+        />
       </div>
 
       {/* Response */}
