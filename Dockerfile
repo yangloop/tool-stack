@@ -1,11 +1,9 @@
-# syntax=docker/dockerfile:1.7
-
 FROM node:20-alpine AS deps
 
 WORKDIR /app
 
 COPY package*.json ./
-RUN --mount=type=cache,target=/root/.npm npm ci
+RUN npm ci
 
 FROM node:20-alpine AS build
 
@@ -21,7 +19,7 @@ FROM node:20-alpine AS prod-deps
 WORKDIR /app
 
 COPY package*.json ./
-RUN --mount=type=cache,target=/root/.npm npm ci --omit=dev && npm cache clean --force
+RUN npm ci --omit=dev && npm cache clean --force
 
 FROM node:20-alpine AS runner
 
