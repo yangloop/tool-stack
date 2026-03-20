@@ -159,7 +159,7 @@ NODE_ENV=production
 DOMAIN=https://your-domain.com
 ```
 
-`docker compose` 会自动读取项目根目录下的 `.env`，并将宿主机端口映射为 `${PORT}:3000`。
+如果项目根目录下存在 `.env`，`docker compose` 会自动读取它；如果没有，也会使用 compose 文件里的默认值启动。宿主机端口映射默认为 `3000:3000`，也可以通过环境变量覆盖。
 
 ## 健康检查
 
