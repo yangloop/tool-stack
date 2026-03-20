@@ -642,7 +642,7 @@ Object.entries(toolsConfig).forEach(([toolId, config]) => {
     .replace(/<meta property="og:url" content=".*?"/, `<meta property="og:url" content="${toolUrl}"`)
     .replace(/<meta name="twitter:title" content=".*?"/, `<meta name="twitter:title" content="${pageTitle}"`)
     .replace(/<meta name="twitter:description" content=".*?"/, `<meta name="twitter:description" content="${pageDesc}"`)
-    .replace(/<!-- JSONLD_PLACEHOLDER -->.*?<!-- \/JSONLD_PLACEHOLDER -->/s, JSON.stringify(finalJsonLd, null, 2));
+    .replace(/<!-- JSONLD_PLACEHOLDER -->/, `<script type="application/ld+json">${JSON.stringify(finalJsonLd, null, 2)}</script>`);
 
   // 添加 FAQ HTML 内容（对 AI 可见）
   const faqHtml = config.faq ? `
@@ -697,16 +697,16 @@ const homeJsonLd = {
 };
 
 let homeHtml = indexHtml
-  .replace(/<title>.*?<\/title>/, `<title>ToolStack - 开发者在线工具箱 | JSON格式化 SQL优化 Base64编解码等25+工具</title>`)
-  .replace(/<meta name="description" content=".*?"/, `<meta name="description" content="ToolStack 是现代化开发者工具集合，包含25+实用工具：JSON/SQL格式化、Base64编解码、哈希计算、RSA加密、二维码生成等。界面简洁，支持深色模式，免费在线使用。"`)
-  .replace(/<meta name="keywords" content=".*?"/, `<meta name="keywords" content="开发者工具,在线工具,JSON格式化,SQL格式化,Base64编解码,哈希计算,RSA加密,二维码生成"`)
+  .replace(/<title>.*?<\/title>/, `<title>ToolStack - 开发者在线工具箱 | JSON/SQL格式化等25+工具</title>`)
+  .replace(/<meta name="description" content=".*?"/, `<meta name="description" content="ToolStack 是免费的开发者在线工具箱，无需注册打开即用。提供25+专业工具：JSON格式化、SQL美化与优化、Base64编解码、MD5/SHA哈希计算、RSA加密、二维码生成、正则表达式测试、JWT解码、时间戳转换等。界面简洁优雅，支持深色模式，所有数据本地处理不上传服务器，安全可靠。"`)
+  .replace(/<meta name="keywords" content=".*?"/, `<meta name="keywords" content="开发者工具,在线工具箱,JSON格式化,SQL格式化,Base64编解码,哈希计算,二维码生成,正则表达式测试,JWT解码,URL编码,时间戳转换,UUID生成"`)
   .replace(/<link rel="canonical" href=".*?"/, `<link rel="canonical" href="${domain}/"`)
-  .replace(/<meta property="og:title" content=".*?"/, `<meta property="og:title" content="ToolStack - 开发者在线工具箱 | JSON/SQL格式化 Base64编解码等"`)
-  .replace(/<meta property="og:description" content=".*?"/, `<meta property="og:description" content="ToolStack 是现代化开发者工具集合，包含25+实用工具：JSON/SQL格式化、Base64编解码、哈希计算等。界面简洁，支持深色模式。"`)
+  .replace(/<meta property="og:title" content=".*?"/, `<meta property="og:title" content="ToolStack - 开发者在线工具箱 | JSON/SQL格式化等25+工具"`)
+  .replace(/<meta property="og:description" content=".*?"/, `<meta property="og:description" content="ToolStack 是免费的开发者在线工具箱，无需注册打开即用。提供25+专业工具：JSON格式化、SQL美化与优化、Base64编解码、MD5/SHA哈希计算、RSA加密等。界面简洁优雅，支持深色模式，数据本地处理更安全。"`)
   .replace(/<meta property="og:url" content=".*?"/, `<meta property="og:url" content="${domain}/"`)
-  .replace(/<meta name="twitter:title" content=".*?"/, `<meta name="twitter:title" content="ToolStack - 开发者在线工具箱 | 25+实用工具集合"`)
-  .replace(/<meta name="twitter:description" content=".*?"/, `<meta name="twitter:description" content="ToolStack 是现代化开发者工具集合，包含25+实用工具：JSON/SQL格式化、Base64编解码等。界面简洁，支持深色模式。"`)
-  .replace(/<!-- JSONLD_PLACEHOLDER -->.*?<!-- \/JSONLD_PLACEHOLDER -->/s, JSON.stringify(homeJsonLd, null, 2));
+  .replace(/<meta name="twitter:title" content=".*?"/, `<meta name="twitter:title" content="ToolStack - 开发者在线工具箱 | 25+实用工具"`)
+  .replace(/<meta name="twitter:description" content=".*?"/, `<meta name="twitter:description" content="ToolStack 是免费的开发者在线工具箱，无需注册打开即用。提供25+专业工具：JSON格式化、SQL美化与优化、Base64编解码等。界面简洁优雅，支持深色模式。"`)
+  .replace(/<!-- JSONLD_PLACEHOLDER -->/, `<script type="application/ld+json">${JSON.stringify(homeJsonLd, null, 2)}</script>`);
 
 fs.writeFileSync(path.join(distDir, 'index.html'), homeHtml);
 console.log(`✓ Updated: index.html`);
