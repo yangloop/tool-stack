@@ -103,6 +103,30 @@ export function Home({ onToolSelect }: HomeProps) {
     onToolSelect(toolId);
   };
 
+  const preloadTool = (tool: Tool) => {
+    void tool.load?.();
+  };
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    const preload = () => {
+      hotTools.slice(0, 3).forEach((tool) => {
+        void tool.load?.();
+      });
+    };
+
+    if ('requestIdleCallback' in window) {
+      const id = window.requestIdleCallback(preload, { timeout: 1500 });
+      return () => window.cancelIdleCallback(id);
+    }
+
+    const timer = setTimeout(preload, 600);
+    return () => clearTimeout(timer);
+  }, [hotTools]);
+
   return (
     <div className="max-w-7xl mx-auto space-y-6 animate-fade-in">
       {/* Hero 区域 - 紧凑现代化 */}
@@ -137,17 +161,20 @@ export function Home({ onToolSelect }: HomeProps) {
               <QuickAccessButton 
                 icon={FileJson} 
                 label="JSON 工具" 
-                onClick={() => handleToolClick('json')} 
+                onClick={() => handleToolClick('json')}
+                onPrefetch={() => preloadTool(toolsById.get('json')!)}
               />
               <QuickAccessButton 
                 icon={Sparkles} 
                 label="SQL 分析优化" 
-                onClick={() => handleToolClick('sql-advisor')} 
+                onClick={() => handleToolClick('sql-advisor')}
+                onPrefetch={() => preloadTool(toolsById.get('sql-advisor')!)}
               />
               <QuickAccessButton 
                 icon={Code} 
                 label="Base64 编解码" 
-                onClick={() => handleToolClick('base64')} 
+                onClick={() => handleToolClick('base64')}
+                onPrefetch={() => preloadTool(toolsById.get('base64')!)}
               />
             </div>
           </div>
@@ -317,10 +344,23 @@ export function Home({ onToolSelect }: HomeProps) {
 }
 
 // 快捷入口按钮
-function QuickAccessButton({ icon: Icon, label, onClick }: { icon: React.ComponentType<{ className?: string }>, label: string, onClick: () => void }) {
+function QuickAccessButton({
+  icon: Icon,
+  label,
+  onClick,
+  onPrefetch,
+}: {
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+  onClick: () => void;
+  onPrefetch?: () => void;
+}) {
   return (
     <button
       onClick={onClick}
+      onMouseEnter={onPrefetch}
+      onFocus={onPrefetch}
+      onTouchStart={onPrefetch}
       className="flex items-center gap-2 px-4 py-2.5 bg-white/10 hover:bg-white/20 backdrop-blur rounded-xl text-sm font-medium transition-all duration-200 text-left group"
     >
       <Icon className="w-4 h-4 text-primary-100 group-hover:text-white transition-colors" />
@@ -342,6 +382,9 @@ function ToolRowSmall({ tool, onClick, showTags }: ToolRowSmallProps) {
   return (
     <button
       onClick={onClick}
+      onMouseEnter={() => void tool.load?.()}
+      onFocus={() => void tool.load?.()}
+      onTouchStart={() => void tool.load?.()}
       className="w-full flex items-center gap-2.5 p-2 rounded-lg hover:bg-surface-50 dark:hover:bg-surface-700/50 transition-colors text-left group"
     >
       <div className="w-8 h-8 bg-surface-100 dark:bg-surface-700 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-primary-50 dark:group-hover:bg-primary-900/20 transition-colors">
@@ -374,6 +417,9 @@ function ToolItem({ tool, onClick }: { tool: Tool; onClick: () => void }) {
   return (
     <button
       onClick={onClick}
+      onMouseEnter={() => void tool.load?.()}
+      onFocus={() => void tool.load?.()}
+      onTouchStart={() => void tool.load?.()}
       className="flex items-center gap-2 p-2.5 rounded-xl bg-surface-50 dark:bg-surface-700/30 hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-colors text-left group"
     >
       <div className="w-8 h-8 bg-white dark:bg-surface-700 rounded-lg flex items-center justify-center flex-shrink-0 shadow-sm">
@@ -424,6 +470,8 @@ function ToolCard({ tool, onClick, isFavorite, onToggleFavorite }: ToolCardProps
   return (
     <div
       onClick={onClick}
+      onMouseEnter={() => void tool.load?.()}
+      onTouchStart={() => void tool.load?.()}
       className="group cursor-pointer text-left p-4 bg-surface-0 dark:bg-surface-800 rounded-xl border border-surface-200 dark:border-surface-700 hover:border-primary-300 dark:hover:border-primary-500 hover:shadow-lg hover:shadow-primary-500/10 transition-all duration-300"
     >
       <div className="flex items-start justify-between mb-3">

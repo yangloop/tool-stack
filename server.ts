@@ -20,7 +20,11 @@ async function createServer() {
     })
     app.use(vite.middlewares)
   } else {
-    app.use(express.static(path.resolve(rootDir, 'dist/client'), { index: false }))
+    app.use(
+      express.static(path.resolve(rootDir, 'dist/client'), {
+        index: 'index.html',
+      }),
+    )
   }
 
   app.get('/health', (_req: Request, res: Response) => {

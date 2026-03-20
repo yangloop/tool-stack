@@ -12,6 +12,7 @@ export interface Tool {
   icon: string;
   category: ToolCategory;
   component: ToolComponent;
+  load?: () => Promise<unknown>;
   hot?: boolean;
   new?: boolean;
 }

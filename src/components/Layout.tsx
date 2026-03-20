@@ -208,6 +208,11 @@ export function Layout({ children, activeToolId }: LayoutProps) {
     setSearchQuery('');
   };
 
+  const preloadTool = (toolId: string) => {
+    const tool = tools.find((item) => item.id === toolId);
+    void tool?.load?.();
+  };
+
   return (
     <div className="min-h-screen bg-surface-50 transition-colors duration-300 dark:bg-surface-900">
       {/* 顶部导航 - 全屏时隐藏 */}
@@ -431,6 +436,9 @@ export function Layout({ children, activeToolId }: LayoutProps) {
                     <button
                       key={tool.id}
                       onClick={() => handleToolSelect(tool.id)}
+                      onMouseEnter={() => preloadTool(tool.id)}
+                      onFocus={() => preloadTool(tool.id)}
+                      onTouchStart={() => preloadTool(tool.id)}
                       className="group w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm text-surface-700 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-700 text-left transition-all duration-200 hover:translate-x-0.5"
                     >
                       <span className="font-medium">{tool.name}</span>
@@ -484,6 +492,9 @@ export function Layout({ children, activeToolId }: LayoutProps) {
                             key={tool.id}
                             to={`/tool/${tool.id}`}
                             onClick={() => setIsMobileMenuOpen(false)}
+                            onMouseEnter={() => preloadTool(tool.id)}
+                            onFocus={() => preloadTool(tool.id)}
+                            onTouchStart={() => preloadTool(tool.id)}
                             className={`
                               group w-full flex items-center justify-between px-3 py-2 rounded-xl text-sm transition-all duration-200
                               ${activeToolId === tool.id 
