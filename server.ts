@@ -20,9 +20,30 @@ async function createServer() {
     })
     app.use(vite.middlewares)
   } else {
+    const clientDistDir = path.resolve(rootDir, 'dist/client')
+
     app.use(
-      express.static(path.resolve(rootDir, 'dist/client'), {
+      '/assets',
+      express.static(path.join(clientDistDir, 'assets'), {
+        fallthrough: false,
+        immutable: true,
+        maxAge: '1y',
+      }),
+    )
+
+    app.use(
+      express.static(clientDistDir, {
         index: 'index.html',
+        setHeaders(res, filePath) {
+          if (filePath.endsWith('.html')) {
+            res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate')
+            return
+          }
+
+          if (filePath.includes(`${path.sep}assets${path.sep}`)) {
+            res.setHeader('Cache-Control', 'public, max-age=31536000, immutable')
+          }
+        },
       }),
     )
   }
@@ -33,8 +54,14 @@ async function createServer() {
 
   app.use('*', async (req: Request, res: Response, next: NextFunction) => {
     const url = req.originalUrl
+    const pathname = req.path
 
     try {
+      if (isProduction && path.extname(pathname)) {
+        res.status(404).end('Not Found')
+        return
+      }
+
       let template: string
       let render: (url: string) => { html: string }
 
