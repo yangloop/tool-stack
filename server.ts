@@ -35,6 +35,7 @@ async function createServer() {
         render = (await vite.ssrLoadModule('/src/entry-server.tsx')).render
       } else {
         template = fs.readFileSync(path.resolve(__dirname, 'dist/client/index.html'), 'utf-8')
+        // @ts-expect-error - entry-server.js is generated during build
         render = (await import('./dist/server/entry-server.js')).render
       }
 

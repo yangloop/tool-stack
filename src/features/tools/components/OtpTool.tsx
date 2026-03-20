@@ -31,7 +31,7 @@ export function OtpTool() {
   const [selectedAccount, setSelectedAccount] = useState<string | null>(null);
   const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string>('');
   const { copied, copy } = useClipboard();
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // 新账户表单
   const [newAccount, setNewAccount] = useState({

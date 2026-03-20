@@ -495,7 +495,7 @@ export function checkJoinIndex(
     }
     
     if (!hasIndex) {
-      console.log('[checkJoinIndex] 未找到索引:', schema.name, '.', col);
+      // Debug: console.log('[checkJoinIndex] 未找到索引:', schema.name, '.', col);
       results.push({
         id: generateId(),
         type: 'optimization',

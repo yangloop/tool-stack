@@ -520,7 +520,7 @@ export function parseDDL(
         const idxName = safeExtractString(createIndex.index) || 'index';
         // PostgreSQL 表名在 createIndex.table.table
         const tableName = safeExtractString(createIndex.table?.table);
-        console.log('[DDL] 原始 AST:', JSON.stringify(createIndex, null, 2));
+        // Debug: console.log('[DDL] 原始 AST:', JSON.stringify(createIndex, null, 2));
         
         if (tableName) {
           let idxColumns: string[] = [];
@@ -552,7 +552,7 @@ export function parseDDL(
             else if (d.name) idxColumns.push(safeExtractString(d.name));
             else if (d.value) idxColumns.push(safeExtractString(d.value));
           }
-          console.log('[DDL] 索引列:', idxColumns);
+          // Debug: console.log('[DDL] 索引列:', idxColumns);
           if (idxColumns.length > 0) {
             indexStatements.push({
               idxName,

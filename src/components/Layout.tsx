@@ -402,13 +402,12 @@ export function Layout({ children, activeToolId }: LayoutProps) {
                       >
                         <div className="flex items-center gap-3">
                           <div className={`flex items-center justify-center w-7 h-7 rounded-lg ${hasActiveTool ? 'bg-primary-500/10' : 'bg-surface-100 dark:bg-surface-700'}`}>
-                            <Icon className="w-3.5 h-3.5" style={{ width: '14px', height: '14px' }} />
+                            <Icon className="w-3.5 h-3.5" />
                           </div>
                           <span>{cat.name}</span>
                         </div>
                         <ChevronDown 
                           className={`w-4 h-4 text-surface-400 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}
-                          style={{ width: '16px', height: '16px' }}
                         />
                       </button>
                       
