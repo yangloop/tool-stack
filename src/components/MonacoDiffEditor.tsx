@@ -2,6 +2,7 @@ import { DiffEditor } from '@monaco-editor/react';
 import type * as Monaco from 'monaco-editor';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useIsDarkMode } from '../hooks/useIsDarkMode';
+import { ensureMonacoLoaderConfigured } from '../utils/monacoLoader';
 
 interface MonacoDiffEditorProps {
   original: string;
@@ -17,6 +18,8 @@ interface MonacoDiffEditorProps {
 
 const lightThemeName = 'toolstack-vs';
 const darkThemeName = 'toolstack-vs-dark';
+
+ensureMonacoLoaderConfigured();
 
 function defineDiffThemes(monaco: typeof Monaco) {
   monaco.editor.defineTheme(lightThemeName, {
@@ -166,6 +169,11 @@ function MonacoDiffEditorInner({
           renderOverviewRuler: true,
           overviewRulerBorder: false,
           padding: { top: 16, bottom: 16 },
+          scrollbar: {
+            verticalScrollbarSize: 10,
+            horizontalScrollbarSize: 10,
+            alwaysConsumeMouseWheel: false,
+          },
         }}
         keepCurrentOriginalModel
         keepCurrentModifiedModel

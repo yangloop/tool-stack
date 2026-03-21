@@ -86,21 +86,16 @@ function getManualChunk(id: string) {
   return undefined
 }
 
-export default defineConfig(({ mode, isSsrBuild }) => ({
+export default defineConfig(({ mode }) => ({
   plugins: [
     {
       name: 'resolve-tools-data',
       enforce: 'pre',
-      resolveId(id, importer, options) {
+      resolveId(id) {
         if (id !== '@tools-data') {
           return null
         }
-
-        const isSsrRequest = Boolean(options?.ssr)
-        return resolve(
-          __dirname,
-          isSsrRequest || isSsrBuild ? 'src/data/tools.server.tsx' : 'src/data/tools.client.tsx',
-        )
+        return resolve(__dirname, 'src/data/tools.client.tsx')
       },
     },
     react({
@@ -110,13 +105,10 @@ export default defineConfig(({ mode, isSsrBuild }) => ({
   ],
   
   build: {
-    outDir: isSsrBuild ? 'dist/server' : 'dist/client',
+    outDir: 'dist',
     sourcemap: false,
-    
-    // SSR 构建时不使用 manualChunks
-    rollupOptions: isSsrBuild ? {
-      input: '/src/entry-server.tsx',
-    } : {
+
+    rollupOptions: {
       output: {
         manualChunks: getManualChunk,
         assetFileNames: (assetInfo) => {
@@ -131,19 +123,19 @@ export default defineConfig(({ mode, isSsrBuild }) => ({
         entryFileNames: 'assets/js/[name]-[hash].js',
       },
     },
-    
-    minify: isSsrBuild ? false : 'terser',
-    terserOptions: isSsrBuild ? undefined : {
+
+    minify: 'terser',
+    terserOptions: {
       compress: {
         drop_console: true,
         drop_debugger: true,
       },
     },
-    
+
     target: 'es2015',
     chunkSizeWarningLimit: 1500,
-    reportCompressedSize: !isSsrBuild,
-    cssMinify: !isSsrBuild,
+    reportCompressedSize: true,
+    cssMinify: true,
   },
   
   server: {

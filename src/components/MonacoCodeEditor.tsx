@@ -2,6 +2,7 @@ import { Editor } from '@monaco-editor/react';
 import type * as Monaco from 'monaco-editor';
 import { memo, useCallback, useEffect, useState } from 'react';
 import { useIsDarkMode } from '../hooks/useIsDarkMode';
+import { ensureMonacoLoaderConfigured } from '../utils/monacoLoader';
 
 interface MonacoCodeEditorProps {
   value: string;
@@ -20,6 +21,8 @@ interface MonacoCodeEditorProps {
 
 const lightThemeName = 'toolstack-editor-vs';
 const darkThemeName = 'toolstack-editor-vs-dark';
+
+ensureMonacoLoaderConfigured();
 
 function defineEditorThemes(monaco: typeof Monaco) {
   monaco.editor.defineTheme(lightThemeName, {

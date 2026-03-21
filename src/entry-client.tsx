@@ -1,5 +1,5 @@
 import { StrictMode } from 'react'
-import { createRoot, hydrateRoot } from 'react-dom/client'
+import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import { tools } from '@tools-data'
 import App from './App.tsx'
@@ -31,21 +31,13 @@ async function preloadCurrentRoute() {
 async function bootstrap() {
   await preloadCurrentRoute()
 
-  const app = (
+  createRoot(rootElement).render(
     <StrictMode>
       <BrowserRouter>
         <App />
       </BrowserRouter>
-    </StrictMode>
+    </StrictMode>,
   )
-
-  if (import.meta.env.PROD) {
-    rootElement.innerHTML = ''
-    createRoot(rootElement).render(app)
-    return
-  }
-
-  hydrateRoot(rootElement, app)
 }
 
 void bootstrap()
