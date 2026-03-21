@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "tsx server.ts",
     "dev:spa": "vite",
-    "build": "npm run build:client && npm run build:server && node scripts/prerender-ssr.cjs && npm run build:node-server",
+    "build": "npm run build:client && npm run build:server && node scripts/prerender-ssr.cjs && node scripts/sync-client-to-dist-root.cjs && npm run build:node-server",
     "build:client": "vite build --outDir dist/client",
     "build:server": "vite build --ssr src/entry-server.tsx --outDir dist/server",
     "build:node-server": "tsc -p tsconfig.server.json",
