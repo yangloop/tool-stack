@@ -286,7 +286,7 @@ export function ChmodTool() {
               : 'border-transparent text-surface-500 hover:text-surface-700 dark:hover:text-surface-300'
           }`}
         >
-          <Shield className="w-3 h-3 sm:w-3.5 sm:h-3.5 sm:w-4 sm:h-4" />
+          <Shield className="w-3 h-3 sm:w-4 sm:h-4" />
           可视化设置
         </button>
         <button
@@ -297,7 +297,7 @@ export function ChmodTool() {
               : 'border-transparent text-surface-500 hover:text-surface-700 dark:hover:text-surface-300'
           }`}
         >
-          <Terminal className="w-3 h-3 sm:w-3.5 sm:h-3.5 sm:w-4 sm:h-4" />
+          <Terminal className="w-3 h-3 sm:w-4 sm:h-4" />
           常用命令
         </button>
       </div>
@@ -356,7 +356,7 @@ export function ChmodTool() {
                   <td className="px-3 py-3 sm:px-4 sm:py-4">
                     <div className="flex items-center gap-2 sm:gap-3">
                       <div className="w-10 h-10 bg-primary-100 dark:bg-primary-900/30 rounded-lg flex items-center justify-center">
-                        <User className="w-3 h-3 sm:w-3.5 sm:h-3.5 sm:w-4 sm:h-4 sm:w-5 sm:h-5 text-primary-600 dark:text-primary-400" />
+                        <User className="w-3 h-3 sm:w-5 sm:h-5 text-primary-600 dark:text-primary-400" />
                       </div>
                       <div>
                         <div className="font-medium text-surface-900 dark:text-surface-100">所有者 (Owner)</div>
@@ -401,7 +401,7 @@ export function ChmodTool() {
                   <td className="px-3 py-3 sm:px-4 sm:py-4">
                     <div className="flex items-center gap-2 sm:gap-3">
                       <div className="w-10 h-10 bg-amber-100 dark:bg-amber-900/30 rounded-lg flex items-center justify-center">
-                        <Users className="w-3 h-3 sm:w-3.5 sm:h-3.5 sm:w-4 sm:h-4 sm:w-5 sm:h-5 text-amber-600 dark:text-amber-400" />
+                        <Users className="w-3 h-3 sm:w-5 sm:h-5 text-amber-600 dark:text-amber-400" />
                       </div>
                       <div>
                         <div className="font-medium text-surface-900 dark:text-surface-100">所属组 (Group)</div>
@@ -446,7 +446,7 @@ export function ChmodTool() {
                   <td className="px-3 py-3 sm:px-4 sm:py-4">
                     <div className="flex items-center gap-2 sm:gap-3">
                       <div className="w-10 h-10 bg-surface-100 dark:bg-surface-700 rounded-lg flex items-center justify-center">
-                        <Users className="w-3 h-3 sm:w-3.5 sm:h-3.5 sm:w-4 sm:h-4 sm:w-5 sm:h-5 text-surface-600 dark:text-surface-400" />
+                        <Users className="w-3 h-3 sm:w-5 sm:h-5 text-surface-600 dark:text-surface-400" />
                       </div>
                       <div>
                         <div className="font-medium text-surface-900 dark:text-surface-100">其他用户 (Others)</div>
@@ -492,7 +492,7 @@ export function ChmodTool() {
           {/* 特殊权限 */}
           <div className="card p-3 sm:p-6 space-y-4">
             <h3 className="font-medium text-surface-900 dark:text-surface-100 flex items-center gap-1.5 sm:gap-2">
-              <Lock className="w-3 h-3 sm:w-3.5 sm:h-3.5 sm:w-4 sm:h-4 sm:w-5 sm:h-5 text-red-500" />
+              <Lock className="w-3 h-3 sm:w-5 sm:h-5 text-red-500" />
               特殊权限 (Setuid/Setgid/Sticky)
             </h3>
             <div className="grid sm:grid-cols-3 gap-3 sm:gap-3 sm:p-4">
@@ -523,7 +523,7 @@ export function ChmodTool() {
                         ? 'bg-primary-500 text-white'
                         : 'bg-surface-100 dark:bg-surface-800 text-surface-500'
                     }`}>
-                      <Icon className="w-3 h-3 sm:w-3.5 sm:h-3.5 sm:w-4 sm:h-4 sm:w-5 sm:h-5" />
+                      <Icon className="w-3 h-3 sm:w-5 sm:h-5" />
                     </div>
                     <div>
                       <div className="font-medium text-surface-900 dark:text-surface-100">{label}</div>
@@ -547,7 +547,7 @@ export function ChmodTool() {
           {/* 常用命令参考 */}
           <div className="card p-3 sm:p-6 space-y-4">
             <h3 className="font-medium text-surface-900 dark:text-surface-100 flex items-center gap-1.5 sm:gap-2">
-              <Terminal className="w-3 h-3 sm:w-3.5 sm:h-3.5 sm:w-4 sm:h-4 sm:w-5 sm:h-5 text-primary-500" />
+              <Terminal className="w-3 h-3 sm:w-5 sm:h-5 text-primary-500" />
               常用 Chmod 命令
             </h3>
             <div className="space-y-3">
@@ -582,7 +582,7 @@ export function ChmodTool() {
           {/* 数字权限速查表 */}
           <div className="card p-3 sm:p-6 space-y-4">
             <h3 className="font-medium text-surface-900 dark:text-surface-100 flex items-center gap-1.5 sm:gap-2">
-              <Shield className="w-3 h-3 sm:w-3.5 sm:h-3.5 sm:w-4 sm:h-4 sm:w-5 sm:h-5 text-emerald-500" />
+              <Shield className="w-3 h-3 sm:w-5 sm:h-5 text-emerald-500" />
               数字权限速查表
             </h3>
             <div className="overflow-x-auto">

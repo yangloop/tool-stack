@@ -1,95 +1,134 @@
-import { useState, useCallback, useEffect } from 'react';
-import { 
-  Sparkles, Database, AlertTriangle, CheckCircle, 
-  Info, Lightbulb, Trash2, Play, Copy, Check,
-  Zap, Search, Table2, AlertCircle, Settings,
-  X, BarChart3, Code2, Eye, EyeOff, ArrowRight,
-  AlignLeft, Maximize2, Minimize2
-} from 'lucide-react';
-import { useClipboard } from '../../../hooks/useLocalStorage';
-import { useSqlAdvisor } from '../hooks/useSqlAdvisor';
-import { AdInArticle, AdFooter } from '../../../components/ads';
-import { MonacoCodeEditor } from '../../../components/MonacoCodeEditor';
-import { ToolInfoAuto } from './ToolInfoSection';
-import { ToolHeader } from '../../../components/common';
+import { useState, useCallback, useEffect } from "react";
+import {
+  Sparkles,
+  Database,
+  AlertTriangle,
+  CheckCircle,
+  Info,
+  Lightbulb,
+  Trash2,
+  Play,
+  Copy,
+  Check,
+  Zap,
+  Search,
+  Table2,
+  AlertCircle,
+  Settings,
+  X,
+  BarChart3,
+  Code2,
+  Eye,
+  EyeOff,
+  ArrowRight,
+  AlignLeft,
+  Maximize2,
+  Minimize2,
+} from "lucide-react";
+import { useClipboard } from "../../../hooks/useLocalStorage";
+import { useSqlAdvisor } from "../hooks/useSqlAdvisor";
+
+// 缓存 sql-formatter 模块，避免重复加载
+let sqlFormatterModule: typeof import("sql-formatter") | null = null;
+
+// 预加载 sql-formatter 模块
+const getSqlFormatter = async () => {
+  if (!sqlFormatterModule) {
+    sqlFormatterModule = await import("sql-formatter");
+  }
+  return sqlFormatterModule;
+};
+import { AdInArticle, AdFooter } from "../../../components/ads";
+import { MonacoCodeEditor } from "../../../components/MonacoCodeEditor";
+import { ToolInfoAuto } from "./ToolInfoSection";
+import { ToolHeader } from "../../../components/common";
 
 // 支持的数据库类型
-type DatabaseType = 'mysql' | 'postgresql' | 'sqlite' | 'sqlserver';
+type DatabaseType = "mysql" | "postgresql" | "sqlite" | "sqlserver";
 
 // 分析结果类型
-type AnalysisType = 'critical' | 'warning' | 'info' | 'optimization' | 'success';
+type AnalysisType =
+  | "critical"
+  | "warning"
+  | "info"
+  | "optimization"
+  | "success";
 
 // 数据库配置
-const DATABASE_CONFIGS: Record<DatabaseType, { name: string; description: string; features: string[] }> = {
+const DATABASE_CONFIGS: Record<
+  DatabaseType,
+  { name: string; description: string; features: string[] }
+> = {
   mysql: {
-    name: 'MySQL / MariaDB',
-    description: 'MySQL 5.7+ / 8.0+ 及 MariaDB 10.3+',
-    features: ['完整的DDL支持', 'JSON类型', '窗口函数', 'CTE', 'MariaDB兼容']
+    name: "MySQL / MariaDB",
+    description: "MySQL 5.7+ / 8.0+ 及 MariaDB 10.3+",
+    features: ["完整的DDL支持", "JSON类型", "窗口函数", "CTE", "MariaDB兼容"],
   },
   postgresql: {
-    name: 'PostgreSQL',
-    description: 'PostgreSQL 12+',
-    features: ['高级数据类型', '数组类型', 'JSONB', '全文索引']
+    name: "PostgreSQL",
+    description: "PostgreSQL 12+",
+    features: ["高级数据类型", "数组类型", "JSONB", "全文索引"],
   },
   sqlite: {
-    name: 'SQLite',
-    description: 'SQLite 3.x',
-    features: ['轻量级', '文件数据库', '有限ALTER支持']
+    name: "SQLite",
+    description: "SQLite 3.x",
+    features: ["轻量级", "文件数据库", "有限ALTER支持"],
   },
   sqlserver: {
-    name: 'SQL Server',
-    description: 'Microsoft SQL Server 2016+',
-    features: ['T-SQL支持', '聚集索引', '分区表', '窗口函数']
-  }
+    name: "SQL Server",
+    description: "Microsoft SQL Server 2016+",
+    features: ["T-SQL支持", "聚集索引", "分区表", "窗口函数"],
+  },
 };
 
 export function SqlAdvisorTool() {
   // 状态
-  const [ddlInput, setDdlInput] = useState('');
-  const [sqlInput, setSqlInput] = useState('');
-  const [dbType, setDbType] = useState<DatabaseType>('mysql');
+  const [ddlInput, setDdlInput] = useState("");
+  const [sqlInput, setSqlInput] = useState("");
+  const [dbType, setDbType] = useState<DatabaseType>("mysql");
   const [showSettings, setShowSettings] = useState(false);
-  const [activeTab, setActiveTab] = useState<'all' | AnalysisType>('all');
+  const [activeTab, setActiveTab] = useState<"all" | AnalysisType>("all");
   const [showDDLOnly, setShowDDLOnly] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const { copied, copy } = useClipboard();
 
   // 使用 SQL Advisor Hook
-  const { results, schemas, isAnalyzing, analyze, reset, error, hasAnalyzed } = useSqlAdvisor();
+  const { results, schemas, isAnalyzing, analyze, reset, error, hasAnalyzed } =
+    useSqlAdvisor();
 
   // 按类别分组的结果
   const filteredResults = (() => {
-    if (activeTab === 'all') return results;
-    return results.filter(r => r.type === activeTab);
+    if (activeTab === "all") return results;
+    return results.filter((r) => r.type === activeTab);
   })();
 
   // 统计信息
   const stats = (() => ({
-    critical: results.filter(r => r.type === 'critical').length,
-    warning: results.filter(r => r.type === 'warning').length,
-    info: results.filter(r => r.type === 'info').length,
-    optimization: results.filter(r => r.type === 'optimization').length,
-    success: results.filter(r => r.type === 'success').length,
-    total: results.length
+    critical: results.filter((r) => r.type === "critical").length,
+    warning: results.filter((r) => r.type === "warning").length,
+    info: results.filter((r) => r.type === "info").length,
+    optimization: results.filter((r) => r.type === "optimization").length,
+    success: results.filter((r) => r.type === "success").length,
+    total: results.length,
   }))();
 
-  // 格式化 SQL
+  // 格式化 SQL - 使用缓存的 sql-formatter 模块
   const formatSQL = async (sql: string): Promise<string> => {
     if (!sql.trim()) return sql;
     try {
-      const { format } = await import('sql-formatter');
+      const { format } = await getSqlFormatter();
       // 映射数据库类型到 sql-formatter 支持的类型
       const formatterDialect: Record<DatabaseType, string> = {
-        mysql: 'mysql',
-        postgresql: 'postgresql',
-        sqlite: 'sqlite',
-        sqlserver: 'transactsql',
+        mysql: "mysql",
+        postgresql: "postgresql",
+        sqlite: "sqlite",
+        sqlserver: "transactsql",
       };
-      
+
       return format(sql, {
         language: formatterDialect[dbType] as any,
         tabWidth: 2,
-        keywordCase: 'upper',
+        keywordCase: "upper",
         linesBetweenQueries: 2,
       });
     } catch (e) {
@@ -113,19 +152,22 @@ export function SqlAdvisorTool() {
   // 事件处理
   const handleAnalyze = useCallback(() => {
     // 仅分析DDL模式时，不传SQL输入
-    analyze(showDDLOnly ? '' : sqlInput, ddlInput, dbType);
+    analyze(showDDLOnly ? "" : sqlInput, ddlInput, dbType);
   }, [analyze, sqlInput, ddlInput, dbType, showDDLOnly]);
 
   const handleClear = useCallback(() => {
-    setDdlInput('');
-    setSqlInput('');
+    setDdlInput("");
+    setSqlInput("");
     reset(); // 清除分析结果
   }, [reset]);
 
   const handleCopyResults = async () => {
-    const text = results.map((r, i) => 
-      `${i + 1}. [${getTypeLabel(r.type)}] ${r.title}\n   ${r.description}${r.suggestion ? '\n   建议: ' + r.suggestion : ''}`
-    ).join('\n\n');
+    const text = results
+      .map(
+        (r, i) =>
+          `${i + 1}. [${getTypeLabel(r.type)}] ${r.title}\n   ${r.description}${r.suggestion ? "\n   建议: " + r.suggestion : ""}`,
+      )
+      .join("\n\n");
     await copy(text);
   };
 
@@ -163,7 +205,7 @@ JOIN orders o ON u.id = o.user_id
 WHERE u.status = 'active' 
   AND u.age > 18
 ORDER BY o.created_at DESC
-LIMIT 10;`
+LIMIT 10;`,
       },
       postgresql: {
         ddl: `-- 用户表
@@ -198,7 +240,7 @@ JOIN orders o ON u.id = o.user_id
 WHERE u.status = 'active' 
   AND u.age > 18
 ORDER BY o.created_at DESC
-LIMIT 10;`
+LIMIT 10;`,
       },
       sqlite: {
         ddl: `-- 用户表
@@ -233,7 +275,7 @@ JOIN orders o ON u.id = o.user_id
 WHERE u.status = 'active' 
   AND u.age > 18
 ORDER BY o.created_at DESC
-LIMIT 10;`
+LIMIT 10;`,
       },
       sqlserver: {
         ddl: `-- 用户表
@@ -268,8 +310,8 @@ INNER JOIN orders o ON u.id = o.user_id
 WHERE u.status = 'active' 
   AND u.age > 18
 ORDER BY o.created_at DESC
-OFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY;`
-      }
+OFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY;`,
+      },
     };
 
     const example = examples[dbType];
@@ -282,41 +324,61 @@ OFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY;`
   // 渲染辅助函数
   const getTypeIcon = (type: AnalysisType) => {
     switch (type) {
-      case 'critical': return <AlertCircle className="w-5 h-5 text-red-500" />;
-      case 'warning': return <AlertTriangle className="w-5 h-5 text-amber-500" />;
-      case 'info': return <Info className="w-5 h-5 text-blue-500" />;
-      case 'optimization': return <Lightbulb className="w-5 h-5 text-green-500" />;
-      case 'success': return <CheckCircle className="w-5 h-5 text-emerald-500" />;
+      case "critical":
+        return <AlertCircle className="w-5 h-5 text-red-500" />;
+      case "warning":
+        return <AlertTriangle className="w-5 h-5 text-amber-500" />;
+      case "info":
+        return <Info className="w-5 h-5 text-blue-500" />;
+      case "optimization":
+        return <Lightbulb className="w-5 h-5 text-green-500" />;
+      case "success":
+        return <CheckCircle className="w-5 h-5 text-emerald-500" />;
     }
   };
 
   const getTypeStyle = (type: AnalysisType) => {
     switch (type) {
-      case 'critical': return 'border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/10';
-      case 'warning': return 'border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/10';
-      case 'info': return 'border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/10';
-      case 'optimization': return 'border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/10';
-      case 'success': return 'border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-900/10';
+      case "critical":
+        return "border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/10";
+      case "warning":
+        return "border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/10";
+      case "info":
+        return "border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/10";
+      case "optimization":
+        return "border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/10";
+      case "success":
+        return "border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-900/10";
     }
   };
 
   const getTypeLabel = (type: AnalysisType) => {
     switch (type) {
-      case 'critical': return '严重';
-      case 'warning': return '警告';
-      case 'info': return '提示';
-      case 'optimization': return '优化';
-      case 'success': return '通过';
+      case "critical":
+        return "严重";
+      case "warning":
+        return "警告";
+      case "info":
+        return "提示";
+      case "optimization":
+        return "优化";
+      case "success":
+        return "通过";
     }
   };
 
   const getTypeBadgeStyle = (type: AnalysisType) => {
     switch (type) {
-      case 'critical': return 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300';
-      case 'warning': return 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300';
-      case 'info': return 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300';
-      case 'optimization': return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300';
-      case 'success': return 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300';
+      case "critical":
+        return "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300";
+      case "warning":
+        return "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300";
+      case "info":
+        return "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300";
+      case "optimization":
+        return "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300";
+      case "success":
+        return "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300";
     }
   };
 
@@ -324,35 +386,41 @@ OFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY;`
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && isFullscreen) {
+      if (event.key === "Escape" && isFullscreen) {
         setIsFullscreen(false);
       }
     };
 
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isFullscreen]);
 
   useEffect(() => {
     if (isFullscreen) {
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = '';
+      document.body.style.overflow = "";
     }
 
     return () => {
-      document.body.style.overflow = '';
+      document.body.style.overflow = "";
     };
   }, [isFullscreen]);
 
   const inputPanels = (
-    <div className={`grid ${showDDLOnly ? 'grid-cols-1' : 'lg:grid-cols-2'} gap-3 sm:gap-4 mb-4`}>
+    <div
+      className={`grid ${showDDLOnly ? "grid-cols-1" : "lg:grid-cols-2"} gap-3 sm:gap-4 mb-4`}
+    >
       <div className="card flex flex-col p-4 sm:p-5">
         <div className="mb-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Table2 className="w-4 h-4 text-surface-500" />
-            <span className="text-sm font-medium text-surface-700 dark:text-surface-300">表结构 (DDL)</span>
-            <span className="text-xs text-surface-400">{dbType.toUpperCase()}</span>
+            <span className="text-sm font-medium text-surface-700 dark:text-surface-300">
+              表结构 (DDL)
+            </span>
+            <span className="text-xs text-surface-400">
+              {dbType.toUpperCase()}
+            </span>
           </div>
           <div className="flex items-center gap-2">
             <button
@@ -371,7 +439,10 @@ OFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY;`
             )}
           </div>
         </div>
-        <div style={{ height: showDDLOnly ? '500px' : '280px' }} className="min-h-0">
+        <div
+          style={{ height: showDDLOnly ? "500px" : "280px" }}
+          className="min-h-0"
+        >
           <MonacoCodeEditor
             value={ddlInput}
             onChange={setDdlInput}
@@ -400,8 +471,12 @@ OFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY;`
           <div className="mb-3 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Database className="w-4 h-4 text-surface-500" />
-              <span className="text-sm font-medium text-surface-700 dark:text-surface-300">SQL 语句</span>
-              <span className="text-xs text-primary-500">{dbType.toUpperCase()}</span>
+              <span className="text-sm font-medium text-surface-700 dark:text-surface-300">
+                SQL 语句
+              </span>
+              <span className="text-xs text-primary-500">
+                {dbType.toUpperCase()}
+              </span>
             </div>
             <button
               onClick={handleFormatSQL}
@@ -413,7 +488,7 @@ OFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY;`
               <span className="hidden sm:inline">格式化</span>
             </button>
           </div>
-          <div style={{ height: '280px' }} className="min-h-0">
+          <div style={{ height: "280px" }} className="min-h-0">
             <MonacoCodeEditor
               value={sqlInput}
               onChange={setSqlInput}
@@ -435,33 +510,62 @@ OFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY;`
     return (
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
         {[
-          { type: 'all', label: '全部', count: stats.total, icon: BarChart3 },
-          { type: 'critical', label: '严重', count: stats.critical, icon: AlertCircle },
-          { type: 'warning', label: '警告', count: stats.warning, icon: AlertTriangle },
-          { type: 'info', label: '提示', count: stats.info, icon: Info },
-          { type: 'optimization', label: '优化', count: stats.optimization, icon: Lightbulb },
-          { type: 'success', label: '通过', count: stats.success, icon: CheckCircle },
+          { type: "all", label: "全部", count: stats.total, icon: BarChart3 },
+          {
+            type: "critical",
+            label: "严重",
+            count: stats.critical,
+            icon: AlertCircle,
+          },
+          {
+            type: "warning",
+            label: "警告",
+            count: stats.warning,
+            icon: AlertTriangle,
+          },
+          { type: "info", label: "提示", count: stats.info, icon: Info },
+          {
+            type: "optimization",
+            label: "优化",
+            count: stats.optimization,
+            icon: Lightbulb,
+          },
+          {
+            type: "success",
+            label: "通过",
+            count: stats.success,
+            icon: CheckCircle,
+          },
         ].map(({ type, label, count, icon: Icon }) => (
           <button
             key={type}
-            onClick={() => setActiveTab(type as 'all' | AnalysisType)}
+            onClick={() => setActiveTab(type as "all" | AnalysisType)}
             className={`rounded-lg border p-3 text-left transition-all ${
               activeTab === type
-                ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20'
-                : 'border-gray-200 dark:border-gray-700 hover:border-purple-300'
+                ? "border-purple-500 bg-purple-50 dark:bg-purple-900/20"
+                : "border-gray-200 dark:border-gray-700 hover:border-purple-300"
             }`}
           >
             <div className="flex items-center justify-between">
               <Icon className="w-4 h-4 text-gray-500" />
-              <span className={`text-lg font-bold ${
-                count > 0 && type !== 'success' && type !== 'all' && type !== 'info'
-                  ? type === 'critical' ? 'text-red-500' : 'text-amber-500'
-                  : 'text-gray-700 dark:text-gray-300'
-              }`}>
+              <span
+                className={`text-lg font-bold ${
+                  count > 0 &&
+                  type !== "success" &&
+                  type !== "all" &&
+                  type !== "info"
+                    ? type === "critical"
+                      ? "text-red-500"
+                      : "text-amber-500"
+                    : "text-gray-700 dark:text-gray-300"
+                }`}
+              >
                 {count}
               </span>
             </div>
-            <div className="mt-1 text-xs text-surface-500 dark:text-surface-400">{label}</div>
+            <div className="mt-1 text-xs text-surface-500 dark:text-surface-400">
+              {label}
+            </div>
           </button>
         ))}
       </div>
@@ -484,7 +588,9 @@ OFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY;`
               {getTypeIcon(result.type)}
               <div className="min-w-0 flex-1">
                 <div className="mb-1 flex flex-wrap items-center gap-2">
-                  <span className={`rounded px-2 py-0.5 text-xs font-medium ${getTypeBadgeStyle(result.type)}`}>
+                  <span
+                    className={`rounded px-2 py-0.5 text-xs font-medium ${getTypeBadgeStyle(result.type)}`}
+                  >
                     {getTypeLabel(result.type)}
                   </span>
                   <span className="text-xs text-surface-500 dark:text-surface-400">
@@ -518,7 +624,10 @@ OFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY;`
                 {result.details && result.details.length > 0 && (
                   <ul className="mt-2 space-y-1">
                     {result.details.map((detail, idx) => (
-                      <li key={idx} className="flex items-start gap-1 text-xs text-surface-500 dark:text-surface-400">
+                      <li
+                        key={idx}
+                        className="flex items-start gap-1 text-xs text-surface-500 dark:text-surface-400"
+                      >
                         <span className="text-primary-500">•</span>
                         {detail}
                       </li>
@@ -534,7 +643,9 @@ OFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY;`
   };
 
   const renderEmptyState = () => {
-    if (!(filteredResults.length === 0 && sqlInput && !isAnalyzing && hasAnalyzed)) {
+    if (
+      !(filteredResults.length === 0 && sqlInput && !isAnalyzing && hasAnalyzed)
+    ) {
       return null;
     }
 
@@ -545,8 +656,8 @@ OFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY;`
           未发现问题
         </h3>
         <p className="text-sm text-surface-500 dark:text-surface-400">
-          {activeTab === 'all'
-            ? '已分析SQL语句，未发现明显问题'
+          {activeTab === "all"
+            ? "已分析SQL语句，未发现明显问题"
             : `当前筛选条件下没有${getTypeLabel(activeTab)}类型的结果`}
         </p>
       </div>
@@ -600,8 +711,8 @@ OFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY;`
                 onClick={() => setDbType(type)}
                 className={`p-3 rounded-lg border text-left transition-all ${
                   dbType === type
-                    ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20'
-                    : 'border-surface-200 dark:border-surface-700 hover:border-primary-300'
+                    ? "border-primary-500 bg-primary-50 dark:bg-primary-900/20"
+                    : "border-surface-200 dark:border-surface-700 hover:border-primary-300"
                 }`}
               >
                 <div className="font-medium text-sm text-surface-900 dark:text-surface-100">
@@ -618,9 +729,9 @@ OFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY;`
 
       {/* 工具栏 */}
       <div className="flex flex-wrap items-center gap-2 mb-4">
-        <button 
-          onClick={handleAnalyze} 
-          disabled={isAnalyzing || (!showDDLOnly && !sqlInput.trim())} 
+        <button
+          onClick={handleAnalyze}
+          disabled={isAnalyzing || (!showDDLOnly && !sqlInput.trim())}
           className="btn-primary btn-tool disabled:opacity-50"
         >
           {isAnalyzing ? (
@@ -628,7 +739,7 @@ OFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY;`
           ) : (
             <Play className="w-3.5 h-3.5 flex-shrink-0" />
           )}
-          {isAnalyzing ? '分析中...' : showDDLOnly ? '分析DDL' : '分析SQL'}
+          {isAnalyzing ? "分析中..." : showDDLOnly ? "分析DDL" : "分析SQL"}
         </button>
         <button onClick={handleClear} className="btn-ghost-danger btn-tool">
           <Trash2 className="w-3.5 h-3.5 flex-shrink-0" />
@@ -639,18 +750,29 @@ OFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY;`
           加载示例
         </button>
         {results.length > 0 && (
-          <button onClick={handleCopyResults} className="btn-secondary btn-tool">
-            {copied ? <Check className="w-3.5 h-3.5 flex-shrink-0" /> : <Copy className="w-3.5 h-3.5 flex-shrink-0" />}
-            {copied ? '已复制' : '复制结果'}
+          <button
+            onClick={handleCopyResults}
+            className="btn-secondary btn-tool"
+          >
+            {copied ? (
+              <Check className="w-3.5 h-3.5 flex-shrink-0" />
+            ) : (
+              <Copy className="w-3.5 h-3.5 flex-shrink-0" />
+            )}
+            {copied ? "已复制" : "复制结果"}
           </button>
         )}
         <div className="flex items-center gap-2 ml-auto">
           <button
             onClick={() => setShowDDLOnly(!showDDLOnly)}
-            className={`btn-tool ${showDDLOnly ? 'btn-primary' : 'btn-ghost'}`}
+            className={`btn-tool ${showDDLOnly ? "btn-primary" : "btn-ghost"}`}
           >
-            {showDDLOnly ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
-            {showDDLOnly ? '显示全部' : '仅分析DDL'}
+            {showDDLOnly ? (
+              <EyeOff className="w-3.5 h-3.5" />
+            ) : (
+              <Eye className="w-3.5 h-3.5" />
+            )}
+            {showDDLOnly ? "显示全部" : "仅分析DDL"}
           </button>
         </div>
       </div>
@@ -674,10 +796,12 @@ OFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY;`
           <div className="mb-4 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Search className="w-5 h-5 text-purple-500" />
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">分析结果</h3>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                分析结果
+              </h3>
               <span className="text-sm text-gray-500">
                 共 {filteredResults.length} 条
-                {activeTab !== 'all' && ` (${getTypeLabel(activeTab)})`}
+                {activeTab !== "all" && ` (${getTypeLabel(activeTab)})`}
               </span>
             </div>
           </div>
@@ -698,8 +822,12 @@ OFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY;`
           <div className="flex h-14 flex-shrink-0 items-center justify-between border-b border-surface-200 bg-surface-0 px-4 dark:border-surface-700 dark:bg-surface-800">
             <div className="flex items-center gap-3">
               <Sparkles className="w-5 h-5 text-purple-500" />
-              <span className="font-medium text-surface-900 dark:text-surface-100">SQL 优化建议</span>
-              <span className="hidden text-xs text-surface-400 sm:inline">按 ESC 退出全屏</span>
+              <span className="font-medium text-surface-900 dark:text-surface-100">
+                SQL 优化建议
+              </span>
+              <span className="hidden text-xs text-surface-400 sm:inline">
+                按 ESC 退出全屏
+              </span>
             </div>
             <button
               onClick={() => setIsFullscreen(false)}
@@ -718,23 +846,41 @@ OFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY;`
                 disabled={isAnalyzing || (!showDDLOnly && !sqlInput.trim())}
                 className="btn-primary btn-tool flex-shrink-0 disabled:opacity-50"
               >
-                {isAnalyzing ? <Zap className="w-3.5 h-3.5 flex-shrink-0 animate-pulse" /> : <Play className="w-3.5 h-3.5 flex-shrink-0" />}
-                {isAnalyzing ? '分析中...' : showDDLOnly ? '分析DDL' : '分析SQL'}
+                {isAnalyzing ? (
+                  <Zap className="w-3.5 h-3.5 flex-shrink-0 animate-pulse" />
+                ) : (
+                  <Play className="w-3.5 h-3.5 flex-shrink-0" />
+                )}
+                {isAnalyzing
+                  ? "分析中..."
+                  : showDDLOnly
+                    ? "分析DDL"
+                    : "分析SQL"}
               </button>
-              <button onClick={handleClear} className="btn-ghost-danger btn-tool flex-shrink-0">
+              <button
+                onClick={handleClear}
+                className="btn-ghost-danger btn-tool flex-shrink-0"
+              >
                 <Trash2 className="w-3.5 h-3.5 flex-shrink-0" />
                 清空
               </button>
-              <button onClick={loadExample} className="btn-secondary btn-tool flex-shrink-0">
+              <button
+                onClick={loadExample}
+                className="btn-secondary btn-tool flex-shrink-0"
+              >
                 <Code2 className="w-3.5 h-3.5 flex-shrink-0" />
                 加载示例
               </button>
               <button
                 onClick={() => setShowDDLOnly(!showDDLOnly)}
-                className={`btn-tool flex-shrink-0 ${showDDLOnly ? 'btn-primary' : 'btn-ghost'}`}
+                className={`btn-tool flex-shrink-0 ${showDDLOnly ? "btn-primary" : "btn-ghost"}`}
               >
-                {showDDLOnly ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
-                {showDDLOnly ? '显示全部' : '仅分析DDL'}
+                {showDDLOnly ? (
+                  <EyeOff className="w-3.5 h-3.5" />
+                ) : (
+                  <Eye className="w-3.5 h-3.5" />
+                )}
+                {showDDLOnly ? "显示全部" : "仅分析DDL"}
               </button>
               <button
                 onClick={() => setShowSettings(!showSettings)}
@@ -749,24 +895,26 @@ OFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY;`
           {showSettings && (
             <div className="border-b border-surface-200 bg-surface-0 px-4 py-3 dark:border-surface-700 dark:bg-surface-800">
               <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
-                {(Object.keys(DATABASE_CONFIGS) as DatabaseType[]).map((type) => (
-                  <button
-                    key={type}
-                    onClick={() => setDbType(type)}
-                    className={`rounded-lg border p-3 text-left transition-all ${
-                      dbType === type
-                        ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20'
-                        : 'border-surface-200 dark:border-surface-700 hover:border-primary-300'
-                    }`}
-                  >
-                    <div className="text-sm font-medium text-surface-900 dark:text-surface-100">
-                      {DATABASE_CONFIGS[type].name}
-                    </div>
-                    <div className="mt-1 text-xs text-surface-500 dark:text-surface-400">
-                      {DATABASE_CONFIGS[type].description}
-                    </div>
-                  </button>
-                ))}
+                {(Object.keys(DATABASE_CONFIGS) as DatabaseType[]).map(
+                  (type) => (
+                    <button
+                      key={type}
+                      onClick={() => setDbType(type)}
+                      className={`rounded-lg border p-3 text-left transition-all ${
+                        dbType === type
+                          ? "border-primary-500 bg-primary-50 dark:bg-primary-900/20"
+                          : "border-surface-200 dark:border-surface-700 hover:border-primary-300"
+                      }`}
+                    >
+                      <div className="text-sm font-medium text-surface-900 dark:text-surface-100">
+                        {DATABASE_CONFIGS[type].name}
+                      </div>
+                      <div className="mt-1 text-xs text-surface-500 dark:text-surface-400">
+                        {DATABASE_CONFIGS[type].description}
+                      </div>
+                    </button>
+                  ),
+                )}
               </div>
             </div>
           )}
@@ -782,13 +930,19 @@ OFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY;`
 
           <div className="min-h-0 flex-1 overflow-hidden p-4">
             <div className="grid h-full min-h-0 gap-4 lg:grid-rows-[minmax(300px,1fr)_minmax(260px,1fr)]">
-              <div className={`grid min-h-0 ${showDDLOnly ? 'grid-cols-1' : 'lg:grid-cols-2'} gap-4`}>
+              <div
+                className={`grid min-h-0 ${showDDLOnly ? "grid-cols-1" : "lg:grid-cols-2"} gap-4`}
+              >
                 <div className="min-h-0 overflow-hidden rounded-2xl border border-surface-200 bg-surface-0 p-4 pb-5 shadow-soft dark:border-surface-700 dark:bg-surface-800 flex flex-col">
                   <div className="mb-3 flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <Table2 className="w-4 h-4 text-surface-500" />
-                      <span className="text-sm font-medium text-surface-700 dark:text-surface-300">表结构 (DDL)</span>
-                      <span className="text-xs text-surface-400">{dbType.toUpperCase()}</span>
+                      <span className="text-sm font-medium text-surface-700 dark:text-surface-300">
+                        表结构 (DDL)
+                      </span>
+                      <span className="text-xs text-surface-400">
+                        {dbType.toUpperCase()}
+                      </span>
                     </div>
                     <button
                       onClick={handleFormatDDL}
@@ -815,8 +969,12 @@ OFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY;`
                     <div className="mb-3 flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <Database className="w-4 h-4 text-surface-500" />
-                        <span className="text-sm font-medium text-surface-700 dark:text-surface-300">SQL 语句</span>
-                        <span className="text-xs text-primary-500">{dbType.toUpperCase()}</span>
+                        <span className="text-sm font-medium text-surface-700 dark:text-surface-300">
+                          SQL 语句
+                        </span>
+                        <span className="text-xs text-primary-500">
+                          {dbType.toUpperCase()}
+                        </span>
                       </div>
                       <button
                         onClick={handleFormatSQL}
@@ -845,16 +1003,25 @@ OFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY;`
                   <div className="mb-3 flex items-center justify-between gap-3">
                     <div className="flex items-center gap-2">
                       <Search className="w-5 h-5 text-purple-500" />
-                      <h3 className="text-base font-semibold text-gray-900 dark:text-white">分析结果</h3>
+                      <h3 className="text-base font-semibold text-gray-900 dark:text-white">
+                        分析结果
+                      </h3>
                       <span className="text-sm text-gray-500">
                         共 {filteredResults.length} 条
-                        {activeTab !== 'all' && ` (${getTypeLabel(activeTab)})`}
+                        {activeTab !== "all" && ` (${getTypeLabel(activeTab)})`}
                       </span>
                     </div>
                     {results.length > 0 && (
-                      <button onClick={handleCopyResults} className="btn-secondary btn-tool-sm">
-                        {copied ? <Check className="w-3.5 h-3.5 flex-shrink-0" /> : <Copy className="w-3.5 h-3.5 flex-shrink-0" />}
-                        {copied ? '已复制' : '复制结果'}
+                      <button
+                        onClick={handleCopyResults}
+                        className="btn-secondary btn-tool-sm"
+                      >
+                        {copied ? (
+                          <Check className="w-3.5 h-3.5 flex-shrink-0" />
+                        ) : (
+                          <Copy className="w-3.5 h-3.5 flex-shrink-0" />
+                        )}
+                        {copied ? "已复制" : "复制结果"}
                       </button>
                     )}
                   </div>

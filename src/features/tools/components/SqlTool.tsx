@@ -1,21 +1,29 @@
-import { useState, useEffect } from 'react';
-import { 
-  Copy, Check, Download, Upload, Trash2, 
-  Database, AlertCircle, AlignLeft, Minimize2, Maximize2
-} from 'lucide-react';
-import { downloadFile, readFile } from '../../../utils/helpers';
-import { useClipboard } from '../../../hooks/useLocalStorage';
-import { AdInArticle, AdFooter } from '../../../components/ads';
-import { ToolInfoAuto } from './ToolInfoSection';
-import { CodeEditor } from '../../../components/CodeEditor';
-import { ToolHeader } from '../../../components/common';
+import { useState, useEffect } from "react";
+import {
+  Copy,
+  Check,
+  Download,
+  Upload,
+  Trash2,
+  Database,
+  AlertCircle,
+  AlignLeft,
+  Minimize2,
+  Maximize2,
+} from "lucide-react";
+import { downloadFile, readFile } from "../../../utils/helpers";
+import { useClipboard } from "../../../hooks/useLocalStorage";
+import { AdInArticle, AdFooter } from "../../../components/ads";
+import { ToolInfoAuto } from "./ToolInfoSection";
+import { CodeEditor } from "../../../components/CodeEditor";
+import { ToolHeader } from "../../../components/common";
 
 // SQL 统计
 function SqlStats({ sql }: { sql: string }) {
-  const lines = sql.split('\n').length;
-  const words = sql.split(/\s+/).filter(w => w.length > 0).length;
+  const lines = sql.split("\n").length;
+  const words = sql.split(/\s+/).filter((w) => w.length > 0).length;
   const chars = sql.length;
-  
+
   return (
     <div className="flex flex-wrap gap-2 sm:gap-4 text-xs text-surface-500">
       <span>{lines} 行</span>
@@ -26,70 +34,77 @@ function SqlStats({ sql }: { sql: string }) {
 }
 
 export function SqlTool() {
-  const [input, setInput] = useState('');
-  const [output, setOutput] = useState('');
-  const [error, setError] = useState('');
-  const [viewMode, setViewMode] = useState<'formatted' | 'compressed'>('formatted');
+  const [input, setInput] = useState("");
+  const [output, setOutput] = useState("");
+  const [error, setError] = useState("");
+  const [viewMode, setViewMode] = useState<"formatted" | "compressed">(
+    "formatted",
+  );
   const [isFullscreen, setIsFullscreen] = useState(false);
   const { copied, copy } = useClipboard();
 
   const formatSql = async (sql: string) => {
-    const { format } = await import('sql-formatter');
+    const { format } = await import("sql-formatter");
     return format(sql, {
-      language: 'sql',
+      language: "sql",
       tabWidth: 2,
-      keywordCase: 'upper',
+      keywordCase: "upper",
     });
   };
 
   // 简化错误信息
   const simplifyError = (errorMsg: string): string => {
     // 提取关键错误信息
-    if (errorMsg.includes('Parse error')) {
+    if (errorMsg.includes("Parse error")) {
       const match = errorMsg.match(/token:\s*([^\s]+).*?at line (\d+)/i);
       if (match) {
         return `SQL 语法错误: 第 ${match[2]} 行附近有错误，请检查符号 "${match[1]}"`;
       }
-      return 'SQL 语法错误: 请检查语句格式';
+      return "SQL 语法错误: 请检查语句格式";
     }
-    return '格式化失败: 请检查 SQL 语法';
+    return "格式化失败: 请检查 SQL 语法";
   };
 
-  // 自动格式化
+  // 自动格式化（带防抖）
   useEffect(() => {
     let cancelled = false;
-
-    if (!input.trim()) {
-      setOutput('');
-      setError('');
-      return;
-    }
+    let timeoutId: ReturnType<typeof setTimeout>;
 
     const run = async () => {
+      if (!input.trim()) {
+        setOutput("");
+        setError("");
+        return;
+      }
+
       try {
-        if (viewMode === 'formatted') {
+        if (viewMode === "formatted") {
           const formatted = await formatSql(input);
           if (!cancelled) {
             setOutput(formatted);
-            setError('');
+            setError("");
           }
         } else if (!cancelled) {
-          setOutput(input.replace(/\s+/g, ' ').trim());
-          setError('');
+          setOutput(input.replace(/\s+/g, " ").trim());
+          setError("");
         }
       } catch (e) {
         if (!cancelled) {
-          const errorMsg = e instanceof Error ? e.message : '未知错误';
+          const errorMsg = e instanceof Error ? e.message : "未知错误";
           setError(simplifyError(errorMsg));
           setOutput(input);
         }
       }
     };
 
-    void run();
+    // 300ms 防抖延迟
+    timeoutId = setTimeout(() => {
+      void run();
+    }, 300);
 
     return () => {
       cancelled = true;
+      clearTimeout(timeoutId);
     };
   }, [input, viewMode]);
 
@@ -97,25 +112,25 @@ export function SqlTool() {
     if (!isFullscreen) return;
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
+      if (event.key === "Escape") {
         setIsFullscreen(false);
       }
     };
 
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isFullscreen]);
 
   const handleFormat = () => {
     if (!input.trim()) return;
-    setViewMode('formatted');
+    setViewMode("formatted");
     void (async () => {
       try {
         const formatted = await formatSql(input);
         setOutput(formatted);
-        setError('');
+        setError("");
       } catch (e) {
-        const errorMsg = e instanceof Error ? e.message : '未知错误';
+        const errorMsg = e instanceof Error ? e.message : "未知错误";
         setError(simplifyError(errorMsg));
       }
     })();
@@ -123,8 +138,8 @@ export function SqlTool() {
 
   const handleCompress = () => {
     if (!input.trim()) return;
-    setViewMode('compressed');
-    const compressed = input.replace(/\s+/g, ' ').trim();
+    setViewMode("compressed");
+    const compressed = input.replace(/\s+/g, " ").trim();
     setOutput(compressed);
   };
 
@@ -135,7 +150,7 @@ export function SqlTool() {
       const content = await readFile(file);
       setInput(content);
     } catch {
-      setError('文件读取失败');
+      setError("文件读取失败");
     }
   };
 
@@ -147,14 +162,14 @@ export function SqlTool() {
 
   const handleDownload = () => {
     if (!output) return;
-    const ext = viewMode === 'formatted' ? 'sql' : 'min.sql';
-    downloadFile(output, `query.${ext}`, 'text/plain');
+    const ext = viewMode === "formatted" ? "sql" : "min.sql";
+    downloadFile(output, `query.${ext}`, "text/plain");
   };
 
   const handleClear = () => {
-    setInput('');
-    setOutput('');
-    setError('');
+    setInput("");
+    setOutput("");
+    setError("");
   };
 
   const toolbar = (
@@ -171,9 +186,20 @@ export function SqlTool() {
       <label className="btn-secondary btn-tool cursor-pointer">
         <Upload className="w-3.5 h-3.5 flex-shrink-0" />
         导入
-        <input type="file" accept=".sql,.txt" onChange={handleFileUpload} className="hidden" />
+        <input
+          type="file"
+          id="sql-file-import"
+          name="sql-file-import"
+          accept=".sql,.txt"
+          onChange={handleFileUpload}
+          className="hidden"
+        />
       </label>
-      <button onClick={handleDownload} disabled={!output} className="btn-secondary btn-tool disabled:opacity-50">
+      <button
+        onClick={handleDownload}
+        disabled={!output}
+        className="btn-secondary btn-tool disabled:opacity-50"
+      >
         <Download className="w-3.5 h-3.5 flex-shrink-0" />
         下载
       </button>
@@ -218,7 +244,9 @@ export function SqlTool() {
             <div className="card flex flex-col p-4 sm:p-6">
               <div className="mb-3 flex min-h-[36px] items-center justify-between">
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-xs font-medium text-surface-700 dark:text-surface-300 sm:text-sm">输入 SQL</span>
+                  <span className="text-xs font-medium text-surface-700 dark:text-surface-300 sm:text-sm">
+                    输入 SQL
+                  </span>
                   {input && <SqlStats sql={input} />}
                 </div>
               </div>
@@ -235,7 +263,9 @@ export function SqlTool() {
             <div className="card flex flex-col p-4 sm:p-6">
               <div className="mb-3 flex min-h-[36px] items-center justify-between">
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-xs font-medium text-surface-700 dark:text-surface-300 sm:text-sm">输出</span>
+                  <span className="text-xs font-medium text-surface-700 dark:text-surface-300 sm:text-sm">
+                    输出
+                  </span>
                   {output && (
                     <span className="text-xs text-surface-400">
                       {output.length.toLocaleString()} 字符
@@ -247,24 +277,28 @@ export function SqlTool() {
                     <>
                       <div className="btn-group">
                         <button
-                          onClick={() => setViewMode('formatted')}
-                          className={`btn-group-item ${viewMode === 'formatted' ? 'btn-group-item-active' : ''}`}
+                          onClick={() => setViewMode("formatted")}
+                          className={`btn-group-item ${viewMode === "formatted" ? "btn-group-item-active" : ""}`}
                         >
                           格式化
                         </button>
                         <button
-                          onClick={() => setViewMode('compressed')}
-                          className={`btn-group-item ${viewMode === 'compressed' ? 'btn-group-item-active' : ''}`}
+                          onClick={() => setViewMode("compressed")}
+                          className={`btn-group-item ${viewMode === "compressed" ? "btn-group-item-active" : ""}`}
                         >
                           压缩
                         </button>
                       </div>
                       <button
                         onClick={handleCopy}
-                        className={`btn-tool ${copied ? 'btn-ghost-success' : 'btn-ghost'}`}
+                        className={`btn-tool ${copied ? "btn-ghost-success" : "btn-ghost"}`}
                       >
-                        {copied ? <Check className="w-3.5 h-3.5 flex-shrink-0" /> : <Copy className="w-3.5 h-3.5 flex-shrink-0" />}
-                        {copied ? '已复制' : '复制'}
+                        {copied ? (
+                          <Check className="w-3.5 h-3.5 flex-shrink-0" />
+                        ) : (
+                          <Copy className="w-3.5 h-3.5 flex-shrink-0" />
+                        )}
+                        {copied ? "已复制" : "复制"}
                       </button>
                     </>
                   )}
@@ -301,7 +335,9 @@ export function SqlTool() {
           <div className="flex h-14 flex-shrink-0 items-center justify-between border-b border-surface-200 bg-surface-0 px-4 dark:border-surface-700 dark:bg-surface-800">
             <div className="flex items-center gap-3">
               <Database className="w-5 h-5 text-primary-500" />
-              <span className="font-medium text-surface-900 dark:text-surface-100">SQL 格式化</span>
+              <span className="font-medium text-surface-900 dark:text-surface-100">
+                SQL 格式化
+              </span>
               <span className="text-xs text-surface-400">按 ESC 退出全屏</span>
             </div>
             <button
@@ -331,7 +367,9 @@ export function SqlTool() {
             <div className="flex min-h-0 flex-col border-b border-surface-200 bg-surface-0 dark:border-surface-700 dark:bg-surface-800 lg:border-b-0 lg:border-r">
               <div className="flex h-12 flex-shrink-0 items-center justify-between border-b border-surface-200 px-4 dark:border-surface-700">
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-sm font-medium text-surface-700 dark:text-surface-300">输入 SQL</span>
+                  <span className="text-sm font-medium text-surface-700 dark:text-surface-300">
+                    输入 SQL
+                  </span>
                   {input && <SqlStats sql={input} />}
                 </div>
               </div>
@@ -351,32 +389,42 @@ export function SqlTool() {
             <div className="flex min-h-0 flex-col bg-surface-0 dark:bg-surface-800">
               <div className="flex h-12 flex-shrink-0 items-center justify-between border-b border-surface-200 px-4 dark:border-surface-700">
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-sm font-medium text-surface-700 dark:text-surface-300">输出</span>
-                  {output && <span className="text-xs text-surface-400">{output.length.toLocaleString()} 字符</span>}
+                  <span className="text-sm font-medium text-surface-700 dark:text-surface-300">
+                    输出
+                  </span>
+                  {output && (
+                    <span className="text-xs text-surface-400">
+                      {output.length.toLocaleString()} 字符
+                    </span>
+                  )}
                 </div>
                 <div className="flex items-center gap-2">
                   {output && (
                     <>
                       <div className="btn-group">
                         <button
-                          onClick={() => setViewMode('formatted')}
-                          className={`btn-group-item ${viewMode === 'formatted' ? 'btn-group-item-active' : ''}`}
+                          onClick={() => setViewMode("formatted")}
+                          className={`btn-group-item ${viewMode === "formatted" ? "btn-group-item-active" : ""}`}
                         >
                           格式化
                         </button>
                         <button
-                          onClick={() => setViewMode('compressed')}
-                          className={`btn-group-item ${viewMode === 'compressed' ? 'btn-group-item-active' : ''}`}
+                          onClick={() => setViewMode("compressed")}
+                          className={`btn-group-item ${viewMode === "compressed" ? "btn-group-item-active" : ""}`}
                         >
                           压缩
                         </button>
                       </div>
                       <button
                         onClick={handleCopy}
-                        className={`btn-tool ${copied ? 'btn-ghost-success' : 'btn-ghost'}`}
+                        className={`btn-tool ${copied ? "btn-ghost-success" : "btn-ghost"}`}
                       >
-                        {copied ? <Check className="w-3.5 h-3.5 flex-shrink-0" /> : <Copy className="w-3.5 h-3.5 flex-shrink-0" />}
-                        {copied ? '已复制' : '复制'}
+                        {copied ? (
+                          <Check className="w-3.5 h-3.5 flex-shrink-0" />
+                        ) : (
+                          <Copy className="w-3.5 h-3.5 flex-shrink-0" />
+                        )}
+                        {copied ? "已复制" : "复制"}
                       </button>
                     </>
                   )}

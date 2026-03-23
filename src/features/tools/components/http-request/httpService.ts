@@ -1,5 +1,5 @@
-import axios from 'axios';
-import type { AxiosRequestConfig, AxiosResponse, CancelTokenSource } from 'axios';
+import axios from "axios";
+import type { AxiosRequestConfig, AxiosResponse } from "axios";
 
 export interface HttpRequestOptions {
   method: string;
@@ -7,6 +7,7 @@ export interface HttpRequestOptions {
   headers?: Record<string, string>;
   body?: string | null;
   timeout?: number;
+  signal?: AbortSignal; // 支持传入外部取消信号
 }
 
 export interface HttpResponse {
@@ -18,72 +19,85 @@ export interface HttpResponse {
   size: number;
 }
 
-// 创建 axios 实例
-const axiosInstance = axios.create({
-  timeout: 30000,
-  validateStatus: () => true, // 允许任何状态码
-});
-
-// 当前取消令牌
-let currentCancelToken: CancelTokenSource | null = null;
+// 当前活动的 AbortController
+let currentController: AbortController | null = null;
 
 /**
  * 发送 HTTP 请求
+ * @param options 请求选项
+ * @returns Promise<HttpResponse>
  */
-export async function sendHttpRequest(options: HttpRequestOptions): Promise<HttpResponse> {
+export async function sendHttpRequest(
+  options: HttpRequestOptions,
+): Promise<HttpResponse> {
   const startTime = performance.now();
-  
+
   // 取消之前的请求
-  if (currentCancelToken) {
-    currentCancelToken.cancel('New request started');
+  if (currentController) {
+    currentController.abort("New request started");
   }
-  currentCancelToken = axios.CancelToken.source();
-  
+
+  // 创建新的 AbortController
+  currentController = new AbortController();
+
+  // 如果传入了外部 signal，需要合并两个 signal
+  let signal = currentController.signal;
+  if (options.signal) {
+    // 使用外部的 AbortSignal
+    signal = options.signal;
+  }
+
   const config: AxiosRequestConfig = {
     method: options.method.toLowerCase() as any,
     url: options.url,
     headers: options.headers || {},
-    cancelToken: currentCancelToken.token,
+    signal: signal,
     timeout: options.timeout || 30000,
     withCredentials: false,
     transformResponse: [(data) => data],
-    responseType: 'text',
+    responseType: "text",
   };
-  
+
   // 添加请求体
-  if (options.body && options.method !== 'GET' && options.method !== 'HEAD') {
+  if (options.body && options.method !== "GET" && options.method !== "HEAD") {
     config.data = options.body;
   }
-  
+
   try {
-    const response: AxiosResponse<string> = await axiosInstance(config);
+    const response: AxiosResponse<string> = await axios(config);
     const endTime = performance.now();
-    
+
     // 转换响应头
     const responseHeaders: Record<string, string> = {};
     Object.entries(response.headers).forEach(([key, value]) => {
-      if (typeof value === 'string') {
+      if (typeof value === "string") {
         responseHeaders[key] = value;
       } else if (Array.isArray(value)) {
-        responseHeaders[key] = value.join(', ');
+        responseHeaders[key] = value.join(", ");
       }
     });
-    
+
     return {
       status: response.status,
       statusText: response.statusText,
       headers: responseHeaders,
-      body: response.data || '',
+      body: response.data || "",
       time: Math.round(endTime - startTime),
-      size: new Blob([response.data || '']).size,
+      size: new Blob([response.data || ""]).size,
     };
   } catch (error) {
-    if (axios.isCancel(error)) {
-      throw new Error('请求已取消');
+    if (
+      axios.isCancel(error) ||
+      (error instanceof Error && error.name === "AbortError")
+    ) {
+      throw new Error("请求已取消");
     }
     throw error;
   } finally {
-    currentCancelToken = null;
+    // 只有使用内部 controller 时才清理
+    if (!options.signal && currentController) {
+      currentController = null;
+    }
   }
 }
 
@@ -91,9 +105,9 @@ export async function sendHttpRequest(options: HttpRequestOptions): Promise<Http
  * 取消当前请求
  */
 export function cancelCurrentRequest(): void {
-  if (currentCancelToken) {
-    currentCancelToken.cancel('用户取消');
-    currentCancelToken = null;
+  if (currentController) {
+    currentController.abort("用户取消");
+    currentController = null;
   }
 }
 

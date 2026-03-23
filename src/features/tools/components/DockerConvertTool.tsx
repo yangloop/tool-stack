@@ -126,7 +126,7 @@ export function DockerConvertTool() {
                 : 'border-transparent text-surface-500 hover:text-surface-700 dark:hover:text-surface-300'
             }`}
           >
-            <Icon className="w-3 h-3 sm:w-3.5 sm:h-3.5 sm:w-4 sm:h-4" />
+            <Icon className="w-3 h-3 sm:w-4 sm:h-4" />
             {label}
           </button>
         ))}
@@ -137,7 +137,7 @@ export function DockerConvertTool() {
           <div className="card p-3 sm:p-6 space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="font-medium text-surface-900 dark:text-surface-100 flex items-center gap-1.5 sm:gap-2">
-                <Terminal className="w-3 h-3 sm:w-3.5 sm:h-3.5 sm:w-4 sm:h-4 text-primary-500" />
+                <Terminal className="w-3 h-3 sm:w-4 sm:h-4 text-primary-500" />
                 Docker Run 命令
               </h3>
               <button onClick={() => setDockerRunCommand('')} className="btn-ghost-danger btn-icon">
@@ -156,7 +156,7 @@ export function DockerConvertTool() {
 
             {error && (
               <div className="flex items-center gap-2 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/30 rounded-xl text-sm text-red-600 dark:text-red-400">
-                <AlertCircle className="w-3 h-3 sm:w-3.5 sm:h-3.5 sm:w-4 sm:h-4" />
+                <AlertCircle className="w-3 h-3 sm:w-4 sm:h-4" />
                 {error}
               </div>
             )}
@@ -177,7 +177,7 @@ export function DockerConvertTool() {
           <div className="card p-3 sm:p-6 space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="font-medium text-surface-900 dark:text-surface-100 flex items-center gap-1.5 sm:gap-2">
-                <FileJson className="w-3 h-3 sm:w-3.5 sm:h-3.5 sm:w-4 sm:h-4 text-emerald-500" />
+                <FileJson className="w-3 h-3 sm:w-4 sm:h-4 text-emerald-500" />
                 Docker Compose
               </h3>
               <div className="flex gap-1.5 sm:gap-2">
@@ -221,7 +221,7 @@ export function DockerConvertTool() {
           <div className="card p-3 sm:p-6 space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="font-medium text-surface-900 dark:text-surface-100 flex items-center gap-1.5 sm:gap-2">
-                <FileJson className="w-3 h-3 sm:w-3.5 sm:h-3.5 sm:w-4 sm:h-4 text-emerald-500" />
+                <FileJson className="w-3 h-3 sm:w-4 sm:h-4 text-emerald-500" />
                 Docker Compose
               </h3>
               <button onClick={() => setComposeInput('')} className="btn-ghost-danger btn-icon">
@@ -240,7 +240,7 @@ export function DockerConvertTool() {
 
             {error && (
               <div className="flex items-center gap-2 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/30 rounded-xl text-sm text-red-600 dark:text-red-400">
-                <AlertCircle className="w-3 h-3 sm:w-3.5 sm:h-3.5 sm:w-4 sm:h-4" />
+                <AlertCircle className="w-3 h-3 sm:w-4 sm:h-4" />
                 {error}
               </div>
             )}
@@ -259,7 +259,7 @@ export function DockerConvertTool() {
           <div className="card p-3 sm:p-6 space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="font-medium text-surface-900 dark:text-surface-100 flex items-center gap-1.5 sm:gap-2">
-                <Terminal className="w-3 h-3 sm:w-3.5 sm:h-3.5 sm:w-4 sm:h-4 text-primary-500" />
+                <Terminal className="w-3 h-3 sm:w-4 sm:h-4 text-primary-500" />
                 Docker Run 命令
               </h3>
               <button
@@ -420,7 +420,7 @@ function FormConfigTab({
       <div className="card space-y-5 max-h-[800px] overflow-y-auto">
         <div className="flex items-center justify-between">
           <h3 className="font-medium text-surface-900 dark:text-surface-100 flex items-center gap-1.5 sm:gap-2">
-            <Settings className="w-3 h-3 sm:w-3.5 sm:h-3.5 sm:w-4 sm:h-4 text-primary-500" />
+            <Settings className="w-3 h-3 sm:w-4 sm:h-4 text-primary-500" />
             容器配置
           </h3>
           <div className="flex gap-1.5 sm:gap-2">
@@ -436,7 +436,7 @@ function FormConfigTab({
         {/* 反向解析 */}
         <div className="p-3 sm:p-4 bg-surface-50 dark:bg-surface-900/50 rounded-xl space-y-3">
           <h4 className="text-sm font-medium text-surface-700 dark:text-surface-300 flex items-center gap-1.5 sm:gap-2">
-            <ArrowRightLeft className="w-3 h-3 sm:w-3.5 sm:h-3.5 sm:w-4 sm:h-4" />
+            <ArrowRightLeft className="w-3 h-3 sm:w-4 sm:h-4" />
             反向解析（粘贴命令自动填充表单）
           </h4>
           <CodeEditor
@@ -510,7 +510,7 @@ function FormConfigTab({
                 name={`docker-option-${key}`}
                 checked={options[key as keyof DockerRunOptions] as boolean}
                 onChange={(e) => updateOption(key as keyof DockerRunOptions, e.target.checked)}
-                className="w-3 h-3 sm:w-3.5 sm:h-3.5 sm:w-4 sm:h-4 rounded border-surface-300 text-primary-500"
+                className="w-3 h-3 sm:w-4 sm:h-4 rounded border-surface-300 text-primary-500"
               />
               <span className="text-sm text-surface-600 dark:text-surface-400">{label}</span>
             </label>
@@ -651,7 +651,7 @@ function FormConfigTab({
       <div className="space-y-5">
         <OutputPanel
           title="Docker Run 命令"
-          icon={<Terminal className="w-3 h-3 sm:w-3.5 sm:h-3.5 sm:w-4 sm:h-4 text-primary-500" />}
+          icon={<Terminal className="w-3 h-3 sm:w-4 sm:h-4 text-primary-500" />}
           value={runCommand}
           onCopy={() => copy(runCommand)}
           copied={copied}
@@ -659,7 +659,7 @@ function FormConfigTab({
 
         <OutputPanel
           title="Docker Compose"
-          icon={<FileJson className="w-3 h-3 sm:w-3.5 sm:h-3.5 sm:w-4 sm:h-4 text-emerald-500" />}
+          icon={<FileJson className="w-3 h-3 sm:w-4 sm:h-4 text-emerald-500" />}
           value={composeConfig}
           onCopy={() => copy(composeConfig)}
           copied={copied}

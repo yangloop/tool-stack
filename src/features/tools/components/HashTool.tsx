@@ -1,25 +1,23 @@
-import { useState, useEffect } from 'react';
-import { Copy, Check, Upload, Hash } from 'lucide-react';
-import CryptoJS from 'crypto-js';
-import { useClipboard } from '../../../hooks/useLocalStorage';
-import { readFile } from '../../../utils/helpers';
-import { AdFooter } from '../../../components/ads';
-import { ToolInfoAuto } from './ToolInfoSection';
-import { CodeEditor } from '../../../components/CodeEditor';
-import { ToolHeader } from '../../../components/common';
+import { useState, useEffect } from "react";
+import { Copy, Check, Upload, Hash } from "lucide-react";
+import CryptoJS from "crypto-js";
+import { useClipboard } from "../../../hooks/useLocalStorage";
+import { readFile } from "../../../utils/helpers";
+import { AdFooter } from "../../../components/ads";
+import { ToolInfoAuto } from "./ToolInfoSection";
+import { CodeEditor } from "../../../components/CodeEditor";
+import { ToolHeader } from "../../../components/common";
 
 const algorithms = [
-  { id: 'MD5', name: 'MD5', bit: 128 },
-  { id: 'SHA1', name: 'SHA-1', bit: 160 },
-  { id: 'SHA256', name: 'SHA-256', bit: 256 },
-  { id: 'SHA512', name: 'SHA-512', bit: 512 },
+  { id: "MD5", name: "MD5", bit: 128 },
+  { id: "SHA1", name: "SHA-1", bit: 160 },
+  { id: "SHA256", name: "SHA-256", bit: 256 },
+  { id: "SHA512", name: "SHA-512", bit: 512 },
 ] as const;
 
-
-
 export function HashTool() {
-  const [input, setInput] = useState('');
-  const [hmacKey, setHmacKey] = useState('');
+  const [input, setInput] = useState("");
+  const [hmacKey, setHmacKey] = useState("");
   const [results, setResults] = useState<Record<string, string>>({});
   const { copied, copy } = useClipboard();
 
@@ -34,16 +32,16 @@ export function HashTool() {
     algorithms.forEach(({ id }) => {
       let hash;
       switch (id) {
-        case 'MD5':
+        case "MD5":
           hash = CryptoJS.MD5(input).toString();
           break;
-        case 'SHA1':
+        case "SHA1":
           hash = CryptoJS.SHA1(input).toString();
           break;
-        case 'SHA256':
+        case "SHA256":
           hash = CryptoJS.SHA256(input).toString();
           break;
-        case 'SHA512':
+        case "SHA512":
           hash = CryptoJS.SHA512(input).toString();
           break;
       }
@@ -52,16 +50,16 @@ export function HashTool() {
       if (hmacKey) {
         let hmac;
         switch (id) {
-          case 'MD5':
+          case "MD5":
             hmac = CryptoJS.HmacMD5(input, hmacKey).toString();
             break;
-          case 'SHA1':
+          case "SHA1":
             hmac = CryptoJS.HmacSHA1(input, hmacKey).toString();
             break;
-          case 'SHA256':
+          case "SHA256":
             hmac = CryptoJS.HmacSHA256(input, hmacKey).toString();
             break;
-          case 'SHA512':
+          case "SHA512":
             hmac = CryptoJS.HmacSHA512(input, hmacKey).toString();
             break;
         }
@@ -79,7 +77,7 @@ export function HashTool() {
       const content = await readFile(file);
       setInput(content);
     } catch {
-      alert('文件读取失败');
+      alert("文件读取失败");
     }
   };
 
@@ -111,12 +109,21 @@ export function HashTool() {
           <label className="btn-secondary btn-tool cursor-pointer">
             <Upload className="w-3.5 h-3.5 flex-shrink-0" />
             从文件导入
-            <input type="file" onChange={handleFileUpload} className="hidden" />
+            <input
+              type="file"
+              id="hash-file-import"
+              name="hash-file-import"
+              onChange={handleFileUpload}
+              className="hidden"
+            />
           </label>
         </div>
 
         <div>
-          <label htmlFor="hmac-key" className="block text-xs sm:text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
+          <label
+            htmlFor="hmac-key"
+            className="block text-xs sm:text-sm font-medium text-surface-700 dark:text-surface-300 mb-2"
+          >
             HMAC 密钥（可选）
           </label>
           <input
@@ -137,30 +144,42 @@ export function HashTool() {
             <div key={id} className="card p-4 sm:p-6">
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
-                  <span className="font-medium text-surface-900 dark:text-surface-100">{name}</span>
+                  <span className="font-medium text-surface-900 dark:text-surface-100">
+                    {name}
+                  </span>
                   <span className="text-xs text-surface-400">({bit} bit)</span>
                 </div>
                 <button
                   onClick={() => copy(results[id])}
-                  className={`btn-tool ${copied ? 'btn-ghost-success' : 'btn-ghost'}`}
+                  className={`btn-tool ${copied ? "btn-ghost-success" : "btn-ghost"}`}
                 >
-                  {copied ? <Check className="w-3.5 h-3.5 flex-shrink-0" /> : <Copy className="w-3.5 h-3.5 flex-shrink-0" />}
+                  {copied ? (
+                    <Check className="w-3.5 h-3.5 flex-shrink-0" />
+                  ) : (
+                    <Copy className="w-3.5 h-3.5 flex-shrink-0" />
+                  )}
                   复制
                 </button>
               </div>
               <div className="p-2 sm:p-3 bg-surface-50 dark:bg-surface-900 rounded-lg font-mono text-xs sm:text-sm break-all dark:text-surface-100">
                 {results[id]}
               </div>
-              
+
               {hmacKey && results[`${id}_HMAC`] && (
                 <>
                   <div className="mt-2 sm:mt-3 flex items-center gap-2">
-                    <span className="font-medium text-surface-700 dark:text-surface-300">HMAC-{name}</span>
+                    <span className="font-medium text-surface-700 dark:text-surface-300">
+                      HMAC-{name}
+                    </span>
                     <button
                       onClick={() => copy(results[`${id}_HMAC`])}
-                      className={`btn-tool ${copied ? 'btn-ghost-success' : 'btn-ghost'}`}
+                      className={`btn-tool ${copied ? "btn-ghost-success" : "btn-ghost"}`}
                     >
-                      {copied ? <Check className="w-3 h-3 flex-shrink-0" /> : <Copy className="w-3 h-3 flex-shrink-0" />}
+                      {copied ? (
+                        <Check className="w-3 h-3 flex-shrink-0" />
+                      ) : (
+                        <Copy className="w-3 h-3 flex-shrink-0" />
+                      )}
                       复制
                     </button>
                   </div>

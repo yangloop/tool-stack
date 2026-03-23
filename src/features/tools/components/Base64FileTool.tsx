@@ -261,7 +261,7 @@ export function Base64FileTool() {
               : 'border-transparent text-surface-500 hover:text-surface-700 dark:hover:text-surface-300'
           }`}
         >
-          <Upload className="w-3 h-3 sm:w-3.5 sm:h-3.5 sm:w-4 sm:h-4" />
+          <Upload className="w-3 h-3 sm:w-4 sm:h-4" />
           文件转 Base64
         </button>
         <button
@@ -275,7 +275,7 @@ export function Base64FileTool() {
               : 'border-transparent text-surface-500 hover:text-surface-700 dark:hover:text-surface-300'
           }`}
         >
-          <Download className="w-3 h-3 sm:w-3.5 sm:h-3.5 sm:w-4 sm:h-4" />
+          <Download className="w-3 h-3 sm:w-4 sm:h-4" />
           Base64 转文件
         </button>
       </div>
@@ -487,7 +487,7 @@ export function Base64FileTool() {
             {/* 错误提示 */}
             {error && (
               <div className="flex items-center gap-2 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/30 rounded-xl text-sm text-red-600 dark:text-red-400">
-                <AlertCircle className="w-3 h-3 sm:w-3.5 sm:h-3.5 sm:w-4 sm:h-4" />
+                <AlertCircle className="w-3 h-3 sm:w-4 sm:h-4" />
                 {error}
               </div>
             )}

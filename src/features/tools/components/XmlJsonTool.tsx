@@ -1,61 +1,80 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 import {
-  Copy, Check, ArrowRightLeft, FileCode,
-  Upload, Download, Trash2, AlertCircle, Maximize2, Minimize2
-} from 'lucide-react';
-import { useClipboard } from '../../../hooks/useLocalStorage';
-import { AdInArticle, AdFooter } from '../../../components/ads';
-import { ToolInfoAuto } from './ToolInfoSection';
-import { ToolHeader } from '../../../components/common';
-import { downloadFile, readFile } from '../../../utils/helpers';
-import { CodeEditor } from '../../../components/CodeEditor';
+  Copy,
+  Check,
+  ArrowRightLeft,
+  FileCode,
+  Upload,
+  Download,
+  Trash2,
+  AlertCircle,
+  Maximize2,
+  Minimize2,
+} from "lucide-react";
+import { useClipboard } from "../../../hooks/useLocalStorage";
+import { AdInArticle, AdFooter } from "../../../components/ads";
+import { ToolInfoAuto } from "./ToolInfoSection";
+import { ToolHeader } from "../../../components/common";
+import { downloadFile, readFile } from "../../../utils/helpers";
+import { CodeEditor } from "../../../components/CodeEditor";
 
-type ConversionMode = 'xml-to-json' | 'json-to-xml';
+type ConversionMode = "xml-to-json" | "json-to-xml";
 
 // XML 格式化
 function formatXml(xml: string): string {
-  const PADDING = '  ';
-  let formatted = '';
+  const PADDING = "  ";
+  let formatted = "";
   let indent = 0;
-  
-  xml = xml.replace(/>\s*</g, '><');
-  
-  const tokens = xml.split(/(<[^>]+>)/g).filter(t => t.trim() !== '');
-  
-  tokens.forEach(token => {
+
+  xml = xml.replace(/>\s*</g, "><");
+
+  const tokens = xml.split(/(<[^>]+>)/g).filter((t) => t.trim() !== "");
+
+  tokens.forEach((token) => {
     if (token.match(/^<\/\w/)) {
       indent--;
     }
-    
-    formatted += PADDING.repeat(Math.max(0, indent)) + token + '\n';
-    
-    if (token.match(/^<\w[^>]*[^\/]>$/) && !token.match(/<\?xml/) && !token.match(/<!/) && !token.match(/<\/\w/)) {
+
+    formatted += PADDING.repeat(Math.max(0, indent)) + token + "\n";
+
+    if (
+      token.match(/^<\w[^>]*[^\/]>$/) &&
+      !token.match(/<\?xml/) &&
+      !token.match(/<!/) &&
+      !token.match(/<\/\w/)
+    ) {
       indent++;
     }
   });
-  
+
   return formatted.trim();
 }
 
 async function loadXmlTools() {
-  const { XMLParser, XMLBuilder, XMLValidator } = await import('fast-xml-parser');
+  const { XMLParser, XMLBuilder, XMLValidator } =
+    await import("fast-xml-parser");
   return { XMLParser, XMLBuilder, XMLValidator };
 }
 
 export function XmlJsonTool() {
-  const [input, setInput] = useState('');
-  const [output, setOutput] = useState('');
-  const [mode, setMode] = useState<ConversionMode>('xml-to-json');
-  const [error, setError] = useState('');
-  const [viewMode, setViewMode] = useState<'formatted' | 'compressed'>('formatted');
+  const [input, setInput] = useState("");
+  const [output, setOutput] = useState("");
+  const [mode, setMode] = useState<ConversionMode>("xml-to-json");
+  const [error, setError] = useState("");
+  const [viewMode, setViewMode] = useState<"formatted" | "compressed">(
+    "formatted",
+  );
   const [isFullscreen, setIsFullscreen] = useState(false);
   const { copied, copy } = useClipboard();
 
   // 执行转换
-  const convert = async (inputValue: string, currentMode: ConversionMode): Promise<string> => {
-    if (!inputValue.trim()) return '';
+  const convert = async (
+    inputValue: string,
+    currentMode: ConversionMode,
+  ): Promise<string> => {
+    if (!inputValue.trim()) return "";
 
-    if (currentMode === 'xml-to-json') {
+    if (currentMode === "xml-to-json") {
       const { XMLParser, XMLValidator } = await loadXmlTools();
 
       const validation = XMLValidator.validate(inputValue);
@@ -65,8 +84,8 @@ export function XmlJsonTool() {
 
       const parser = new XMLParser({
         ignoreAttributes: false,
-        attributeNamePrefix: '@_',
-        textNodeName: '#text',
+        attributeNamePrefix: "@_",
+        textNodeName: "#text",
         parseAttributeValue: false,
         parseTagValue: true,
         trimValues: true,
@@ -74,7 +93,7 @@ export function XmlJsonTool() {
 
       const result = parser.parse(inputValue);
 
-      return viewMode === 'compressed'
+      return viewMode === "compressed"
         ? JSON.stringify(result)
         : JSON.stringify(result, null, 2);
     }
@@ -85,10 +104,10 @@ export function XmlJsonTool() {
     try {
       jsonObj = JSON.parse(inputValue);
     } catch {
-      throw new Error('无效的 JSON 格式');
+      throw new Error("无效的 JSON 格式");
     }
 
-    if (typeof jsonObj !== 'object' || jsonObj === null) {
+    if (typeof jsonObj !== "object" || jsonObj === null) {
       jsonObj = { root: jsonObj };
     } else if (!Array.isArray(jsonObj) && Object.keys(jsonObj).length > 1) {
       jsonObj = { root: jsonObj };
@@ -96,17 +115,17 @@ export function XmlJsonTool() {
 
     const builder = new XMLBuilder({
       ignoreAttributes: false,
-      attributeNamePrefix: '@_',
-      textNodeName: '#text',
-      format: viewMode === 'formatted',
-      indentBy: '  ',
+      attributeNamePrefix: "@_",
+      textNodeName: "#text",
+      format: viewMode === "formatted",
+      indentBy: "  ",
       suppressUnpairedNode: false,
       suppressBooleanAttributes: false,
     });
 
     const xml = builder.build(jsonObj);
     const xmlDeclaration = '<?xml version="1.0" encoding="UTF-8"?>\n';
-    return xmlDeclaration + (viewMode === 'formatted' ? formatXml(xml) : xml);
+    return xmlDeclaration + (viewMode === "formatted" ? formatXml(xml) : xml);
   };
 
   // 监听输入变化并实时转换
@@ -118,11 +137,11 @@ export function XmlJsonTool() {
         const result = await convert(input, mode);
         if (cancelled) return;
         setOutput(result);
-        setError('');
+        setError("");
       } catch (e) {
         if (cancelled) return;
-        setError(e instanceof Error ? e.message : '转换失败');
-        setOutput('');
+        setError(e instanceof Error ? e.message : "转换失败");
+        setOutput("");
       }
     };
 
@@ -137,35 +156,35 @@ export function XmlJsonTool() {
     if (!isFullscreen) return;
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
+      if (event.key === "Escape") {
         setIsFullscreen(false);
       }
     };
 
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isFullscreen]);
 
   // 切换模式时交换输入输出
   const switchMode = () => {
-    const newMode = mode === 'xml-to-json' ? 'json-to-xml' : 'xml-to-json';
-    
+    const newMode = mode === "xml-to-json" ? "json-to-xml" : "xml-to-json";
+
     // 如果从 JSON→XML 切换回 XML→JSON，需要移除 XML 声明避免重复
     let newInput = output;
-    if (newMode === 'xml-to-json' && output) {
+    if (newMode === "xml-to-json" && output) {
       // 移除 XML 声明
-      newInput = output.replace(/^<\?xml[^?]*\?>\s*/i, '');
+      newInput = output.replace(/^<\?xml[^?]*\?>\s*/i, "");
     }
-    
+
     setMode(newMode);
     setInput(newInput);
-    setOutput('');
-    setError('');
+    setOutput("");
+    setError("");
   };
 
   // 获取示例数据
   const loadExample = () => {
-    if (mode === 'xml-to-json') {
+    if (mode === "xml-to-json") {
       setInput(`<?xml version="1.0" encoding="UTF-8"?>
 <catalog>
   <book id="bk101">
@@ -186,36 +205,43 @@ export function XmlJsonTool() {
   </book>
 </catalog>`);
     } else {
-      setInput(JSON.stringify({
-        catalog: {
-          book: [
-            {
-              "@_id": "bk101",
-              author: "Gambardella, Matthew",
-              title: "XML Developer's Guide",
-              genre: "Computer",
-              price: {
-                "@_currency": "USD",
-                "#text": "44.95"
-              },
-              publish_date: "2000-10-01",
-              description: "An in-depth look at creating applications with XML."
+      setInput(
+        JSON.stringify(
+          {
+            catalog: {
+              book: [
+                {
+                  "@_id": "bk101",
+                  author: "Gambardella, Matthew",
+                  title: "XML Developer's Guide",
+                  genre: "Computer",
+                  price: {
+                    "@_currency": "USD",
+                    "#text": "44.95",
+                  },
+                  publish_date: "2000-10-01",
+                  description:
+                    "An in-depth look at creating applications with XML.",
+                },
+                {
+                  "@_id": "bk102",
+                  author: "Ralls, Kim",
+                  title: "Midnight Rain",
+                  genre: "Fantasy",
+                  price: {
+                    "@_currency": "USD",
+                    "#text": "5.95",
+                  },
+                  publish_date: "2000-12-16",
+                  description: "A former architect battles corporate zombies.",
+                },
+              ],
             },
-            {
-              "@_id": "bk102",
-              author: "Ralls, Kim",
-              title: "Midnight Rain",
-              genre: "Fantasy",
-              price: {
-                "@_currency": "USD",
-                "#text": "5.95"
-              },
-              publish_date: "2000-12-16",
-              description: "A former architect battles corporate zombies."
-            }
-          ]
-        }
-      }, null, 2));
+          },
+          null,
+          2,
+        ),
+      );
     }
   };
 
@@ -227,49 +253,50 @@ export function XmlJsonTool() {
       const content = await readFile(file);
       setInput(content);
     } catch {
-      setError('文件读取失败');
+      setError("文件读取失败");
     }
   };
 
   // 下载结果
   const handleDownload = () => {
     if (!output) return;
-    const extension = mode === 'xml-to-json' ? 'json' : 'xml';
-    const mimeType = mode === 'xml-to-json' ? 'application/json' : 'application/xml';
+    const extension = mode === "xml-to-json" ? "json" : "xml";
+    const mimeType =
+      mode === "xml-to-json" ? "application/json" : "application/xml";
     downloadFile(output, `converted.${extension}`, mimeType);
   };
 
   // 复制结果
   const handleCopy = async () => {
     if (!output) return;
-    
+
     // JSON→XML 模式下，移除 XML 声明使复制内容与显示内容一致
     let contentToCopy = output;
-    if (mode === 'json-to-xml') {
-      contentToCopy = output.replace(/^<\?xml[^?]*\?>\n?/i, '');
+    if (mode === "json-to-xml") {
+      contentToCopy = output.replace(/^<\?xml[^?]*\?>\n?/i, "");
     }
-    
+
     await copy(contentToCopy);
   };
 
   const handleClear = () => {
-    setInput('');
-    setOutput('');
-    setError('');
+    setInput("");
+    setOutput("");
+    setError("");
   };
 
   const toolbar = (
     <div className="flex flex-wrap items-center gap-2 mb-4">
       <div className="inline-flex bg-surface-100 dark:bg-surface-800 p-1 rounded-lg">
         <button
-          onClick={() => setMode('xml-to-json')}
-          className={`btn-group-item ${mode === 'xml-to-json' ? 'btn-group-item-active' : ''}`}
+          onClick={() => setMode("xml-to-json")}
+          className={`btn-group-item ${mode === "xml-to-json" ? "btn-group-item-active" : ""}`}
         >
           XML → JSON
         </button>
         <button
-          onClick={() => setMode('json-to-xml')}
-          className={`btn-group-item ${mode === 'json-to-xml' ? 'btn-group-item-active' : ''}`}
+          onClick={() => setMode("json-to-xml")}
+          className={`btn-group-item ${mode === "json-to-xml" ? "btn-group-item-active" : ""}`}
         >
           JSON → XML
         </button>
@@ -286,14 +313,14 @@ export function XmlJsonTool() {
 
       <div className="inline-flex bg-surface-100 dark:bg-surface-800 p-1 rounded-lg">
         <button
-          onClick={() => setViewMode('formatted')}
-          className={`btn-group-item ${viewMode === 'formatted' ? 'btn-group-item-active' : ''}`}
+          onClick={() => setViewMode("formatted")}
+          className={`btn-group-item ${viewMode === "formatted" ? "btn-group-item-active" : ""}`}
         >
           格式化
         </button>
         <button
-          onClick={() => setViewMode('compressed')}
-          className={`btn-group-item ${viewMode === 'compressed' ? 'btn-group-item-active' : ''}`}
+          onClick={() => setViewMode("compressed")}
+          className={`btn-group-item ${viewMode === "compressed" ? "btn-group-item-active" : ""}`}
         >
           压缩
         </button>
@@ -303,7 +330,14 @@ export function XmlJsonTool() {
         <label className="btn-tool text-surface-700 dark:text-surface-300 hover:bg-white dark:hover:bg-surface-700 cursor-pointer">
           <Upload className="w-3.5 h-3.5 flex-shrink-0" />
           <span>导入</span>
-          <input type="file" accept=".xml,.json,.txt" onChange={handleFileUpload} className="hidden" />
+          <input
+            type="file"
+            id="xml-json-file-import"
+            name="xml-json-file-import"
+            accept=".xml,.json,.txt"
+            onChange={handleFileUpload}
+            className="hidden"
+          />
         </label>
         <button
           onClick={handleDownload}
@@ -322,10 +356,7 @@ export function XmlJsonTool() {
         加载示例
       </button>
 
-      <button
-        onClick={handleClear}
-        className="btn-ghost-danger btn-tool"
-      >
+      <button onClick={handleClear} className="btn-ghost-danger btn-tool">
         <Trash2 className="w-3.5 h-3.5 flex-shrink-0" />
         <span>清空</span>
       </button>
@@ -367,7 +398,7 @@ export function XmlJsonTool() {
               <div className="flex items-center justify-between mb-2 sm:mb-3 min-h-[36px]">
                 <div className="flex items-center gap-2">
                   <span className="text-sm font-medium text-surface-700 dark:text-surface-300">
-                    {mode === 'xml-to-json' ? 'XML 输入' : 'JSON 输入'}
+                    {mode === "xml-to-json" ? "XML 输入" : "JSON 输入"}
                   </span>
                   {input && (
                     <span className="text-xs text-surface-400">
@@ -385,8 +416,12 @@ export function XmlJsonTool() {
               <CodeEditor
                 value={input}
                 onChange={setInput}
-                language={mode === 'xml-to-json' ? 'xml' : 'json'}
-                placeholder={mode === 'xml-to-json' ? '在此粘贴 XML 数据...' : '在此粘贴 JSON 数据...'}
+                language={mode === "xml-to-json" ? "xml" : "json"}
+                placeholder={
+                  mode === "xml-to-json"
+                    ? "在此粘贴 XML 数据..."
+                    : "在此粘贴 JSON 数据..."
+                }
                 height="400px"
                 variant="embedded"
               />
@@ -396,7 +431,7 @@ export function XmlJsonTool() {
               <div className="flex items-center justify-between mb-2 sm:mb-3 min-h-[36px]">
                 <div className="flex items-center gap-2">
                   <span className="text-sm font-medium text-surface-700 dark:text-surface-300">
-                    {mode === 'xml-to-json' ? 'JSON 输出' : 'XML 输出'}
+                    {mode === "xml-to-json" ? "JSON 输出" : "XML 输出"}
                   </span>
                   {output && (
                     <span className="text-xs text-surface-400">
@@ -407,10 +442,14 @@ export function XmlJsonTool() {
                 {output && (
                   <button
                     onClick={handleCopy}
-                    className={`btn-tool ${copied ? 'btn-ghost-success' : 'btn-ghost'}`}
+                    className={`btn-tool ${copied ? "btn-ghost-success" : "btn-ghost"}`}
                   >
-                    {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-                    {copied ? '已复制' : '复制'}
+                    {copied ? (
+                      <Check className="w-3.5 h-3.5" />
+                    ) : (
+                      <Copy className="w-3.5 h-3.5" />
+                    )}
+                    {copied ? "已复制" : "复制"}
                   </button>
                 )}
               </div>
@@ -418,7 +457,7 @@ export function XmlJsonTool() {
               <CodeEditor
                 value={output}
                 onChange={() => {}}
-                language={mode === 'xml-to-json' ? 'json' : 'xml'}
+                language={mode === "xml-to-json" ? "json" : "xml"}
                 placeholder="转换结果将显示在这里"
                 height="400px"
                 variant="embedded"
@@ -438,7 +477,9 @@ export function XmlJsonTool() {
           <div className="flex h-14 flex-shrink-0 items-center justify-between border-b border-surface-200 bg-surface-0 px-4 dark:border-surface-700 dark:bg-surface-800">
             <div className="flex items-center gap-3">
               <FileCode className="w-5 h-5 text-primary-500" />
-              <span className="font-medium text-surface-900 dark:text-surface-100">XML / JSON 互转</span>
+              <span className="font-medium text-surface-900 dark:text-surface-100">
+                XML / JSON 互转
+              </span>
               <span className="text-xs text-surface-400">按 ESC 退出全屏</span>
             </div>
             <button
@@ -469,9 +510,13 @@ export function XmlJsonTool() {
               <div className="flex h-12 flex-shrink-0 items-center justify-between border-b border-surface-200 px-4 dark:border-surface-700">
                 <div className="flex items-center gap-2">
                   <span className="text-sm font-medium text-surface-700 dark:text-surface-300">
-                    {mode === 'xml-to-json' ? 'XML 输入' : 'JSON 输入'}
+                    {mode === "xml-to-json" ? "XML 输入" : "JSON 输入"}
                   </span>
-                  {input && <span className="text-xs text-surface-400">{input.length.toLocaleString()} 字符</span>}
+                  {input && (
+                    <span className="text-xs text-surface-400">
+                      {input.length.toLocaleString()} 字符
+                    </span>
+                  )}
                 </div>
                 <div className="invisible">
                   <button className="btn-tool btn-ghost">
@@ -484,8 +529,12 @@ export function XmlJsonTool() {
                 <CodeEditor
                   value={input}
                   onChange={setInput}
-                  language={mode === 'xml-to-json' ? 'xml' : 'json'}
-                  placeholder={mode === 'xml-to-json' ? '在此粘贴 XML 数据...' : '在此粘贴 JSON 数据...'}
+                  language={mode === "xml-to-json" ? "xml" : "json"}
+                  placeholder={
+                    mode === "xml-to-json"
+                      ? "在此粘贴 XML 数据..."
+                      : "在此粘贴 JSON 数据..."
+                  }
                   height="100%"
                   variant="embedded"
                   wrapperClassName="h-full"
@@ -497,17 +546,25 @@ export function XmlJsonTool() {
               <div className="flex h-12 flex-shrink-0 items-center justify-between border-b border-surface-200 px-4 dark:border-surface-700">
                 <div className="flex items-center gap-2">
                   <span className="text-sm font-medium text-surface-700 dark:text-surface-300">
-                    {mode === 'xml-to-json' ? 'JSON 输出' : 'XML 输出'}
+                    {mode === "xml-to-json" ? "JSON 输出" : "XML 输出"}
                   </span>
-                  {output && <span className="text-xs text-surface-400">{output.length.toLocaleString()} 字符</span>}
+                  {output && (
+                    <span className="text-xs text-surface-400">
+                      {output.length.toLocaleString()} 字符
+                    </span>
+                  )}
                 </div>
                 {output && (
                   <button
                     onClick={handleCopy}
-                    className={`btn-tool ${copied ? 'btn-ghost-success' : 'btn-ghost'}`}
+                    className={`btn-tool ${copied ? "btn-ghost-success" : "btn-ghost"}`}
                   >
-                    {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-                    {copied ? '已复制' : '复制'}
+                    {copied ? (
+                      <Check className="w-3.5 h-3.5" />
+                    ) : (
+                      <Copy className="w-3.5 h-3.5" />
+                    )}
+                    {copied ? "已复制" : "复制"}
                   </button>
                 )}
               </div>
@@ -515,7 +572,7 @@ export function XmlJsonTool() {
                 <CodeEditor
                   value={output}
                   onChange={() => {}}
-                  language={mode === 'xml-to-json' ? 'json' : 'xml'}
+                  language={mode === "xml-to-json" ? "json" : "xml"}
                   placeholder="转换结果将显示在这里"
                   height="100%"
                   variant="embedded"

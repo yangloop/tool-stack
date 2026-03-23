@@ -1,12 +1,24 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
-import { Copy, Check, RefreshCw, Key, Download, Shield, Lock, Unlock, Sparkles, Loader2, Zap } from 'lucide-react';
-import JSEncrypt from 'jsencrypt';
-import { useClipboard } from '../../../hooks/useLocalStorage';
-import { downloadFile } from '../../../utils/helpers';
-import { AdFooter } from '../../../components/ads';
-import { ToolInfoAuto } from './ToolInfoSection';
-import { CodeEditor } from '../../../components/CodeEditor';
-import { ToolHeader } from '../../../components/common';
+import { useState, useEffect, useRef, useCallback } from "react";
+import {
+  Copy,
+  Check,
+  RefreshCw,
+  Key,
+  Download,
+  Shield,
+  Lock,
+  Unlock,
+  Sparkles,
+  Loader2,
+  Zap,
+} from "lucide-react";
+import JSEncrypt from "jsencrypt";
+import { useClipboard } from "../../../hooks/useLocalStorage";
+import { downloadFile } from "../../../utils/helpers";
+import { AdFooter } from "../../../components/ads";
+import { ToolInfoAuto } from "./ToolInfoSection";
+import { CodeEditor } from "../../../components/CodeEditor";
+import { ToolHeader } from "../../../components/common";
 
 // 使用 Web Worker 生成 RSA 密钥，避免阻塞 UI
 interface WorkerResult {
@@ -23,16 +35,19 @@ const useRsaWorker = () => {
 
   useEffect(() => {
     // 创建 Worker
-    const worker = new Worker(new URL('../workers/rsaWorker.ts', import.meta.url), {
-      type: 'module',
-    });
+    const worker = new Worker(
+      new URL("../workers/rsaWorker.ts", import.meta.url),
+      {
+        type: "module",
+      },
+    );
 
     worker.onmessage = (event) => {
       const { type, progress: p, publicKey, privateKey, error } = event.data;
-      
-      if (type === 'progress') {
+
+      if (type === "progress") {
         setProgress(p);
-      } else if (type === 'result') {
+      } else if (type === "result") {
         setIsGenerating(false);
         setProgress(100);
         if (callbackRef.current) {
@@ -45,74 +60,102 @@ const useRsaWorker = () => {
     workerRef.current = worker;
 
     return () => {
-      worker.terminate();
+      try {
+        workerRef.current?.terminate();
+      } catch {
+        // 忽略已终止的 Worker 错误
+      }
+      workerRef.current = null;
+      callbackRef.current = null;
     };
   }, []);
 
-  const generateKeys = useCallback((keySize: number, onComplete: (result: WorkerResult) => void) => {
-    if (!workerRef.current) return;
-    
-    setIsGenerating(true);
-    setProgress(0);
-    callbackRef.current = onComplete;
-    workerRef.current.postMessage({ type: 'generate', keySize, id: Date.now() });
-  }, []);
+  const generateKeys = useCallback(
+    (keySize: number, onComplete: (result: WorkerResult) => void) => {
+      if (!workerRef.current) return;
+
+      setIsGenerating(true);
+      setProgress(0);
+      callbackRef.current = onComplete;
+      workerRef.current.postMessage({
+        type: "generate",
+        keySize,
+        id: Date.now(),
+      });
+    },
+    [],
+  );
 
   return { generateKeys, isGenerating, progress };
 };
 
 export function RsaTool() {
   const [keySize, setKeySize] = useState<512 | 1024 | 2048 | 4096>(2048);
-  const [publicKey, setPublicKey] = useState('');
-  const [privateKey, setPrivateKey] = useState('');
-  const [activeTab, setActiveTab] = useState<'test' | 'generate'>('test');
-  
+  const [publicKey, setPublicKey] = useState("");
+  const [privateKey, setPrivateKey] = useState("");
+  const [activeTab, setActiveTab] = useState<"test" | "generate">("test");
+
   // 加密/解密测试
-  const [testText, setTestText] = useState('');
-  const [encryptedText, setEncryptedText] = useState('');
-  const [decryptedText, setDecryptedText] = useState('');
+  const [testText, setTestText] = useState("");
+  const [encryptedText, setEncryptedText] = useState("");
+  const [decryptedText, setDecryptedText] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
-  
+
   const { copied: copiedPub, copy: copyPub } = useClipboard();
   const { copied: copiedPri, copy: copyPri } = useClipboard();
   const { copied: copiedEnc, copy: copyEnc } = useClipboard();
-  
+
   // Web Worker
-  const { generateKeys: generateKeysWithWorker, isGenerating, progress } = useRsaWorker();
+  const {
+    generateKeys: generateKeysWithWorker,
+    isGenerating,
+    progress,
+  } = useRsaWorker();
 
   // 页面加载时自动生成默认密钥
   useEffect(() => {
+    let isMounted = true;
+
     generateKeysWithWorker(keySize, ({ publicKey: pub, privateKey: pri }) => {
+      // 组件卸载后不再更新状态
+      if (!isMounted) return;
       setPublicKey(pub);
       setPrivateKey(pri);
     });
+
+    return () => {
+      isMounted = false;
+    };
   }, [generateKeysWithWorker, keySize]);
 
   // 生成密钥对
   const handleGenerateKeys = () => {
-    generateKeysWithWorker(keySize, ({ publicKey: pub, privateKey: pri, error }) => {
-      if (!error) {
-        setPublicKey(pub);
-        setPrivateKey(pri);
-      }
-    });
+    generateKeysWithWorker(
+      keySize,
+      ({ publicKey: pub, privateKey: pri, error }) => {
+        if (!error) {
+          setPublicKey(pub);
+          setPrivateKey(pri);
+        }
+      },
+    );
   };
 
   // 加密测试
   const handleEncrypt = () => {
     if (!testText || !publicKey) return;
     setIsProcessing(true);
-    
+
     // 使用 setTimeout 让 UI 有时间更新
     setTimeout(() => {
       try {
         const encrypt = new JSEncrypt();
         encrypt.setPublicKey(publicKey);
         const encrypted = encrypt.encrypt(testText);
-        setEncryptedText(encrypted || '');
-        setDecryptedText('');
+        setEncryptedText(encrypted || "");
+        setDecryptedText("");
       } catch {
-        setEncryptedText('加密失败');
+        setEncryptedText("加密失败");
       } finally {
         setIsProcessing(false);
       }
@@ -123,15 +166,15 @@ export function RsaTool() {
   const handleDecrypt = () => {
     if (!encryptedText || !privateKey) return;
     setIsProcessing(true);
-    
+
     setTimeout(() => {
       try {
         const decrypt = new JSEncrypt();
         decrypt.setPrivateKey(privateKey);
         const decrypted = decrypt.decrypt(encryptedText);
-        setDecryptedText(decrypted || '');
+        setDecryptedText(decrypted || "");
       } catch {
-        setDecryptedText('解密失败');
+        setDecryptedText("解密失败");
       } finally {
         setIsProcessing(false);
       }
@@ -140,57 +183,54 @@ export function RsaTool() {
 
   // 下载密钥文件
   const downloadKey = (content: string, filename: string) => {
-    downloadFile(content, filename, 'text/plain');
+    downloadFile(content, filename, "text/plain");
   };
 
   // 加载示例文本
   const loadExample = () => {
-    setTestText('Hello, RSA Encryption!');
-    setEncryptedText('');
-    setDecryptedText('');
+    setTestText("Hello, RSA Encryption!");
+    setEncryptedText("");
+    setDecryptedText("");
   };
 
   // 清空测试
   const clearTest = () => {
-    setTestText('');
-    setEncryptedText('');
-    setDecryptedText('');
+    setTestText("");
+    setEncryptedText("");
+    setDecryptedText("");
   };
 
   // 预估生成时间
   const getEstimatedTime = (size: number) => {
-    if (size <= 512) return '1-2 秒';
-    if (size <= 1024) return '2-5 秒';
-    if (size <= 2048) return '5-15 秒';
-    return '30-60 秒';
+    if (size <= 512) return "1-2 秒";
+    if (size <= 1024) return "2-5 秒";
+    if (size <= 2048) return "5-15 秒";
+    return "30-60 秒";
   };
 
   return (
     <div className="max-w-6xl mx-auto animate-fade-in">
-      <ToolHeader
-        title="RSA 密钥生成"
-        description="生成 RSA 公私钥对"
-      />
+      <ToolHeader title="RSA 密钥生成" description="生成 RSA 公私钥对" />
 
       {/* Tab 导航 */}
       <div className="flex gap-1 border-b border-surface-200 dark:border-surface-700 mb-4 sm:mb-5">
         <button
-          onClick={() => setActiveTab('test')}
+          onClick={() => setActiveTab("test")}
           className={`px-4 py-3 text-sm font-medium border-b-2 transition-all flex items-center gap-2 -mb-px ${
-            activeTab === 'test'
-              ? 'border-primary-500 text-primary-600 dark:text-primary-400'
-              : 'border-transparent text-surface-500 hover:text-surface-700 dark:hover:text-surface-300'
+            activeTab === "test"
+              ? "border-primary-500 text-primary-600 dark:text-primary-400"
+              : "border-transparent text-surface-500 hover:text-surface-700 dark:hover:text-surface-300"
           }`}
         >
           <Shield className="w-4 h-4" />
           加密/解密测试
         </button>
         <button
-          onClick={() => setActiveTab('generate')}
+          onClick={() => setActiveTab("generate")}
           className={`px-4 py-3 text-sm font-medium border-b-2 transition-all flex items-center gap-2 -mb-px ${
-            activeTab === 'generate'
-              ? 'border-primary-500 text-primary-600 dark:text-primary-400'
-              : 'border-transparent text-surface-500 hover:text-surface-700 dark:hover:text-surface-300'
+            activeTab === "generate"
+              ? "border-primary-500 text-primary-600 dark:text-primary-400"
+              : "border-transparent text-surface-500 hover:text-surface-700 dark:hover:text-surface-300"
           }`}
         >
           <Key className="w-4 h-4" />
@@ -199,7 +239,7 @@ export function RsaTool() {
       </div>
 
       {/* 加密/解密测试 Tab */}
-      {activeTab === 'test' && (
+      {activeTab === "test" && (
         <div className="space-y-5">
           {/* 快速测试区 */}
           <div className="card p-4 sm:p-6 space-y-4">
@@ -209,10 +249,7 @@ export function RsaTool() {
                 加密/解密测试
               </h3>
               <div className="flex items-center gap-1.5 sm:gap-2">
-                <button
-                  onClick={loadExample}
-                  className="btn-secondary text-xs"
-                >
+                <button onClick={loadExample} className="btn-secondary text-xs">
                   <Sparkles className="w-3.5 h-3.5" />
                   加载示例
                 </button>
@@ -225,7 +262,7 @@ export function RsaTool() {
                 </button>
               </div>
             </div>
-            
+
             <div className="grid lg:grid-cols-3 gap-3 sm:gap-4">
               {/* 原文 */}
               <div className="space-y-2">
@@ -246,7 +283,11 @@ export function RsaTool() {
                   disabled={!testText || !publicKey || isProcessing}
                   className="w-full btn-primary btn-tool disabled:opacity-50"
                 >
-                  {isProcessing ? <Loader2 className="w-4 h-4 animate-spin flex-shrink-0" /> : <Lock className="w-4 h-4 flex-shrink-0" />}
+                  {isProcessing ? (
+                    <Loader2 className="w-4 h-4 animate-spin flex-shrink-0" />
+                  ) : (
+                    <Lock className="w-4 h-4 flex-shrink-0" />
+                  )}
                   加密
                 </button>
               </div>
@@ -269,10 +310,14 @@ export function RsaTool() {
                 <button
                   onClick={() => copyEnc(encryptedText)}
                   disabled={!encryptedText}
-                  className={`w-full btn-tool disabled:opacity-50 ${copiedEnc ? 'btn-ghost-success' : 'btn-secondary'}`}
+                  className={`w-full btn-tool disabled:opacity-50 ${copiedEnc ? "btn-ghost-success" : "btn-secondary"}`}
                 >
-                  {copiedEnc ? <Check className="w-4 h-4 flex-shrink-0" /> : <Copy className="w-4 h-4 flex-shrink-0" />}
-                  {copiedEnc ? '已复制' : '复制密文'}
+                  {copiedEnc ? (
+                    <Check className="w-4 h-4 flex-shrink-0" />
+                  ) : (
+                    <Copy className="w-4 h-4 flex-shrink-0" />
+                  )}
+                  {copiedEnc ? "已复制" : "复制密文"}
                 </button>
               </div>
 
@@ -296,7 +341,11 @@ export function RsaTool() {
                   disabled={!encryptedText || !privateKey || isProcessing}
                   className="w-full btn-primary btn-tool disabled:opacity-50"
                 >
-                  {isProcessing ? <Loader2 className="w-4 h-4 animate-spin flex-shrink-0" /> : <Unlock className="w-4 h-4 flex-shrink-0" />}
+                  {isProcessing ? (
+                    <Loader2 className="w-4 h-4 animate-spin flex-shrink-0" />
+                  ) : (
+                    <Unlock className="w-4 h-4 flex-shrink-0" />
+                  )}
                   解密
                 </button>
               </div>
@@ -304,11 +353,13 @@ export function RsaTool() {
 
             {/* 验证结果 */}
             {decryptedText && (
-              <div className={`p-4 rounded-xl text-sm flex items-center gap-2 ${
-                decryptedText === testText 
-                  ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400' 
-                  : 'bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400'
-              }`}>
+              <div
+                className={`p-4 rounded-xl text-sm flex items-center gap-2 ${
+                  decryptedText === testText
+                    ? "bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400"
+                    : "bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400"
+                }`}
+              >
                 {decryptedText === testText ? (
                   <>
                     <Check className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -328,7 +379,9 @@ export function RsaTool() {
           {publicKey && privateKey && (
             <div className="card space-y-3">
               <div className="flex items-center justify-between">
-                <h4 className="font-medium text-surface-900 dark:text-surface-100">当前使用的密钥</h4>
+                <h4 className="font-medium text-surface-900 dark:text-surface-100">
+                  当前使用的密钥
+                </h4>
                 <span className="badge-primary text-[10px]">{keySize} bit</span>
               </div>
               <p className="text-sm text-surface-500">
@@ -340,19 +393,23 @@ export function RsaTool() {
       )}
 
       {/* 密钥管理 Tab */}
-      {activeTab === 'generate' && (
+      {activeTab === "generate" && (
         <div className="space-y-5">
           {/* 密钥生成设置 */}
           <div className="card p-4 sm:p-6 space-y-4">
             <div className="flex flex-wrap items-center gap-3 sm:gap-4">
               <div className="flex items-center gap-1.5 sm:gap-2">
                 <Shield className="w-4 h-4 sm:w-5 sm:h-5 text-surface-400" />
-                <span className="font-medium text-surface-700 dark:text-surface-300">密钥长度</span>
+                <span className="font-medium text-surface-700 dark:text-surface-300">
+                  密钥长度
+                </span>
                 <select
                   id="rsa-key-size"
                   name="rsa-key-size"
                   value={keySize}
-                  onChange={(e) => setKeySize(Number(e.target.value) as typeof keySize)}
+                  onChange={(e) =>
+                    setKeySize(Number(e.target.value) as typeof keySize)
+                  }
                   disabled={isGenerating}
                   className="select w-48"
                 >
@@ -362,7 +419,7 @@ export function RsaTool() {
                   <option value={4096}>4096 bit (高安全性，较慢)</option>
                 </select>
               </div>
-              
+
               <button
                 onClick={handleGenerateKeys}
                 disabled={isGenerating}
@@ -373,7 +430,7 @@ export function RsaTool() {
                 ) : (
                   <RefreshCw className="w-4 h-4 flex-shrink-0" />
                 )}
-                {isGenerating ? '生成中...' : '重新生成密钥对'}
+                {isGenerating ? "生成中..." : "重新生成密钥对"}
               </button>
             </div>
 
@@ -388,13 +445,14 @@ export function RsaTool() {
                   <span className="text-surface-500">{progress}%</span>
                 </div>
                 <div className="h-2 bg-surface-100 dark:bg-surface-700 rounded-full overflow-hidden">
-                  <div 
+                  <div
                     className="h-full bg-primary-500 transition-all duration-300"
                     style={{ width: `${progress}%` }}
                   />
                 </div>
                 <p className="text-xs text-surface-400">
-                  预计耗时: {getEstimatedTime(keySize)} · 生成过程在后台进行，可切换标签页
+                  预计耗时: {getEstimatedTime(keySize)} ·
+                  生成过程在后台进行，可切换标签页
                 </p>
               </div>
             )}
@@ -402,7 +460,9 @@ export function RsaTool() {
             {/* 性能提示 */}
             {!isGenerating && keySize >= 2048 && (
               <div className="p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/30 rounded-xl text-sm text-amber-700 dark:text-amber-400">
-                <strong>提示:</strong> {keySize} 位密钥生成需要较长时间（{getEstimatedTime(keySize)}），这是正常现象。密钥生成使用了后台线程，不会阻塞页面操作。
+                <strong>提示:</strong> {keySize} 位密钥生成需要较长时间（
+                {getEstimatedTime(keySize)}
+                ），这是正常现象。密钥生成使用了后台线程，不会阻塞页面操作。
               </div>
             )}
           </div>
@@ -415,18 +475,26 @@ export function RsaTool() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1.5 sm:gap-2">
                     <Unlock className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-500" />
-                    <span className="font-medium text-surface-900 dark:text-surface-100">公钥 (Public Key)</span>
+                    <span className="font-medium text-surface-900 dark:text-surface-100">
+                      公钥 (Public Key)
+                    </span>
                   </div>
                   <div className="flex gap-1.5 sm:gap-2">
                     <button
                       onClick={() => copyPub(publicKey)}
-                      className={`btn-tool ${copiedPub ? 'btn-ghost-success' : 'btn-ghost'}`}
+                      className={`btn-tool ${copiedPub ? "btn-ghost-success" : "btn-ghost"}`}
                     >
-                      {copiedPub ? <Check className="w-3.5 h-3.5 flex-shrink-0" /> : <Copy className="w-3.5 h-3.5 flex-shrink-0" />}
-                      {copiedPub ? '已复制' : '复制'}
+                      {copiedPub ? (
+                        <Check className="w-3.5 h-3.5 flex-shrink-0" />
+                      ) : (
+                        <Copy className="w-3.5 h-3.5 flex-shrink-0" />
+                      )}
+                      {copiedPub ? "已复制" : "复制"}
                     </button>
                     <button
-                      onClick={() => downloadKey(publicKey, `rsa_public_${keySize}.pem`)}
+                      onClick={() =>
+                        downloadKey(publicKey, `rsa_public_${keySize}.pem`)
+                      }
                       className="btn-secondary btn-tool"
                     >
                       <Download className="w-3.5 h-3.5 flex-shrink-0" />
@@ -452,18 +520,26 @@ export function RsaTool() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1.5 sm:gap-2">
                     <Lock className="w-4 h-4 sm:w-5 sm:h-5 text-red-500" />
-                    <span className="font-medium text-surface-900 dark:text-surface-100">私钥 (Private Key)</span>
+                    <span className="font-medium text-surface-900 dark:text-surface-100">
+                      私钥 (Private Key)
+                    </span>
                   </div>
                   <div className="flex gap-1.5 sm:gap-2">
                     <button
                       onClick={() => copyPri(privateKey)}
-                      className={`btn-tool ${copiedPri ? 'btn-ghost-success' : 'btn-ghost'}`}
+                      className={`btn-tool ${copiedPri ? "btn-ghost-success" : "btn-ghost"}`}
                     >
-                      {copiedPri ? <Check className="w-3.5 h-3.5 flex-shrink-0" /> : <Copy className="w-3.5 h-3.5 flex-shrink-0" />}
-                      {copiedPri ? '已复制' : '复制'}
+                      {copiedPri ? (
+                        <Check className="w-3.5 h-3.5 flex-shrink-0" />
+                      ) : (
+                        <Copy className="w-3.5 h-3.5 flex-shrink-0" />
+                      )}
+                      {copiedPri ? "已复制" : "复制"}
                     </button>
                     <button
-                      onClick={() => downloadKey(privateKey, `rsa_private_${keySize}.pem`)}
+                      onClick={() =>
+                        downloadKey(privateKey, `rsa_private_${keySize}.pem`)
+                      }
                       className="btn-secondary btn-tool"
                     >
                       <Download className="w-3.5 h-3.5 flex-shrink-0" />
@@ -489,13 +565,17 @@ export function RsaTool() {
           {/* 自定义密钥输入 */}
           {!isGenerating && (
             <div className="card p-4 sm:p-6 space-y-4">
-              <h4 className="font-medium text-surface-900 dark:text-surface-100">使用自定义密钥</h4>
+              <h4 className="font-medium text-surface-900 dark:text-surface-100">
+                使用自定义密钥
+              </h4>
               <p className="text-sm text-surface-500">
                 您也可以粘贴自己的公钥和私钥进行测试（密钥格式为 PEM）
               </p>
               <div className="grid lg:grid-cols-2 gap-3 sm:gap-4">
                 <div>
-                  <label className="text-sm font-medium text-surface-700 dark:text-surface-300 mb-2 block">自定义公钥</label>
+                  <label className="text-sm font-medium text-surface-700 dark:text-surface-300 mb-2 block">
+                    自定义公钥
+                  </label>
                   <CodeEditor
                     value={publicKey}
                     onChange={setPublicKey}
@@ -506,7 +586,9 @@ export function RsaTool() {
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-surface-700 dark:text-surface-300 mb-2 block">自定义私钥</label>
+                  <label className="text-sm font-medium text-surface-700 dark:text-surface-300 mb-2 block">
+                    自定义私钥
+                  </label>
                   <CodeEditor
                     value={privateKey}
                     onChange={setPrivateKey}
